@@ -1,0 +1,119 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Inter:wght@500&family=Patua+One&display=swap");
+
+body {
+    background-image: url("../image/background.png");
+    background-repeat: no-repeat;
+    background-size: 100%;
+    font-family: "Inter", sans-serif;
+}
+
+.container {
+    position: relative;
+    height: 100%;
+    align-content: center;
+}
+
+.card {
+    float: right;
+    height: 370px;
+    margin-top: 50px;
+    margin-right: 130px;
+    margin-bottom: auto;
+    width: 400px;
+    background-color: rgba(0, 0, 40, 0.7);
+}
+
+.social_icon span {
+    font-size: 60px;
+    margin-left: 10px;
+    color: #ffc312;
+}
+
+.social_icon span:hover {
+    color: white;
+    cursor: pointer;
+}
+
+.card-header h2 {
+    margin-left: 20px;
+    color: white;
+}
+
+.social_icon {
+    position: absolute;
+    right: 20px;
+    top: -45px;
+}
+
+input:focus {
+    outline: 0 0 0 0 !important;
+    box-shadow: 0 0 0 0 !important;
+}
+
+.remember {
+    color: white;
+}
+
+.remember input {
+    width: 20px;
+    height: 20px;
+    margin-left: 20px;
+    margin-right: 5px;
+}
+
+.login_btn {
+    float: right;
+    margin-right: 70px;
+    height: 40px;
+    width: 100px;
+    border-radius: 10%;
+    color: black;
+    background-color: cornflowerblue;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.login_btn:hover {
+    color: black;
+    background-color: white;
+}
+
+.links {
+    color: white;
+}
+
+.links a {
+    margin-left: 4px;
+}
+
+.card-footer {
+    text-align: center;
+    margin-top: 110px;
+    color: white;
+}
+
+A {
+    color: cornflowerblue;
+}
+
+.input-form {
+    margin-left: 20px;
+    padding-top: 10px;
+    height: 40px;
+}
+
+.form-control {
+    height: 25px;
+    width: 300px;
+}
+
+.slogan {
+    color:midnightblue;
+    font-family: 'Patua One', cursive;
+    float: left;
+    margin-left: 200px;
+    margin-top: 100px;
+    font-size:60px;
+    font-weight:900;
+}
