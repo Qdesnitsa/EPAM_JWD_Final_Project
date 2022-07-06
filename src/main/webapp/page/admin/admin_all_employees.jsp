@@ -1,9 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <style>
-    <%@include file="/page/employee/styles.css"%>
+    <%@include file="/page/css/styles.css"%>
 </style>
-<t:not-auth-layout title="Admin Edit Customer">
+<t:layout title="Admin Edit Customer">
     <div class="container">
         <div class="header">
             <h2>
@@ -95,4 +95,4 @@
     <div class="footer">
         &copy; IT-Teams Studio (Elena Sidina). All rights reserved. 2022
     </div>
-</t:not-auth-layout>
+</t:layout>

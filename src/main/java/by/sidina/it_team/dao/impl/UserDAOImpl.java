@@ -190,7 +190,7 @@ public class UserDAOImpl implements UserDAO<User,UserStatus,String> {
                 .setId(resultSet.getInt("id"))
                 .setName(resultSet.getString("name"))
                 .setSurname(resultSet.getString("surname"))
-                .setId(resultSet.getInt("role_id"))
+                .setRole_id(resultSet.getInt("role_id"))
                 .setEmail(resultSet.getString("email"))
                 .setStatus_id(resultSet.getInt("user_status_id"))
                 .build();

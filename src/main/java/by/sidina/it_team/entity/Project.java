@@ -14,14 +14,17 @@ public class Project implements Serializable {
     private int projectStatusID;
     private String requirementComment;
 
+    private int customerID;
+
     private Project() {}
 
-    public Project(String name, Date startDate, Date endDate, int projectStatusID, String requirementComment) {
+    public Project(String name, Date startDate, Date endDate, int projectStatusID, String requirementComment, int customerID) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
         this.projectStatusID = projectStatusID;
         this.requirementComment = requirementComment;
+        this.customerID = customerID;
     }
 
     public int getId() {
@@ -48,19 +51,23 @@ public class Project implements Serializable {
         return requirementComment;
     }
 
+    public int getCustomerID() {
+        return customerID;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Project project = (Project) o;
-        return id == project.id && projectStatusID == project.projectStatusID && Objects.equals(name, project.name) &&
-                Objects.equals(startDate, project.startDate) && Objects.equals(endDate, project.endDate) &&
-                Objects.equals(requirementComment, project.requirementComment);
+        return id == project.id && projectStatusID == project.projectStatusID && customerID == project.customerID &&
+                Objects.equals(name, project.name) && Objects.equals(startDate, project.startDate) &&
+                Objects.equals(endDate, project.endDate) && Objects.equals(requirementComment, project.requirementComment);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, startDate, endDate, projectStatusID, requirementComment);
+        return Objects.hash(id, name, startDate, endDate, projectStatusID, requirementComment, customerID);
     }
 
     @Override
@@ -72,6 +79,7 @@ public class Project implements Serializable {
                 ", endDate=" + endDate +
                 ", projectStatusID=" + projectStatusID +
                 ", requirementComment='" + requirementComment + '\'' +
+                ", customerID=" + customerID +
                 "; ";
     }
 
@@ -108,6 +116,11 @@ public class Project implements Serializable {
 
         public Project.Builder setRequirementComment(String requirementComment) {
             newProject.requirementComment = requirementComment;
+            return this;
+        }
+
+        public Project.Builder setCustomerID(int id) {
+            newProject.customerID = id;
             return this;
         }
 
