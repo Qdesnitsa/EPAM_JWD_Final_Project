@@ -5,12 +5,10 @@ import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.ProjectDAO;
 import by.sidina.it_team.entity.Project;
-import by.sidina.it_team.entity.User;
+import by.sidina.it_team.entity.ProjectStatus;
+import by.sidina.it_team.entity.UserStatus;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -82,7 +80,33 @@ public class ProjectDAOImpl implements ProjectDAO {
             GROUP BY id
             """;
     private static final String SQL_FIND_PROJECT_BY_ID
-            = "SELECT id, name, start_date, end_date, project_status_id, requirement_comment FROM projects WHERE id=?";
+            = """
+            SELECT projects.id as id,
+                   projects.name as name,
+                   projects.start_date as start_date,
+                   projects.end_date as end_date,
+                   status_project.status as project_status,
+                   projects.requirement_comment as comment,
+                   projects.customer_id as customer_id,
+                   sum(payments.amount) as payments,
+                   sum(team_schedule.hours_fact) as hours_fact,
+                   project_calculation.hours_plan as hours_plan,
+                   project_calculation.cost_plan as cost_plan
+            FROM projects
+                     LEFT JOIN status_project ON projects.project_status_id = status_project.id
+                     LEFT JOIN payments ON projects.id = payments.project_id
+                     LEFT JOIN team_schedule ON projects.id = team_schedule.project_id
+                     LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
+            WHERE projects.id=?
+            GROUP BY id
+            """;
+    private static final String SQL_CHANGE_PROJECT_STATUS
+            = "UPDATE projects SET project_status_id=? WHERE id=?";
+    private static final String SQL_CHANGE_START_DATE
+            = "UPDATE projects SET start_date=? WHERE id=?";
+    private static final String SQL_CHANGE_END_DATE
+            = "UPDATE projects SET end_date_id=? WHERE id=?";
+
 
     @Override
     public List<ProjectDto> findAllForAdmin() throws DAOException {
@@ -199,8 +223,66 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public boolean update(ProjectDto project) throws DAOException {
-        throw new DAOException("Not implemented");
+    public boolean changeStatus(int id, int status) throws DAOException {
+        boolean isChanged = false;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_PROJECT_STATUS)) {
+            statement.setInt(1, status);
+            statement.setInt(2, id);
+            int rowCount = statement.executeUpdate();
+            if (rowCount != 0) {
+                isChanged = true;
+                //LOGGER.info("Project status has been changed");
+            } else {
+                //LOGGER.error("Project status has not been changed");
+            }
+        } catch (SQLException e) {
+            //LOGGER.error("Failed attempt to change project status in the database");
+            throw new DAOException("Failed attempt to change project status in the database", e);
+        }
+        return isChanged;
+    }
+
+    @Override
+    public boolean changeStartDate(int id, Date date) throws DAOException {
+        boolean isChanged = false;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_START_DATE)) {
+            statement.setDate(1, date);
+            statement.setInt(2, id);
+            int rowCount = statement.executeUpdate();
+            if (rowCount != 0) {
+                isChanged = true;
+                //LOGGER.info("Project start_date has been changed");
+            } else {
+                //LOGGER.error("Project start_date has not been changed");
+            }
+        } catch (SQLException e) {
+            //LOGGER.error("Failed attempt to change project start_date in the database");
+            throw new DAOException("Failed attempt to change project start_date in the database", e);
+        }
+        return isChanged;
+    }
+
+    @Override
+    public boolean changeEndDate(int id, Date date) throws DAOException {
+        boolean isChanged = false;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_END_DATE)) {
+            statement.setDate(1, date);
+            statement.setInt(2, id);
+            int rowCount = statement.executeUpdate();
+            if (rowCount != 0) {
+                isChanged = true;
+                //LOGGER.info("Project end_date has been changed");
+            } else {
+                //LOGGER.error("Project end_date has not been changed");
+            }
+        } catch (SQLException e) {
+            //LOGGER.error("Failed attempt to change project end_date in the database");
+            throw new DAOException("Failed attempt to change project end_date in the database", e);
+        }
+        return isChanged;
     }
 
     private ProjectDto retrieve(ResultSet resultSet) throws SQLException {
@@ -208,7 +290,7 @@ public class ProjectDAOImpl implements ProjectDAO {
                 .setCustomerId(resultSet.getInt("customer_id"))
                 .setId(resultSet.getInt("id"))
                 .setName(resultSet.getString("name"))
-                .setStatus(resultSet.getString("project_status"))
+                .setStatus(ProjectStatus.valueOf(resultSet.getString("project_status")))
                 .setStartDate(resultSet.getDate("start_date"))
                 .setEndDate(resultSet.getDate("end_date"))
                 .setHoursPlan(resultSet.getDouble("hours_plan"))
@@ -216,6 +298,5 @@ public class ProjectDAOImpl implements ProjectDAO {
                 .setAmount(resultSet.getDouble("payments"))
                 .setCostPlan(resultSet.getDouble("cost_plan"))
                 .build();
-
     }
 }

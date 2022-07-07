@@ -1,11 +1,11 @@
-<form method="get" action="/IT_Team/project">
+<form method="get" action="/IT_Team/projects">
     <input type="text" style="display: none" name="project_id" value="0">
     <button type="submit" class="show">
         Show all projects
     </button>
 </form>
 
-<form method="get" action="/IT_Team/edit-project">
+<form method="post" action="/IT_Team/edit-project">
     <button type="submit" class="change">
         Edit project data
     </button>

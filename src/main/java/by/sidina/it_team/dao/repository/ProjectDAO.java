@@ -4,6 +4,7 @@ import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.entity.Project;
 
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,5 +15,7 @@ public interface ProjectDAO {
     Optional<ProjectDto> findByID(int id) throws DAOException;
     boolean add(Project project) throws DAOException;
 
-    boolean update(ProjectDto project) throws DAOException;
+    boolean changeStatus(int id, int status) throws DAOException;
+    boolean changeStartDate(int id, Date date) throws DAOException;
+    boolean changeEndDate(int id, Date date) throws DAOException;
 }

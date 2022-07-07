@@ -2,6 +2,7 @@ package by.sidina.it_team.controller;
 
 public final class JSPPagePath {
     public final static String ADMIN_ALL_PROJECTS = "/page/admin/admin_all_projects.jsp";
+    public final static String ADMIN_EDIT_PROJECT = "/page/admin/admin_edit_project.jsp";
     public final static String EMPLOYEE_PROJECTS = "/page/employee/employee_projects.jsp";
     public final static String CUSTOMER_PROJECTS = "/page/customer/customer_projects.jsp";
     public final static String NEW_PROJECT = "/page/customer/customer_new_project.jsp";

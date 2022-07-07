@@ -16,7 +16,7 @@
                     <th class="greeting" width="33.33%" ;>
                         Hello, ${user_name} ${user_surname}!
                     </th>
-                    <th class="date" width="33.33%">Today is Date_now</th>
+                    <th class="date_header" width="33.33%">Today is Date_now</th>
                     <th class="sign_out_btn" width="33.33%">
                         <form method="post" action="/IT_Team/sign-out">
                             <button type="submit" id="sign_out" class="signout_btn">

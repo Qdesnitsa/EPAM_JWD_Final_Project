@@ -1,202 +1,171 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <style>
     <%@include file="/page/css/styles.css"%>
 </style>
 <t:layout title="Admin Edit Project">
-    <form>
-        <div class="container">
-            <div class="header">
-                <h2>
-                    <table width="100%">
-                        <tbody>
+    <jsp:attribute name="actions">
+        <t:admin-actions/>
+    </jsp:attribute>
+    <jsp:body>
+        <form method="post" action="/IT_Team/edit-project">
+        <table class="table" align="center">
+            <caption>
+                <h2>Edit project</h2>
+                <fieldset>
+                    <legend>Please fill in project ID</legend>
+                    <table>
                         <tr>
-                            <th class="greeting" width="33.33%" ;>
-                                Hello, username usersurname !
-                            </th>
-                            <th class="date" width="33.33%">Today is Date_now</th>
-                            <th class="sign_out_btn" width="33.33%">
-                                <button type="submit" id="sign_out" class="signout_btn">
-                                    Sign out
-                                </button>
+                            <th width="33%">
+                                Project ID<br/>
+                                <input
+                                        type="text"
+                                        required
+                                        name="project_id"
+                                        class="project_id"
+                                        placeholder="project id"
+                                        pattern="[\d]+"
+                                />
+                                <br/>
                             </th>
                         </tr>
-                        </tbody>
                     </table>
-                </h2>
-            </div>
+                </fieldset>
+            </caption>
+            <tr>
+                <th>Customer ID</th>
+                <th>Project name</th>
+                <th>Project status</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Requirements comment</th>
+            </tr>
 
-            <div class="content">
-                <div class="navigation">
-                    <h1 class="menu">Menu</h1>
-                    <button type="submit" id="new_project" class="show">
-                        Show all projects
-                    </button>
-                    <button type="submit" class="change">
-                        Edit project data
-                    </button>
-                    <button type="submit" class="show">
-                        Show all employees
-                    </button>
-                    <button type="submit" class="change">
-                        Edit employee data
-                    </button>
-                    <button type="submit" class="show">
-                        Show all customers
-                    </button>
-                    <button type="submit" class="change">
-                        Edit customer data
-                    </button>
-                </div>
-            </div>
-            <div class="article">
-                <table class="table" align="center">
-                    <caption>
-                        <h2>Edit project</h2>
-                        <fieldset>
-                            <legend>Please fill in project ID</legend>
-                            <table>
-                                <tr>
-                                    <th width="33%">
-                                        Project ID<br/>
-                                        <input
-                                                type="text"
-                                                name="project_id"
-                                                class="project_id"
-                                                placeholder="project id"
-                                                pattern="[\d]+"
-                                        />
-                                        <br/>
-                                    </th>
-                                </tr>
-                            </table>
-                        </fieldset>
-                    </caption>
-                    <tr>
-                        <th>Customer ID</th>
-                        <th>Project name</th>
-                        <th>Project status</th>
-                        <th>Start date</th>
-                        <th>End date</th>
-                        <th>Requirements comment</th>
-                    </tr>
-                </table>
-                <div align="center">
-                    <button type="submit" class="submit">Show</button>
-                </div>
+            <c:forEach var="project" items="${project}">
 
-                <table class="table" align="center">
-                    <caption>
-                        <h2>Employees</h2>
-                        <fieldset>
-                            <legend>Select data to show</legend>
-                            <table>
-                                <tr>
-                                    <th width="25%">
-                                        Select start date<br/>
-                                        <input type="date" name="start_date" class="date"/><br/>
-                                    </th>
-                                    <th width="25%">
-                                        Select end date<br/>
-                                        <input type="date" name="end_date" class="date"/><br/>
-                                    </th>
+                <tr>
+                    <td>${project.customerId}</td>
+                    <td>${project.name}</td>
+                    <td>${project.status}</td>
+                    <td>${project.startDate}</td>
+                    <td>${project.endDate}</td>
+                    <td>${project.requirementComment}</td>
+                </tr>
 
-                                    <th width="25%">
-                                        Employee position<br/>
-                                        <input type="text" name="employee_position" placeholder="position"/>
-                                    </th>
-                                    <th width="25%">
-                                        Employee level<br/>
-                                        <select name="level">
-                                            <option value="0" selected>all</option>
-                                            <option value="1">junior</option>
-                                            <option value="2">middle</option>
-                                            <option value="3">senior</option>
-                                            <option value="5">manager</option>
-                                        </select
-                                        ><br/>
-                                    </th>
-                                    <th width="25%">
-                                        Quantity<br/>
-                                        <textarea
-                                                cols="8"
-                                                rows="1"
-                                                type="text"
-                                                name="employee_position"
-                                                placeholder="quantity"
-                                        ></textarea>
-                                    </th>
-                                </tr>
-                            </table>
-                        </fieldset>
-                    </caption>
-                    <tr>
-                        <th>Employee ID</th>
-                        <th>Employee position</th>
-                        <th>Employee level</th>
-                    </tr>
-                </table>
-                <div align="center">
-                    <button type="submit" class="submit">Show</button>
-                </div>
-
-                <table class="table" align="center">
-                    <caption>
-                        <h2>Project edition</h2>
-                    </caption>
-                    <tr>
-                        <th>Project status</th>
-                        <th>Start date</th>
-                        <th>End date</th>
-                        <th>Add employee</th>
-                        <th>Remove employee</th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <select name="change_project_status">
-                                <option value="PREPARE" selected>prepared</option>
-                                <option value="ACTIVE">active</option>
-                                <option value="CANCEL">cancel</option>
-                                <option value="FINISH">finish</option>
-                            </select
-                            ><br/>
-                            <button type="submit" class="submit">
-                                Change status
-                            </button>
-                        </th>
-                        <th width="33%">
-                            <input type="date" name="start_date" class="date"/><br/>
-                            <button type="submit" class="submit">
-                                Change start date
-                            </button>
-                        </th>
-                        <th width="33%">
-                            <input type="date" name="end_date" class="date"/><br/>
-                            <button type="submit" class="submit">
-                                Change end date
-                            </button>
-                        </th>
-                        <th>
-                            <input type="text" name="employee_id" placeholder="employee_id" pattern="[\d]+"/>
-                            <button type="submit" class="submit">
-                                Add employee
-                            </button>
-                        </th>
-                        <th>
-                            <input type="text" name="employee_id" placeholder="employee_id" pattern="[\d]+"/>
-                            <button type="submit" class="submit">
-                                Remove employee
-                            </button>
-                        </th>
-                    </tr>
-                </table>
-                <div align="center">
-                </div>
-                <div class="clear"></div>
-            </div>
+            </c:forEach>
+        </table>
+        <div align="center">
+            <button type="submit" class="submit" name="show_project">Show</button>
         </div>
-        <div class="footer">
-            &copy; IT-Teams Studio (Elena Sidina). All rights reserved. 2022
+
+        <table class="table" align="center">
+            <caption>
+                <h2>Employees</h2>
+                <fieldset>
+                    <legend>Select data to show</legend>
+                    <table>
+                        <tr>
+                            <th width="25%">
+                                Employee position<br/>
+                                <input type="text" name="employee_position" placeholder="position"/>
+                            </th>
+                            <th width="25%">
+                                Employee level<br/>
+                                <select name="level">
+                                    <option value="junior" selected>junior</option>
+                                    <option value="middle">middle</option>
+                                    <option value="senior">senior</option>
+                                    <option value="manager">manager</option>
+                                </select
+                                ><br/>
+                            </th>
+                            <th width="25%">
+                                Quantity<br/>
+                                <textarea
+                                        cols="8"
+                                        rows="1"
+                                        type="text"
+                                        name="quantity"
+                                        placeholder="quantity"
+                                ></textarea>
+                            </th>
+                        </tr>
+                    </table>
+                </fieldset>
+            </caption>
+            <tr>
+                <th>Employee ID</th>
+                <th>Employee position</th>
+                <th>Employee level</th>
+            </tr>
+            <c:forEach var="employee" items="${employees}">
+
+                <tr>
+                    <td>${employee.id}</td>
+                    <td>${employee.position}</td>
+                    <td>${employee.level}</td>
+                </tr>
+
+            </c:forEach>
+        </table>
+        <div align="center">
+            <button type="submit" class="submit" name="show_employees">Show</button>
         </div>
-    </form>
+
+        <table class="table" align="center">
+            <caption>
+                <h2>Project edition</h2>
+            </caption>
+            <tr>
+                <th>Project status</th>
+                <th>Start date</th>
+                <th>End date</th>
+                <th>Add employee</th>
+                <th>Remove employee</th>
+            </tr>
+            <tr>
+                <th>
+                    <select name="change_project_status">
+                        <option value="2" selected>prepared</option>
+                        <option value="3">active</option>
+                        <option value="4">cancel</option>
+                        <option value="5">finish</option>
+                    </select
+                    ><br/>
+                    <button type="submit" class="submit" name="change_status">
+                        Change status
+                    </button>
+                </th>
+                <th width="33%">
+                    <input type="date" name="start_date" class="date"/><br/>
+                    <button type="submit" class="submit" name="change_start">
+                        Change start date
+                    </button>
+                </th>
+                <th width="33%">
+                    <input type="date" name="end_date" class="date"/><br/>
+                    <button type="submit" class="submit" name="change_end">
+                        Change end date
+                    </button>
+                </th>
+                <th>
+                    <input type="text" name="employee_id" placeholder="employee_id" pattern="[\d]+"/>
+                    <button type="submit" class="submit" name="add_employee">
+                        Add employee
+                    </button>
+                </th>
+                <th>
+                    <input type="text" name="employee_id" placeholder="employee_id" pattern="[\d]+"/>
+                    <button type="submit" class="submit" name="remove_employee">
+                        Remove employee
+                    </button>
+                </th>
+            </tr>
+        </table>
+        <div align="center">
+        </div>
+        <div class="clear"></div>
+        </form>
+    </jsp:body>
 </t:layout>

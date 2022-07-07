@@ -34,6 +34,7 @@ div img {
 }
 
 .header {
+    height: 50px;
     color: rgb(210, 229, 233);
     width: auto;
     background-color:midnightblue;
@@ -69,11 +70,14 @@ div img {
     text-align: left;
     padding-left: 10px;
     color: rgb(210, 229, 233);
+    padding-bottom: 10px;
 }
 
-.date {
+.date_header {
+    font-size: x-large;
     text-align: center;
     color: rgb(210, 229, 233);
+    padding-bottom: 10px;
 }
 
 .date_period {
@@ -137,6 +141,6 @@ tbody tr:nth-child(even) {
     border-radius: 10px;
     margin-bottom: 20px;
     margin-top: 10px;
-    height: 40px;
+    height: 30px;
     width: 180px;
 }
