@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.Date;
+import java.time.LocalDate;
 
 public class NewProjectPostRequest extends BaseProcessor {
     private static final String EQUALS = "=";
@@ -28,7 +29,11 @@ public class NewProjectPostRequest extends BaseProcessor {
 
     @Override
     public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        LocalDate currentDate = LocalDate.now();
+        request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
+        request.setAttribute(AttributeName.USER_NAME, user.getName());
+        request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
         String projectName = request.getParameter(ParameterName.PROJECT_NAME);
         Date startDate = Date.valueOf(request.getParameter(ParameterName.START_DATE));
         Date endDate = Date.valueOf(request.getParameter(ParameterName.END_DATE));

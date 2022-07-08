@@ -144,3 +144,23 @@ tbody tr:nth-child(even) {
     height: 30px;
     width: 180px;
 }
+
+.big_button {
+    float: right;
+    margin-right: 50px;
+    justify-content: center;
+    color: rgb(210, 229, 233);
+    font-weight: 700;
+    background-color: midnightblue;
+    font-size: medium;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    height: 60px;
+    width: 180px;
+}
+
+.msg {
+    text-align: center;
+    color: red;
+}

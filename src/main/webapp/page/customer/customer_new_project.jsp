@@ -49,7 +49,7 @@
                                     size="5"
                                     multiple
                             >
-                                <option value="Frontend">HTML/CSS/JS</option>
+                                <option value="HTML/CSS/JS">HTML/CSS/JS</option>
                                 <option value="C++">C++</option>
                                 <option value="C#">C#</option>
                                 <option value="Java">Java</option>

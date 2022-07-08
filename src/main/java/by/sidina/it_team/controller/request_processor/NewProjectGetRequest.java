@@ -12,6 +12,8 @@ import by.sidina.it_team.entity.User;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class NewProjectGetRequest extends BaseProcessor {
@@ -26,6 +28,11 @@ public class NewProjectGetRequest extends BaseProcessor {
 
     @Override
     public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        LocalDate currentDate = LocalDate.now();
+        request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
+        User user = (User)request.getSession().getAttribute(AttributeName.USER);
+        request.setAttribute(AttributeName.USER_NAME, user.getName());
+        request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
         int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
         if (projectId == 0) {
             return JSPPagePath.NEW_PROJECT;

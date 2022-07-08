@@ -2,26 +2,22 @@ package by.sidina.it_team.dao.impl;
 
 import by.sidina.it_team.dao.connection.ConnectionPool;
 import by.sidina.it_team.dao.dto.EmployeeDto;
-import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.TeamScheduleDAO;
 import by.sidina.it_team.entity.Level;
-import by.sidina.it_team.entity.TeamSchedule;
-import by.sidina.it_team.entity.User;
-import by.sidina.it_team.entity.UserStatus;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TeamScheduleDAOImpl implements TeamScheduleDAO {
     private static final String SQL_ADD_EMPLOYEE_TO_PROJECT
-            = "INSERT INTO team_schedule (employee_id, project_id, date, hours_fact) values(?,?,?,?)";
+            = "INSERT INTO team_schedule (employee_id, project_id, date, hours_fact) " +
+            "values(?,?,(SELECT projects.start_date FROM projects WHERE id=?),0)";
+    private static final String SQL_GET_PROJECT_START_DATE
+            = "SELECT start_date FROM projects WHERE id=?";
     private static final String SQL_REMOVE_EMPLOYEE_FROM_PROJECT
-            = "DELETE FROM team_schedule WHERE employee_id=?";
+            = "DELETE FROM team_schedule WHERE employee_id=? AND project_id=?";
     private static final String SQL_FIND_FREE_EMPLOYEES_FOR_PROJECT_ID
             = """
             SELECT team_position_level.employee_id AS id,
@@ -50,35 +46,36 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             	ON team_position_level.employee_position_id=positions.id
             LEFT JOIN levels
             	ON team_position_level.employee_level_id=levels.id
-            WHERE projects.start_date <\s
+            	WHERE position=?
+            	AND level=?
+            AND projects.start_date <
             	(SELECT projects.start_date
             	FROM projects
             	WHERE projects.id=?)
-            		AND projects.end_date <\s
+            		AND projects.end_date <
             	(SELECT projects.start_date
             	FROM projects
             	WHERE projects.id=?)
-            		OR projects.start_date >\s
+            		OR projects.start_date >
             	(SELECT projects.end_date
             	FROM projects
             	WHERE projects.id=?)
-            		AND projects.end_date >\s
+            		AND projects.end_date >
             	(SELECT projects.end_date
             	FROM projects
-            WHERE projects.id=?)
-            AND position=?
-            AND level=?
-            LIMIT ?;
+                WHERE projects.id=?)
+            LIMIT ?
             """;
+
     @Override
-    public boolean addEmployeeToProject(TeamSchedule teamSchedule) throws DAOException {
+    public boolean addEmployeeToProject(int employee_id, int project_id) throws DAOException {
         boolean isAdded = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_ADD_EMPLOYEE_TO_PROJECT)) {
-            statement.setInt(1, teamSchedule.getEmployee_id());
-            statement.setInt(2, teamSchedule.getProject_id());
-            statement.setDate(3, teamSchedule.getCurrentDate());
-            statement.setDouble(4, teamSchedule.getHours_fact());
+            //Optional<Date> startDate = getStartDate(project_id);
+            statement.setInt(1, employee_id);
+            statement.setInt(2, project_id);
+            statement.setInt(3, project_id);
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isAdded = true;
@@ -94,11 +91,12 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
     }
 
     @Override
-    public boolean removeEmployeeFromProject(int id) throws DAOException{
+    public boolean removeEmployeeFromProject(int employee_id, int project_id) throws DAOException {
         boolean isRemoved = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_REMOVE_EMPLOYEE_FROM_PROJECT)) {
-            statement.setInt(1, id);
+            statement.setInt(1, employee_id);
+            statement.setInt(2, project_id);
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isRemoved = true;
@@ -121,12 +119,12 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_FREE_EMPLOYEES_FOR_PROJECT_ID)) {
             statement.setString(1, position);
             statement.setString(2, String.valueOf(level));
-            statement.setInt(3, projectId);
-            statement.setInt(4, projectId);
+            statement.setString(3, position);
+            statement.setString(4, String.valueOf(level));
             statement.setInt(5, projectId);
             statement.setInt(6, projectId);
-            statement.setString(7, position);
-            statement.setString(8, String.valueOf(level));
+            statement.setInt(7, projectId);
+            statement.setInt(8, projectId);
             statement.setInt(9, limit);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
@@ -136,12 +134,14 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             throw new DAOException("Failed attempt to find free employees in the database", e);
         } finally {
             try {
-                resultSet.close();
+                if (resultSet != null) {
+                    resultSet.close();
+                }
             } catch (SQLException e) {
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
-       return users;
+        return users;
     }
 
     private EmployeeDto retrieveFreeEmployee(ResultSet resultSet) throws SQLException {

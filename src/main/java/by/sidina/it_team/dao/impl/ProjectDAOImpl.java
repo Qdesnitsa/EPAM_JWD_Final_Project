@@ -105,7 +105,7 @@ public class ProjectDAOImpl implements ProjectDAO {
     private static final String SQL_CHANGE_START_DATE
             = "UPDATE projects SET start_date=? WHERE id=?";
     private static final String SQL_CHANGE_END_DATE
-            = "UPDATE projects SET end_date_id=? WHERE id=?";
+            = "UPDATE projects SET end_date=? WHERE id=?";
 
 
     @Override

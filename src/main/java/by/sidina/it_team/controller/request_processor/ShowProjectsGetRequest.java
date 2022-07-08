@@ -7,6 +7,8 @@ import by.sidina.it_team.entity.User;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.sql.Date;
+import java.time.LocalDate;
 
 public class ShowProjectsGetRequest extends BaseProcessor {
     @Override
@@ -17,6 +19,8 @@ public class ShowProjectsGetRequest extends BaseProcessor {
 
     @Override
     public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        LocalDate currentDate = LocalDate.now();
+        request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         HttpSession session = request.getSession();
         User user = (User)session.getAttribute(AttributeName.USER);
         return HomePageByRoleProvider.getProjectsPageForUser(user, request);

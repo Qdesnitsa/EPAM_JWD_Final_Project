@@ -8,7 +8,8 @@ public class ProjectCalculation {
     private double hoursPlan;
     private double costPlan;
 
-    private ProjectCalculation() {}
+    private ProjectCalculation() {
+    }
 
     public ProjectCalculation(int projectID, double hoursPlan, double costPlan) {
         this.projectID = projectID;
