@@ -2,15 +2,20 @@ package by.sidina.it_team.controller.request_processor;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
+import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
 import by.sidina.it_team.dao.repository.ProjectDAO;
+import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
 import by.sidina.it_team.entity.User;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public class ShowEmployeesGetRequest extends BaseProcessor{
@@ -24,16 +29,20 @@ public class ShowEmployeesGetRequest extends BaseProcessor{
     public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
-        HttpSession session = request.getSession();
-        User user = (User)session.getAttribute(AttributeName.USER);
-        if ("" == request.getParameter("project_id") || null == request.getParameter("project_id")) {
-            return JSPPagePath.ADMIN_EDIT_PROJECT;
+        User user = (User)request.getSession().getAttribute(AttributeName.USER);
+        request.setAttribute(AttributeName.USER_NAME, user.getName());
+        request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
+        int employeeId = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_ID));
+        if (employeeId == 0) {
+            TeamPositionLevelDAO teamPositionLevelDAO = new TeamPositionLevelDAOImpl();
+            List<EmployeeDto> employees = teamPositionLevelDAO.findAll();
+            request.setAttribute(AttributeName.EMPLOYEES,employees);
+            return JSPPagePath.ADMIN_ALL_EMPLOYEES;
         } else {
-            int projectId = Integer.parseInt(request.getParameter("project_id"));
             ProjectDAO projectDAO = new ProjectDAOImpl();
-            Optional<ProjectDto> project = projectDAO.findByID(projectId);
-            request.setAttribute(AttributeName.PROJECT, project);
-            return JSPPagePath.ADMIN_EDIT_PROJECT;
+            List<ProjectDto> project = projectDAO.findAllByCustomerID(employeeId);
+            request.setAttribute(AttributeName.PROJECTS,project);
+            return JSPPagePath.CUSTOMER_PROJECTS;
         }
     }
 

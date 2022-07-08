@@ -50,9 +50,12 @@ public class EditProjectGetRequest extends BaseProcessor {
             if (request.getParameter("show_project") != null) {
                 ProjectDAO projectDAO = new ProjectDAOImpl();
                 Optional<ProjectDto> project = projectDAO.findByID(projectId);
-                request.setAttribute(AttributeName.PROJECT, project);
+                request.setAttribute(AttributeName.PROJECT, project.get());
                 return JSPPagePath.ADMIN_EDIT_PROJECT;
             } else if (request.getParameter("show_employees") != null) {
+                ProjectDAO projectDAO = new ProjectDAOImpl();
+                Optional<ProjectDto> project = projectDAO.findByID(projectId);
+                request.setAttribute(AttributeName.PROJECT, project.get());
                 TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
                 String position = request.getParameter("employee_position");
                 Level level = Level.valueOf(request.getParameter("level").toUpperCase());

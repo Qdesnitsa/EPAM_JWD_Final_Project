@@ -14,4 +14,6 @@ public final class ParameterName {
     public static final String SENIOR_QUANTITY = "senior_quantity";
     public static final String MIDDLE_QUANTITY = "middle_quantity";
     public static final String JUNIOR_QUANTITY = "junior_quantity";
+    public static final String CUSTOMER_ID = "customer_id";
+    public static final String EMPLOYEE_ID = "employee_id";
 }

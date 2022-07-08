@@ -43,8 +43,6 @@
                 <th>Requirements comment</th>
             </tr>
 
-            <c:forEach var="project" items="${project}">
-
                 <tr>
                     <td>${project.id}</td>
                     <td>${project.customerId}</td>
@@ -55,7 +53,6 @@
                     <td>${project.requirementComment}</td>
                 </tr>
 
-            </c:forEach>
         </table>
         <div align="center">
             <button type="submit" class="submit" name="show_project">Show</button>

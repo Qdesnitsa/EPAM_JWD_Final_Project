@@ -1,7 +1,6 @@
 package by.sidina.it_team.controller.servlet;
 
 import by.sidina.it_team.controller.request_processor.ShowEmployeesGetRequest;
-import by.sidina.it_team.controller.request_processor.ShowProjectsGetRequest;
 
 import javax.servlet.*;
 import javax.servlet.http.*;

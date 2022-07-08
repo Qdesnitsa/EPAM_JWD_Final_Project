@@ -44,7 +44,7 @@
                         <fieldset>
                             <legend>Multiple choice</legend>
                             <select
-                                    name="developers[]"
+                                    name="developers"
                                     id="developers[]"
                                     size="5"
                                     multiple

@@ -12,7 +12,7 @@
 </form>
 
 <form method="get" action="/IT_Team/show-employees">
-    <button type="submit" class="show">
+    <button type="submit" class="show" name="employee_id" value="0">
         Show all employees
     </button>
 </form>

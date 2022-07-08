@@ -297,6 +297,7 @@ public class ProjectDAOImpl implements ProjectDAO {
                 .setHoursFact(resultSet.getDouble("hours_fact"))
                 .setAmount(resultSet.getDouble("payments"))
                 .setCostPlan(resultSet.getDouble("cost_plan"))
+                .setRequirementComment(resultSet.getString("comment"))
                 .build();
     }
 }

@@ -52,10 +52,10 @@
                         <td>${project.status}</td>
                         <td>${project.startDate}</td>
                         <td>${project.endDate}</td>
-                        <td>NOT IMPLEMENTED</td>
-                        <td>NOT IMPLEMENTED</td>
-                        <td>NOT IMPLEMENTED</td>
-                        <td>NOT IMPLEMENTED</td>
+                        <td>${project.hoursPlan}</td>
+                        <td>${project.hoursFact}</td>
+                        <td>${project.costPlan}</td>
+                        <td>${project.amount}</td>
                     </tr>
                 </c:forEach>
             </table>

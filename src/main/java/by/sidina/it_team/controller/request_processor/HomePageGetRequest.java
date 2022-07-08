@@ -7,10 +7,9 @@ import by.sidina.it_team.entity.User;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.sql.Date;
 import java.time.LocalDate;
 
-public class ShowProjectsGetRequest extends BaseProcessor {
+public class HomePageGetRequest extends BaseProcessor {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
