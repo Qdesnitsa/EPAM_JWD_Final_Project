@@ -12,12 +12,12 @@
 </form>
 
 <form method="get" action="/IT_Team/show-employees">
-    <button type="submit" class="show" name="employee_id" value="0">
+    <button type="submit" class="show">
         Show all employees
     </button>
 </form>
 
-<form method="get" action="/IT_Team/edit-employee">
+<form method="post" action="/IT_Team/edit-employee">
     <button type="submit" class="change">
         Edit employee data
     </button>

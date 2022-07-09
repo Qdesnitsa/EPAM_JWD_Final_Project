@@ -13,4 +13,5 @@ public interface UserDAO<T,N,S> {
     Optional<T> findUserByEmail(S email) throws DAOException;
     Optional<T> findUserByEmailAndPassword(S email, S password) throws DAOException;
     Optional<S> findPasswordByEmail(S email) throws DAOException;
+    boolean changeStatus(int id, int status) throws DAOException;
 }

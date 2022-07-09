@@ -6,11 +6,9 @@ import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.impl.ProjectCalculationDAOImpl;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
-import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
 import by.sidina.it_team.dao.impl.TeamScheduleDAOImpl;
 import by.sidina.it_team.dao.repository.ProjectCalculationDAO;
 import by.sidina.it_team.dao.repository.ProjectDAO;
-import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
 import by.sidina.it_team.dao.repository.TeamScheduleDAO;
 import by.sidina.it_team.entity.Level;
 import by.sidina.it_team.entity.Role;
@@ -21,11 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class EditProjectGetRequest extends BaseProcessor {
+public class EditProjectPostRequest extends BaseProcessor {
     private final String MSG_SUCCESS = "Successfully";
     private final String MSG_FAIL = "Operation failed";
 

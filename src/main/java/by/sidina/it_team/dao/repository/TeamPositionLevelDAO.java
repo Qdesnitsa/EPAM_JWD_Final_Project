@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TeamPositionLevelDAO {
-    boolean add(TeamPositionLevel userPositionLevel, User user) throws DAOException;
+    boolean add(int position, int level, User user, String password) throws DAOException;
     Optional<EmployeeDto> findByID(int id) throws DAOException;
     List<EmployeeDto> findAll() throws DAOException;
+    boolean changePosition(int id, int position) throws DAOException;
+    boolean changeLevel(int id, int level) throws DAOException;
 }

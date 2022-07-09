@@ -42,7 +42,6 @@
                 <th>End date</th>
                 <th>Requirements comment</th>
             </tr>
-
                 <tr>
                     <td>${project.id}</td>
                     <td>${project.customerId}</td>
@@ -52,7 +51,6 @@
                     <td>${project.endDate}</td>
                     <td>${project.requirementComment}</td>
                 </tr>
-
         </table>
         <div align="center">
             <button type="submit" class="submit" name="show_project">Show</button>

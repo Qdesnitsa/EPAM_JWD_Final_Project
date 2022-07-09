@@ -12,29 +12,6 @@
             <table class="table" align="center">
                 <caption>
                     <h2>All employees</h2>
-                    <fieldset>
-                        <legend>Select employee position and level</legend>
-                        <table>
-                            <tr>
-                                <th width="33%">
-                                    Position<br/>
-                                    <input
-                                            type="text"
-                                            name="position"
-                                            placeholder="specialization"
-                                    />
-                                </th>
-                                <th width="33%">
-                                    Level<br/>
-                                    <input
-                                            type="text"
-                                            name="level"
-                                            placeholder="level"
-                                    />
-                                </th>
-                            </tr>
-                        </table>
-                    </fieldset>
                 </caption>
                 <tr>
                     <th>Employee ID</th>

@@ -12,14 +12,12 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
             = "SELECT start_date, end_date FROM projects WHERE id=?";
     private static final String SQL_GET_SUM_AND_COUNT_RATES
             = """
-            SELECT sum(rates.rate)   AS sum_rates,
+            SELECT sum(rates.rate) AS sum_rates,
                    count(team_schedule.employee_id) AS count_employees
             FROM   team_schedule
-                   LEFT JOIN team_position_level
-                          ON team_schedule.employee_id = team_position_level.employee_id
-                   LEFT JOIN rates
-                          ON ( team_position_level.employee_position_id = rates.position_id
-                               AND team_position_level.employee_level_id = rates.level_id )
+                   LEFT JOIN team_position_level ON team_schedule.employee_id=team_position_level.employee_id
+                   LEFT JOIN rates ON (team_position_level.employee_position_id=rates.position_id AND 
+                                        team_position_level.employee_level_id=rates.level_id)
             WHERE team_schedule.project_id=?                      
             """;
     private static final String SQL_ADD_PROJECT_CALCULATION
@@ -119,11 +117,11 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
     }
 
     private static int countWorkDays(Date strStartDate, Date strEndDate) throws DAOException {
-        int countWorkDays = 1;
+        int countWorkDays = 0;
         while (strStartDate.compareTo(strEndDate) <= 0) {
             if (strStartDate.getDay() != 6 && strEndDate.getDay() != 0)
                 ++countWorkDays;
-            strStartDate.setDate(strEndDate.getDate() + 1);
+            strStartDate.setDate(strStartDate.getDate() + 1);
         }
         return countWorkDays;
     }

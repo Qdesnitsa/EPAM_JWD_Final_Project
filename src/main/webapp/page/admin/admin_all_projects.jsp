@@ -12,25 +12,6 @@
             <table class="table" align="center">
                 <caption>
                     <h2>All projects</h2>
-                    <fieldset>
-                        <legend>Select project status</legend>
-                        <table>
-                            <tr>
-                                <th width="33%">
-                                    Project status<br/>
-                                    <select name="status" class="status">
-                                        <option value="0" selected>all</option>
-                                        <option value="1">new</option>
-                                        <option value="2">prepared</option>
-                                        <option value="3">active</option>
-                                        <option value="4">cancelled</option>
-                                        <option value="5">finished</option>
-                                    </select>
-                                    <br/>
-                                </th>
-                            </tr>
-                        </table>
-                    </fieldset>
                 </caption>
                 <tr>
                     <th>Customer ID</th>

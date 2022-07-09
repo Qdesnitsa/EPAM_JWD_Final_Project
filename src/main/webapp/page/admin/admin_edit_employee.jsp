@@ -1,214 +1,211 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <style>
     <%@include file="/page/css/styles.css"%>
 </style>
 <t:layout title="Admin Edit Employee">
-    <form>
-        <div class="container">
-            <div class="header">
-                <h2>
-                    <table width="100%">
-                        <tbody>
-                        <tr>
-                            <th class="greeting" width="33.33%" ;>
-                                Hello, username usersurname !
-                            </th>
-                            <th class="date" width="33.33%">Today is Date_now</th>
-                            <th class="sign_out_btn" width="33.33%">
-                                <button type="submit" id="sign_out" class="signout_btn">
-                                    Sign out
-                                </button>
-                            </th>
-                        </tr>
-                        </tbody>
-                    </table>
-                </h2>
+    <jsp:attribute name="actions">
+        <t:admin-actions/>
+    </jsp:attribute>
+    <jsp:body>
+        <form method="post" action="/IT_Team/edit-employee">
+            <table class="table" align="center">
+                <caption>
+                    <h2>Edit employee</h2>
+                    <fieldset>
+                        <legend>Please fill in employee ID</legend>
+                        <table>
+                            <tr>
+                                <th width="33%">
+                                    Employee ID<br/>
+                                    <input
+                                            type="text"
+                                            name="employee_id"
+                                            class="project_id"
+                                            placeholder="employee id"
+                                            pattern="[\d]+"
+                                    />
+                                    <br/>
+                                </th>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </caption>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Status</th>
+                    <th>Position</th>
+                    <th>Level</th>
+                </tr>
+                <tr>
+                    <td>${employee.id}</td>
+                    <td>${employee.email}</td>
+                    <td>${employee.name}</td>
+                    <td>${employee.surname}</td>
+                    <td>${employee.status}</td>
+                    <td>${employee.position}</td>
+                    <td>${employee.level}</td>
+                </tr>
+            </table>
+            <div align="center">
+                <button type="submit" class="submit" name="show_employee">Show</button>
             </div>
+            <table class="table" align="center">
+                <caption>
+                    <h2>Employee data edition</h2>
+                </caption>
+                <tr>
+                    <th>Status</th>
+                    <th>Position</th>
+                    <th>Level</th>
+                </tr>
+                <tr>
+                    <th>
+                        <select name="change_employee_status">
+                            <option value="1">active</option>
+                            <option value="2">blocked</option>
+                        </select
+                        ><br/>
+                        <button type="submit" class="submit" name="change_status">
+                            Change status
+                        </button>
+                    </th>
+                    <th width="25%">
+                        Employee position<br/>
+                        <select name="employee_position">
+                            <option value="2">HTML/CSS/JS</option>
+                            <option value="3">C++</option>
+                            <option value="4">C#</option>
+                            <option value="1">Java</option>
+                            <option value="5">Python</option>
+                            <option value="6">Ruby</option>
+                            <option value="7">PHP</option>
+                            <option value="8">DBA</option>
+                            <option value="9">QA Automation</option>
+                            <option value="10">QA Manual</option>
+                            <option value="11">BA</option>
+                        </select
+                        ><br/>
+                        <button type="submit" class="big_button_middle" name="change_position">
+                            Change specialization
+                        </button>
+                    </th>
+                    <th>
+                        <select name="employee_level">
+                            <option value="1">junior</option>
+                            <option value="2">middle</option>
+                            <option value="3">senior</option>
+                            <option value="5">manager</option>
+                        </select
+                        ><br/>
+                        <button type="submit" class="submit" name="change_level">
+                            Change level
+                        </button>
+                    </th>
+                </tr>
+            </table>
+            <table class="table" align="center">
+                <caption>
+                    <h2>Add new employee</h2>
+                </caption>
+                <tr>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Status</th>
+                    <th>Role</th>
+                    <th>Position</th>
+                    <th>Level</th>
+                </tr>
+                <tr>
+                    <th>
+                        <input
+                                type="text"
+                                name="email"
+                                placeholder="email"
+                                pattern="[a-zA-Z]{1}[a-zA-Z\d\u002E\u005F]+@([a-zA-Z]+\u002E){1,2}[a-zA-Z]+"
+                        /><br/>
+                    </th>
+                    <th>
+                        <input
+                                type="text"
+                                name="password"
+                                placeholder="password"
+                        /><br/>
+                    </th>
+                    <th>
+                        <input
+                                type="text"
+                                name="name"
+                                placeholder="name"
+                                pattern="[a-zA-Zа-яА-Я]+"
+                        /><br/>
+                    </th>
+                    <th>
+                        <input
+                                type="text"
+                                name="surname"
+                                placeholder="surname"
+                                pattern="[a-zA-Zа-яА-Я]+"
+                        /><br/>
+                    </th>
+                    <th>
+                        <select name="employee_status">
+                            <option value="1" selected>active</option>
+                            <option value="2">blocked</option>
+                        </select
+                        ><br/>
+                    </th>
+                    <th>
+                        <select name="employee_role">
+                            <option value="1" selected>admin</option>
+                            <option value="2">employee</option>
+                        </select
+                        ><br/>
+                    </th>
+                    <th width="25%">
 
-            <div class="content">
-                <div class="navigation">
-                    <h1 class="menu">Menu</h1>
-                    <button type="submit" class="show">
-                        Show all projects
-                    </button>
-                    <button type="submit" class="change">
-                        Edit project data
-                    </button>
-                    <button type="submit" class="show">
-                        Show all employees
-                    </button>
-                    <button type="submit" class="change">
-                        Edit employee data
-                    </button>
-                    <button type="submit" class="show">
-                        Show all customers
-                    </button>
-                    <button type="submit" id="show_projects" class="change">
-                        Edit customer data
-                    </button>
-                </div>
+                        <select name="employee_position">
+                            <option value="2">HTML/CSS/JS</option>
+                            <option value="3">C++</option>
+                            <option value="4">C#</option>
+                            <option value="1">Java</option>
+                            <option value="5">Python</option>
+                            <option value="6">Ruby</option>
+                            <option value="7">PHP</option>
+                            <option value="8">DBA</option>
+                            <option value="9">QA Automation</option>
+                            <option value="10">QA Manual</option>
+                            <option value="11">BA</option>
+                        </select
+                        ><br/>
+                    </th>
+                    <th>
+                        <select name="employee_level">
+                            <option value="1">junior</option>
+                            <option value="2">middle</option>
+                            <option value="3">senior</option>
+                            <option value="5">manager</option>
+                        </select
+                        ><br/>
+                    </th>
+                </tr>
+            </table>
+            <div align="center">
+                <button type="submit" class="submit" name="add_employee">Add</button>
             </div>
-            <div class="article">
-                <table class="table" align="center">
-                    <caption>
-                        <h2>Edit employee</h2>
-                        <fieldset>
-                            <legend>Please fill in employee ID</legend>
-                            <table>
-                                <tr>
-                                    <th width="33%">
-                                        Employee ID<br/>
-                                        <input
-                                                type="text"
-                                                name="project_id"
-                                                class="project_id"
-                                                placeholder="employee id"
-                                                pattern="[\d]+"
-                                        />
-                                        <br/>
-                                    </th>
-                                </tr>
-                            </table>
-                        </fieldset>
-                    </caption>
-                    <tr>
-                        <th>Email</th>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Status</th>
-                        <th>Position</th>
-                        <th>Level</th>
-                    </tr>
-                </table>
-                <div align="center">
-                    <button type="submit" class="submit">Show</button>
-                </div>
-                <table class="table" align="center">
-                    <caption>
-                        <h2>Employee data edition</h2>
-                    </caption>
-                    <tr>
-                        <th>Status</th>
-                        <th>Position</th>
-                        <th>Level</th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <select name="change_employee_status">
-                                <option value="1" selected>active</option>
-                                <option value="2">blocked</option>
-                            </select
-                            ><br/>
-                            <button type="submit" class="submit">
-                                Change status
-                            </button>
-                        </th>
-                        <th>
-                            <input
-                                    type="text"
-                                    name="position"
-                                    placeholder="specialization"
-                            /><br/>
-                            <button type="submit" class="submit">
-                                Change specialization
-                            </button>
-                        </th>
-                        <th>
-                            <input type="text" name="level" placeholder="level"/><br/>
-                            <button type="submit" class="submit">
-                                Change level
-                            </button>
-                        </th>
-                    </tr>
-                </table>
-                <table class="table" align="center">
-                    <caption>
-                        <h2>Add new employee</h2>
-                    </caption>
-                    <tr>
-                        <th>Email</th>
-                        <th>Password</th>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>Status</th>
-                        <th>Role</th>
-                        <th>Position</th>
-                        <th>Level</th>
-                    </tr>
-                    <tr>
-                        <th>
-                            <input
-                                    type="text"
-                                    name="email"
-                                    placeholder="email"
-                                    pattern="[a-zA-Z]{1}[a-zA-Z\d\u002E\u005F]+@([a-zA-Z]+\u002E){1,2}[a-zA-Z]+"
-                            /><br/>
-                        </th>
-                        <th>
-                            <input
-                                    type="text"
-                                    name="password"
-                                    placeholder="password"
-                            /><br/>
-                        </th>
-                        <th>
-                            <input
-                                    type="text"
-                                    name="name"
-                                    placeholder="name"
-                                    pattern="[a-zA-Zа-яА-Я]"
-                            /><br/>
-                        </th>
-                        <th>
-                            <input
-                                    type="text"
-                                    name="surname"
-                                    placeholder="surname"
-                                    pattern="[a-zA-Zа-яА-Я]"
-                            /><br/>
-                        </th>
-                        <th>
-                            <select name="status">
-                                <option value="1" selected>active</option>
-                                <option value="2">blocked</option>
-                            </select
-                            ><br/>
-                        </th>
-                        <th>
-                            <select name="role">
-                                <option value="1" selected>admin</option>
-                                <option value="2">employee</option>
-                            </select
-                            ><br/>
-                        </th>
-                        <th>
-                            <input
-                                    type="text"
-                                    name="position"
-                                    placeholder="specialization"
-                            /><br/>
-                        </th>
-                        <th>
-                            <select name="level">
-                                <option value="1" selected>junior</option>
-                                <option value="2">middle</option>
-                                <option value="3">senior</option>
-                                <option value="5">manager</option>
-                            </select
-                            ><br/>
-                        </th>
-                    </tr>
-                </table>
-                <div align="center">
-                    <button type="submit" class="submit">Add</button>
-                </div>
-                <div align="center"></div>
-                <div class="clear"></div>
+            <div class="msg"><br>
+                <c:if test="${message != null}">
+                    <h4><c:out value="${message}" default="guest"/></h4>
+                </c:if>
             </div>
-        </div>
-        <div class="footer">
-            &copy; IT-Teams Studio (Elena Sidina). All rights reserved. 2022
-        </div>
-    </form>
+            <div align="center"></div>
+            <div class="clear"></div>
+        </form>
+    </jsp:body>
 </t:layout>

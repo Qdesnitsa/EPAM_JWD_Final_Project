@@ -31,12 +31,8 @@ public class UserDAOImpl implements UserDAO<User,UserStatus,String> {
             "SELECT id, name, surname, role_id, email, user_status_id FROM users WHERE email=? AND password=?";
     private static final String SQL_FIND_PASSWORD_BY_EMAIL
             = "SELECT password FROM users WHERE email=?";
-
-    public static void main(String[] args) throws DAOException {
-        UserDAOImpl userDAO = new UserDAOImpl();
-        List<User> list = userDAO.findAll();
-        System.out.println(list);
-    }
+    private static final String SQL_CHANGE_EMPLOYEE_STATUS
+            ="UPDATE users SET user_status_id=? WHERE id=?";
 
     @Override
     public List<User> findAll() throws DAOException {
@@ -183,6 +179,27 @@ public class UserDAOImpl implements UserDAO<User,UserStatus,String> {
             throw new DAOException("Failed attempt to find password by email in the database", e);
         }
         return optional;
+    }
+
+    @Override
+    public boolean changeStatus(int id, int status) throws DAOException {
+        boolean isChanged = false;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_EMPLOYEE_STATUS)) {
+            statement.setInt(1, status);
+            statement.setInt(2, id);
+            int rowCount = statement.executeUpdate();
+            if (rowCount != 0) {
+                isChanged = true;
+                //LOGGER.info("Project status has been changed");
+            } else {
+                //LOGGER.error("Project status has not been changed");
+            }
+        } catch (SQLException e) {
+            //LOGGER.error("Failed attempt to change project status in the database");
+            throw new DAOException("Failed attempt to change employee status in the database", e);
+        }
+        return isChanged;
     }
 
     private User retrieve(ResultSet resultSet) throws SQLException {

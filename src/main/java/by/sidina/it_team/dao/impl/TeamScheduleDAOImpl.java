@@ -21,8 +21,8 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
     private static final String SQL_FIND_FREE_EMPLOYEES_FOR_PROJECT_ID
             = """
             SELECT team_position_level.employee_id AS id,
-            		 positions.position AS position,
-            		 levels.level AS level
+            	    positions.position AS position,
+            		levels.level AS level
             FROM team_position_level
             LEFT JOIN team_schedule
             	ON team_position_level.employee_id=team_schedule.employee_id
@@ -48,7 +48,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             	ON team_position_level.employee_level_id=levels.id
             	WHERE position=?
             	AND level=?
-            AND projects.start_date <
+            AND (projects.start_date <
             	(SELECT projects.start_date
             	FROM projects
             	WHERE projects.id=?)
@@ -63,7 +63,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             		AND projects.end_date >
             	(SELECT projects.end_date
             	FROM projects
-                WHERE projects.id=?)
+                WHERE projects.id=?))
             LIMIT ?
             """;
 

@@ -35,7 +35,8 @@ public class ProjectDAOImpl implements ProjectDAO {
                      LEFT JOIN payments ON projects.id = payments.project_id
                      LEFT JOIN team_schedule ON projects.id = team_schedule.project_id
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
-                     GROUP BY id
+            GROUP BY id
+            ORDER BY length(project_status)
             """;
     private static final String SQL_FIND_PROJECTS_BY_CUSTOMER_ID
             = """

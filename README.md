@@ -12,9 +12,6 @@ The developer has the opportunity to post the number of hours spent on the proje
 #### __Technologies__
 Servlet, JSP, JSTL, JDBC, MySQL, Log4J2, JUnit5
 
-#### __Design patterns__
-Front controller, Command, Builder, Singleton
-
 #### __Database diagram__
 
 ![img.png](img.png)
