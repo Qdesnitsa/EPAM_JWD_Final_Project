@@ -70,6 +70,7 @@
                             name="senior_quantity"
                             maxlength="2"
                             placeholder="quantity"
+                            value="0"
                             pattern="[\d]+"
                     />
                         <small>Middle </small
@@ -78,6 +79,7 @@
                             name="middle_quantity"
                             maxlength="2"
                             placeholder="quantity"
+                            value="0"
                             pattern="[\d]+"
                     />
                         <small>Junior </small
@@ -86,6 +88,7 @@
                             name="junior_quantity"
                             maxlength="2"
                             placeholder="quantity"
+                            value="0"
                             pattern="[\d]+"
                     />
                     </th>

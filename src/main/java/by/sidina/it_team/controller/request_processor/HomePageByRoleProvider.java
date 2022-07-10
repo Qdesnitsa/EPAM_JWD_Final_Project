@@ -5,6 +5,7 @@ import by.sidina.it_team.controller.JSPPagePath;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
+import by.sidina.it_team.dao.impl.UserDAOImpl;
 import by.sidina.it_team.dao.repository.ProjectDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
@@ -12,6 +13,7 @@ import by.sidina.it_team.entity.User;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public class HomePageByRoleProvider {
     public static String getProjectsPageForUser(User user, HttpServletRequest request) throws DAOException {
@@ -30,7 +32,9 @@ public class HomePageByRoleProvider {
             request.setAttribute(AttributeName.CURRENT_DATE,currentDate);
             return JSPPagePath.EMPLOYEE_PROJECTS;
         } else if(user.getRole_id() == Role.CUSTOMER.getId()) {
-            List<ProjectDto> projects = projectDAO.findAllByCustomerID(user.getId());
+            UserDAOImpl userDaoImpl = new UserDAOImpl();
+            Optional<User> existingUser = userDaoImpl.findUserByEmail(user.getEmail());
+            List<ProjectDto> projects = projectDAO.findAllByCustomerID(existingUser.get().getId());
             request.setAttribute(AttributeName.PROJECTS, projects);
             request.setAttribute(AttributeName.CURRENT_DATE,currentDate);
             return JSPPagePath.CUSTOMER_PROJECTS;

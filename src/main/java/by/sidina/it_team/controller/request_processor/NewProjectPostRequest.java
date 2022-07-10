@@ -4,6 +4,8 @@ import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
 import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
+import by.sidina.it_team.dao.impl.UserDAOImpl;
+import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.Project;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
@@ -13,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.Optional;
 
 public class NewProjectPostRequest extends BaseProcessor {
     private static final String EQUALS = "=";
@@ -41,7 +44,9 @@ public class NewProjectPostRequest extends BaseProcessor {
         int seniorQuantity = Integer.parseInt(request.getParameter(ParameterName.SENIOR_QUANTITY));
         int middleQuantity = Integer.parseInt(request.getParameter(ParameterName.MIDDLE_QUANTITY));
         int juniorQuantity = Integer.parseInt(request.getParameter(ParameterName.JUNIOR_QUANTITY));
-        int user_id = user.getId();
+        UserDAO userDAO = new UserDAOImpl();
+        Optional<User> userNew = userDAO.findUserByEmail(user.getEmail());
+        int user_id = userNew.get().getId();
 
         ProjectDAOImpl projectDAO = new ProjectDAOImpl();
         projectDAO.add(new Project.Builder()

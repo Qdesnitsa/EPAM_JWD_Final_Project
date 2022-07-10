@@ -119,8 +119,7 @@ public class EditProjectPostRequest extends BaseProcessor {
     }
 
     @Override
-    public String getAlternativeJspPage
-            (HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(AttributeName.USER);
         if (user == null) {

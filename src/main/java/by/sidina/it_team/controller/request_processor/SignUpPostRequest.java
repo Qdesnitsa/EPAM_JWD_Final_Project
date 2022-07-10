@@ -11,6 +11,7 @@ import by.sidina.it_team.entity.UserStatus;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Optional;
 
 public class SignUpPostRequest extends BaseProcessor {
     @Override
@@ -30,6 +31,12 @@ public class SignUpPostRequest extends BaseProcessor {
         String password = request.getParameter(ParameterName.PASSWORD);
         User user = new User(name, surname, Role.CUSTOMER.getId(), email, UserStatus.ACTIVE.getUserStatusID());
         UserDAOImpl userDaoImpl = new UserDAOImpl();
+        Optional<User> existingUser = userDaoImpl.findUserByEmail(user.getEmail());
+        if (existingUser.isPresent()) {
+            request.setAttribute("error", "Email already exists");
+            return JSPPagePath.SIGN_UP;
+        }
+        userDaoImpl = new UserDAOImpl();
         userDaoImpl.add(user, password);
         HttpSession session = request.getSession();
         session.setAttribute(AttributeName.USER, user);

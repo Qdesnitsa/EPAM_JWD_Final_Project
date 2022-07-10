@@ -33,7 +33,7 @@
                             placeholder="password"
                     />
                 </div>
-                <div class="form-group">
+                <div class="alert">
                     <c:if test="${not empty error}">
                         <div class="alert">
                                 ${error}

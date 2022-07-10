@@ -5,6 +5,7 @@ import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.TeamScheduleDAO;
 import by.sidina.it_team.entity.Level;
+import by.sidina.it_team.entity.TeamSchedule;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,54 +17,57 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             "values(?,?,(SELECT projects.start_date FROM projects WHERE id=?),0)";
     private static final String SQL_GET_PROJECT_START_DATE
             = "SELECT start_date FROM projects WHERE id=?";
+    private static final String SQL_ADD_HOURS_TO_PROJECT
+            ="INSERT INTO team_schedule(employee_id,project_id,date,hours_fact) values(?,?,?,?)";
     private static final String SQL_REMOVE_EMPLOYEE_FROM_PROJECT
             = "DELETE FROM team_schedule WHERE employee_id=? AND project_id=?";
     private static final String SQL_FIND_FREE_EMPLOYEES_FOR_PROJECT_ID
             = """
             SELECT team_position_level.employee_id AS id,
             	    positions.position AS position,
-            		levels.level AS level
+            		levels.level AS level,
+            		sum(team_schedule.hours_fact) as hours
             FROM team_position_level
-            LEFT JOIN team_schedule
-            	ON team_position_level.employee_id=team_schedule.employee_id
-            LEFT JOIN positions
-            	ON team_position_level.employee_position_id=positions.id
-            LEFT JOIN levels
-            	ON team_position_level.employee_level_id=levels.id
-            WHERE team_schedule.employee_id IS NULL
-            AND position=?
-            AND level=?
+            LEFT JOIN team_schedule ON team_position_level.employee_id=team_schedule.employee_id
+            LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
+            LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
+            LEFT JOIN users ON team_position_level.employee_id=users.id
+                WHERE team_schedule.employee_id IS NULL
+                    AND users.user_status_id=1
+                    AND position=?
+                    AND level=?
+                
             UNION
+            
             SELECT team_schedule.employee_id,
             		 positions.position,
-            		 levels.level
+            		 levels.level,
+            		 sum(team_schedule.hours_fact)
             FROM team_schedule
-            LEFT JOIN projects
-            	ON team_schedule.project_id=projects.id
-            LEFT JOIN team_position_level
-            	ON team_position_level.employee_id=team_schedule.employee_id
-            LEFT JOIN positions
-            	ON team_position_level.employee_position_id=positions.id
-            LEFT JOIN levels
-            	ON team_position_level.employee_level_id=levels.id
+            LEFT JOIN projects ON team_schedule.project_id=projects.id
+            LEFT JOIN team_position_level ON team_position_level.employee_id=team_schedule.employee_id
+            LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
+            LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
+            LEFT JOIN users ON team_position_level.employee_id=users.id
             	WHERE position=?
-            	AND level=?
-            AND (projects.start_date <
-            	(SELECT projects.start_date
-            	FROM projects
-            	WHERE projects.id=?)
+            	    AND level=?
+            	    AND users.user_status_id=1
+                    AND (projects.start_date <
+            	        (SELECT projects.start_date
+            	        FROM projects
+            	        WHERE projects.id=?)
             		AND projects.end_date <
-            	(SELECT projects.start_date
-            	FROM projects
-            	WHERE projects.id=?)
+            	        (SELECT projects.start_date
+            	        FROM projects
+            	        WHERE projects.id=?)
             		OR projects.start_date >
-            	(SELECT projects.end_date
-            	FROM projects
-            	WHERE projects.id=?)
+            	        (SELECT projects.end_date
+            	        FROM projects
+            	        WHERE projects.id=?)
             		AND projects.end_date >
-            	(SELECT projects.end_date
-            	FROM projects
-                WHERE projects.id=?))
+            	        (SELECT projects.end_date
+            	        FROM projects
+                        WHERE projects.id=?))
             LIMIT ?
             """;
 
@@ -144,9 +148,31 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
         return users;
     }
 
+    @Override
+    public boolean addHoursByEmployeeId(TeamSchedule teamSchedule) throws DAOException {
+        boolean isAdded;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_ADD_HOURS_TO_PROJECT)) {
+            statement.setInt(1, teamSchedule.getEmployee_id());
+            statement.setInt(2, teamSchedule.getProject_id());
+            statement.setDate(3, teamSchedule.getDate());
+            statement.setDouble(4, teamSchedule.getHours_fact());
+            int counter = statement.executeUpdate();
+            if (counter != 0) {
+                isAdded = true;
+            } else {
+                isAdded = false;
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Failed attempt to add fact hours to the database", e);
+        }
+        return isAdded;
+    }
+
     private EmployeeDto retrieveFreeEmployee(ResultSet resultSet) throws SQLException {
         return new EmployeeDto.Builder()
                 .setId(resultSet.getInt("id"))
+                .setHours(resultSet.getDouble("hours"))
                 .setPosition(String.valueOf(resultSet.getString("position")))
                 .setLevel(Level.valueOf(resultSet.getString("level").toUpperCase()))
                 .build();

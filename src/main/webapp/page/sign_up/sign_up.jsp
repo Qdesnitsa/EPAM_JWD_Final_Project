@@ -57,7 +57,12 @@
                     />
                 </div>
                 <div class="error"></div>
-                <div class="form-group">
+                <div class="alert">
+                    <c:if test="${not empty error}">
+                        <div>
+                                ${error}
+                        </div>
+                    </c:if>
                     <button type="submit" id="submit" class="login_btn">
                         Sign up
                     </button>

@@ -4,7 +4,9 @@ import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
 import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.dao.dto.ProjectDto;
+import by.sidina.it_team.dao.impl.PaymentDAOImpl;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
+import by.sidina.it_team.dao.repository.PaymentDAO;
 import by.sidina.it_team.dao.repository.ProjectDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
@@ -12,14 +14,18 @@ import by.sidina.it_team.entity.User;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.sql.Date;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
-public class NewProjectGetRequest extends BaseProcessor {
+public class NewPaymentPostRequest extends BaseProcessor{
+    private final String MSG_SUCCESS = "Successfully";
+    private final String MSG_FAIL = "Operation failed";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
-        boolean isNewProjectFormRequested = projectId == 0;
+        boolean isNewProjectFormRequested = projectId != 0;
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
         return (user != null && user.getRole_id() == Role.CUSTOMER.getId())
                 || !isNewProjectFormRequested;
@@ -34,13 +40,22 @@ public class NewProjectGetRequest extends BaseProcessor {
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
         int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
         if (projectId == 0) {
-            return JSPPagePath.CUSTOMER_NEW_PROJECT;
+            return JSPPagePath.CUSTOMER_PROJECTS;
         } else {
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
-            request.setAttribute(AttributeName.PROJECTS,project);
-            return JSPPagePath.CUSTOMER_PROJECTS;
+            PaymentDAO payment = new PaymentDAOImpl();
+            double amount = Double.parseDouble(request.getParameter("payment"));
+            boolean isAdded = payment.addPaymentByProjectAndCustomerID(project.get(), amount, Date.valueOf(currentDate));
+            List<ProjectDto> projects = projectDAO.findAllByCustomerID(user.getId());
+            request.setAttribute(AttributeName.PROJECTS, projects);
+            if (isAdded) {
+                request.setAttribute("message", MSG_SUCCESS);
+            } else {
+                request.setAttribute("message", MSG_FAIL);
+            }
         }
+        return JSPPagePath.CUSTOMER_PROJECTS;
     }
 
     @Override

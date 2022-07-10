@@ -4,6 +4,8 @@ import by.sidina.it_team.entity.Level;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.UserStatus;
 
+import java.util.Objects;
+
 public class EmployeeDto {
     private int id;
     private String name;
@@ -14,11 +16,12 @@ public class EmployeeDto {
     private String position;
     private Level level;
     private double rate;
+    private double hours;
 
     private EmployeeDto() {}
 
     public EmployeeDto(String name, String surname, Role role, String email, UserStatus status, String position,
-                       Level level, double rate) {
+                       Level level, double rate, double hours) {
         this.name = name;
         this.surname = surname;
         this.role = role;
@@ -27,6 +30,7 @@ public class EmployeeDto {
         this.position = position;
         this.level = level;
         this.rate = rate;
+        this.hours = hours;
     }
 
     public int getId() {
@@ -61,8 +65,28 @@ public class EmployeeDto {
         return level;
     }
 
+    public double getHours() {
+        return hours;
+    }
+
     public double getRate() {
         return rate;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        EmployeeDto that = (EmployeeDto) o;
+        return id == that.id && Double.compare(that.rate, rate) == 0 && Double.compare(that.hours, hours) == 0 &&
+                Objects.equals(name, that.name) && Objects.equals(surname, that.surname) && role == that.role &&
+                Objects.equals(email, that.email) && status == that.status && Objects.equals(position, that.position) &&
+                level == that.level;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, surname, role, email, status, position, level, rate, hours);
     }
 
     @Override
@@ -129,6 +153,11 @@ public class EmployeeDto {
 
         public EmployeeDto.Builder setRate(double rate) {
             this.employeeDto.rate = rate;
+            return this;
+        }
+
+        public EmployeeDto.Builder setHours(double hours) {
+            this.employeeDto.hours = hours;
             return this;
         }
 

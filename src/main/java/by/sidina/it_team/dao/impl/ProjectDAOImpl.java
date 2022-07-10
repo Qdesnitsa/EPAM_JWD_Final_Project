@@ -26,14 +26,12 @@ public class ProjectDAOImpl implements ProjectDAO {
                    status_project.status as project_status,
                    projects.requirement_comment as comment,
                    projects.customer_id as customer_id,
-                   sum(payments.amount) as payments,
-                   sum(team_schedule.hours_fact) as hours_fact,
+                   (SELECT sum(amount) FROM payments WHERE projects.id = payments.project_id) as payments,
+                   (SELECT sum(hours_fact) FROM team_schedule WHERE projects.id = team_schedule.project_id) as hours_fact,
                    project_calculation.hours_plan as hours_plan,
                    project_calculation.cost_plan as cost_plan
             FROM projects
                      LEFT JOIN status_project ON projects.project_status_id = status_project.id
-                     LEFT JOIN payments ON projects.id = payments.project_id
-                     LEFT JOIN team_schedule ON projects.id = team_schedule.project_id
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
             GROUP BY id
             ORDER BY length(project_status)
@@ -58,6 +56,7 @@ public class ProjectDAOImpl implements ProjectDAO {
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
             WHERE projects.customer_id=?
             GROUP BY id
+            ORDER BY length(project_status)
             """;
     private static final String SQL_FIND_PROJECTS_BY_EMPLOYEE_ID
             = """
@@ -79,6 +78,7 @@ public class ProjectDAOImpl implements ProjectDAO {
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
             WHERE team_schedule.employee_id=?
             GROUP BY id
+            ORDER BY length(project_status)
             """;
     private static final String SQL_FIND_PROJECT_BY_ID
             = """
@@ -89,10 +89,10 @@ public class ProjectDAOImpl implements ProjectDAO {
                    status_project.status as project_status,
                    projects.requirement_comment as comment,
                    projects.customer_id as customer_id,
-                   sum(payments.amount) as payments,
-                   sum(team_schedule.hours_fact) as hours_fact,
-                   project_calculation.hours_plan as hours_plan,
-                   project_calculation.cost_plan as cost_plan
+                   sum(payments.amount)/count(team_schedule.project_id) as payments,
+                   sum(team_schedule.hours_fact)/count(team_schedule.project_id) as hours_fact,
+                   sum(project_calculation.hours_plan)/count(team_schedule.project_id) as hours_plan,
+                   sum(project_calculation.cost_plan)/count(team_schedule.project_id) as cost_plan
             FROM projects
                      LEFT JOIN status_project ON projects.project_status_id = status_project.id
                      LEFT JOIN payments ON projects.id = payments.project_id

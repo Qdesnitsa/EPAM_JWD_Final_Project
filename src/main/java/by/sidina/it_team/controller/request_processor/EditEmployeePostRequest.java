@@ -97,6 +97,12 @@ public class EditEmployeePostRequest extends BaseProcessor{
                 int position = Integer.parseInt(request.getParameter("employee_position"));
                 int level = Integer.parseInt(request.getParameter("employee_level"));
                 User userEmployee = new User(name,surname,role,email,status);
+                UserDAOImpl userDaoImpl = new UserDAOImpl();
+                Optional<User> existingUser = userDaoImpl.findUserByEmail(userEmployee.getEmail());
+                if (existingUser.isPresent()) {
+                    request.setAttribute("message", "Email already exists");
+                    return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+                }
                 boolean isChanged = teamPositionLevelDAO.add(position,level,userEmployee,password);
                 if (isChanged) {
                     request.setAttribute("message", MSG_SUCCESS);
@@ -104,11 +110,18 @@ public class EditEmployeePostRequest extends BaseProcessor{
                     request.setAttribute("message", MSG_FAIL);
                 }
             }
-        }return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+        }
+        return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
     }
 
     @Override
     public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        return null;
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute(AttributeName.USER);
+        if (user == null) {
+            return JSPPagePath.SIGN_IN;
+        } else {
+            return JSPPagePath.ERROR;
+        }
     }
 }

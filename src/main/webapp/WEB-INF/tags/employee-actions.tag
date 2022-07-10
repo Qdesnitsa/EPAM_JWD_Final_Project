@@ -1,4 +1,4 @@
-<form method="get" action="/IT_Team/post-hours">
+<form method="post" action="/IT_Team/post-hours">
   <input type="text" style="display: none" name="project_id" value="0">
   <button type="submit" id="post_hours" class="post_hours">
     Post hours spent

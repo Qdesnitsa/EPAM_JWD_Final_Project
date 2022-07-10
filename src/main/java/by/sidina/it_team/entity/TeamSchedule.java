@@ -10,15 +10,15 @@ public class TeamSchedule implements Serializable {
     private int id;
     private int employee_id;
     private int project_id;
-    private Date currentDate;
+    private Date date;
     private double hours_fact;
 
     private TeamSchedule() {}
 
-    public TeamSchedule(int employee_id, int project_id, Date currentDate, double hours_fact) {
+    public TeamSchedule(int employee_id, int project_id, Date date, double hours_fact) {
         this.employee_id = employee_id;
         this.project_id = project_id;
-        this.currentDate = currentDate;
+        this.date = date;
         this.hours_fact = hours_fact;
     }
 
@@ -42,12 +42,12 @@ public class TeamSchedule implements Serializable {
         this.project_id = project_id;
     }
 
-    public Date getCurrentDate() {
-        return currentDate;
+    public Date getDate() {
+        return date;
     }
 
-    public void setCurrentDate(Date currentDate) {
-        this.currentDate = currentDate;
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public double getHours_fact() {
@@ -65,12 +65,12 @@ public class TeamSchedule implements Serializable {
         TeamSchedule that = (TeamSchedule) o;
         return id == that.id && employee_id == that.employee_id && project_id == that.project_id &&
                 Double.compare(that.hours_fact, hours_fact) == 0 &&
-                Objects.equals(currentDate, that.currentDate);
+                Objects.equals(date, that.date);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, employee_id, project_id, currentDate, hours_fact);
+        return Objects.hash(id, employee_id, project_id, date, hours_fact);
     }
 
     @Override
@@ -79,7 +79,7 @@ public class TeamSchedule implements Serializable {
                 "id=" + id +
                 ", employee_id=" + employee_id +
                 ", project_id=" + project_id +
-                ", currentDate=" + currentDate +
+                ", date=" + date +
                 ", hours_fact=" + hours_fact + "; ";
     }
 }

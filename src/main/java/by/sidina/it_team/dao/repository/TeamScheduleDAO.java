@@ -12,4 +12,5 @@ public interface TeamScheduleDAO {
     boolean addEmployeeToProject(int employee_id, int project_id) throws DAOException;
     boolean removeEmployeeFromProject(int employee_id, int project_id) throws DAOException;
     List<EmployeeDto> findFreeEmployeesForProject(int projectId, String position, Level level, int limit) throws DAOException;
+    boolean addHoursByEmployeeId(TeamSchedule teamSchedule) throws DAOException;
 }

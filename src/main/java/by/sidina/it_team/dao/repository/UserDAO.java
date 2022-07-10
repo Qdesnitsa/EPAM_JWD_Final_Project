@@ -1,17 +1,21 @@
 package by.sidina.it_team.dao.repository;
 
+import by.sidina.it_team.dao.dto.CustomerDto;
 import by.sidina.it_team.dao.exception.DAOException;
+import by.sidina.it_team.entity.User;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserDAO<T,N,S> {
-    List<T> findAll() throws DAOException;
-    Optional<T> findByID(int id) throws DAOException;
-    boolean edit(int id, T entity) throws DAOException;
-    boolean add(T user, S password) throws DAOException;
-    Optional<T> findUserByEmail(S email) throws DAOException;
-    Optional<T> findUserByEmailAndPassword(S email, S password) throws DAOException;
-    Optional<S> findPasswordByEmail(S email) throws DAOException;
+public interface UserDAO {
+    List<User> findAll() throws DAOException;
+    List<CustomerDto> findAllCustomers() throws DAOException;
+    Optional<CustomerDto> findCustomerByID(int id) throws DAOException;
+    Optional<User> findByID(int id) throws DAOException;
+    boolean edit(int id, User entity) throws DAOException;
+    boolean add(User user, String password) throws DAOException;
+    Optional<User> findUserByEmail(String email) throws DAOException;
+    Optional<User> findUserByEmailAndPassword(String email, String password) throws DAOException;
+    Optional<String> findPasswordByEmail(String email) throws DAOException;
     boolean changeStatus(int id, int status) throws DAOException;
 }

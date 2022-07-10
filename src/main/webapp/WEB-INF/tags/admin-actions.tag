@@ -29,7 +29,7 @@
     </button>
 </form>
 
-<form method="get" action="/IT_Team/edit-customer">
+<form method="post" action="/IT_Team/edit-customer">
     <button type="submit" class="change">
         Edit customer data
     </button>

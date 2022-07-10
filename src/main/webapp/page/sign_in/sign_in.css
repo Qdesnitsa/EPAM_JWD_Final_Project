@@ -8,6 +8,11 @@ body {
     font-family: "Inter", sans-serif;
 }
 
+.alert {
+    color: red;
+    margin-left: 20px;
+}
+
 .container {
     position: relative;
     height: 100%;

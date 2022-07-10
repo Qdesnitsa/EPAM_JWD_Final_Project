@@ -1,6 +1,7 @@
 package by.sidina.it_team.dao.impl;
 
 import by.sidina.it_team.dao.connection.ConnectionPool;
+import by.sidina.it_team.dao.dto.CustomerDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.User;
@@ -14,10 +15,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class UserDAOImpl implements UserDAO<User,UserStatus,String> {
+public class UserDAOImpl implements UserDAO {
     private static final String SQL_FIND_ALL_USERS
             = "SELECT id, name, surname, (SELECT role_types from roles WHERE id=users.role_id), email, " +
             "(SELECT status from status_user WHERE id=users.user_status_id) FROM users";
+    private static final String SQL_FIND_ALL_CUSTOMERS
+            = """
+            SELECT 
+                users.id AS id, 
+                users.name AS name, 
+                users.surname AS surname, 
+                roles.role_types AS role, 
+                users.email AS email,
+                status_user.status AS status
+            FROM users
+            LEFT JOIN roles ON roles.id=users.role_id
+            LEFT JOIN status_user ON status_user.id=users.user_status_id
+            WHERE roles.role_types="CUSTOMER"
+            ORDER BY status_user.status
+            """;
+    private static final String SQL_FIND_CUSTOMER_BY_ID
+            = """
+            SELECT 
+                users.id AS id, 
+                users.name AS name, 
+                users.surname AS surname, 
+                roles.role_types AS role, 
+                users.email AS email,
+                status_user.status AS status
+            FROM users
+            LEFT JOIN roles ON roles.id=users.role_id
+            LEFT JOIN status_user ON status_user.id=users.user_status_id
+            WHERE roles.role_types="CUSTOMER" AND users.id=?
+            ORDER BY status_user.status
+            """;
     private static final String SQL_FIND_USER_BY_ID
             = "SELECT id, name, surname, (SELECT role_types from roles WHERE id=users.role_id), email, " +
             "(SELECT status from status_user WHERE id=users.user_status_id) FROM users WHERE id=?";
@@ -31,7 +62,7 @@ public class UserDAOImpl implements UserDAO<User,UserStatus,String> {
             "SELECT id, name, surname, role_id, email, user_status_id FROM users WHERE email=? AND password=?";
     private static final String SQL_FIND_PASSWORD_BY_EMAIL
             = "SELECT password FROM users WHERE email=?";
-    private static final String SQL_CHANGE_EMPLOYEE_STATUS
+    private static final String SQL_CHANGE_USER_STATUS
             ="UPDATE users SET user_status_id=? WHERE id=?";
 
     @Override
@@ -57,6 +88,28 @@ public class UserDAOImpl implements UserDAO<User,UserStatus,String> {
     }
 
     @Override
+    public List<CustomerDto> findAllCustomers() throws DAOException {
+        List<CustomerDto> users = new ArrayList<>();
+        ResultSet resultSet = null;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_CUSTOMERS)) {
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                users.add(retrieveDto(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Failed attempt to find all customers in the database", e);
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                throw new DAOException("Failed attempt to close resultSet", e);
+            }
+        }
+        return users;
+    }
+
+    @Override
     public Optional<User> findByID(int id) throws DAOException {
         Optional<User> optional = Optional.empty();
         ResultSet resultSet = null;
@@ -70,6 +123,30 @@ public class UserDAOImpl implements UserDAO<User,UserStatus,String> {
             }
         } catch (SQLException e) {
             throw new DAOException("Failed attempt to find user by user ID in the database", e);
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                throw new DAOException("Failed attempt to close resultSet", e);
+            }
+        }
+        return optional;
+    }
+
+    @Override
+    public Optional<CustomerDto> findCustomerByID(int id) throws DAOException {
+        Optional<CustomerDto> optional = Optional.empty();
+        ResultSet resultSet = null;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_CUSTOMER_BY_ID)) {
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                CustomerDto customer = retrieveDto(resultSet);
+                optional = Optional.of(customer);
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Failed attempt to find customer by user ID in the database", e);
         } finally {
             try {
                 resultSet.close();
@@ -185,7 +262,7 @@ public class UserDAOImpl implements UserDAO<User,UserStatus,String> {
     public boolean changeStatus(int id, int status) throws DAOException {
         boolean isChanged = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_EMPLOYEE_STATUS)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_USER_STATUS)) {
             statement.setInt(1, status);
             statement.setInt(2, id);
             int rowCount = statement.executeUpdate();
@@ -210,6 +287,16 @@ public class UserDAOImpl implements UserDAO<User,UserStatus,String> {
                 .setRole_id(resultSet.getInt("role_id"))
                 .setEmail(resultSet.getString("email"))
                 .setStatus_id(resultSet.getInt("user_status_id"))
+                .build();
+    }
+
+    private CustomerDto retrieveDto(ResultSet resultSet) throws SQLException {
+        return new CustomerDto.Builder()
+                .setId(resultSet.getInt("id"))
+                .setName(resultSet.getString("name"))
+                .setSurname(resultSet.getString("surname"))
+                .setEmail(resultSet.getString("email"))
+                .setStatus(UserStatus.valueOf(resultSet.getString("status")))
                 .build();
     }
 }

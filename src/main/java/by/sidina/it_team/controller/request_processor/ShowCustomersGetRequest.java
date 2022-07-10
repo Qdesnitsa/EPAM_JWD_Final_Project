@@ -2,10 +2,9 @@ package by.sidina.it_team.controller.request_processor;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
-import by.sidina.it_team.dao.dto.ProjectDto;
-import by.sidina.it_team.dao.impl.ProjectDAOImpl;
-import by.sidina.it_team.dao.repository.ProjectDAO;
+import by.sidina.it_team.dao.dto.CustomerDto;
+import by.sidina.it_team.dao.impl.UserDAOImpl;
+import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
 
@@ -13,34 +12,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.List;
 
-public class NewProjectGetRequest extends BaseProcessor {
+public class ShowCustomersGetRequest extends BaseProcessor{
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
-        int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
-        boolean isNewProjectFormRequested = projectId == 0;
-        User user = (User) request.getSession().getAttribute(AttributeName.USER);
-        return (user != null && user.getRole_id() == Role.CUSTOMER.getId())
-                || !isNewProjectFormRequested;
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute(AttributeName.USER);
+        return user != null
+                && user.getRole_id() == Role.ADMIN.getId();
     }
 
     @Override
     public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws Exception {
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
-        User user = (User)request.getSession().getAttribute(AttributeName.USER);
+        User user = (User) request.getSession().getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
-        if (projectId == 0) {
-            return JSPPagePath.CUSTOMER_NEW_PROJECT;
-        } else {
-            ProjectDAO projectDAO = new ProjectDAOImpl();
-            Optional<ProjectDto> project = projectDAO.findByID(projectId);
-            request.setAttribute(AttributeName.PROJECTS,project);
-            return JSPPagePath.CUSTOMER_PROJECTS;
-        }
+        UserDAO userDAO = new UserDAOImpl();
+        List<CustomerDto> customers = userDAO.findAllCustomers();
+        request.setAttribute(AttributeName.CUSTOMERS, customers);
+        return JSPPagePath.ADMIN_ALL_CUSTOMERS;
     }
 
     @Override

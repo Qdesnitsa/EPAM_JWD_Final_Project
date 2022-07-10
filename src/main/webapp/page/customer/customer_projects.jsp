@@ -9,23 +9,10 @@
         <t:customer-actions/>
     </jsp:attribute>
     <jsp:body>
+        <form method="post" action="/IT_Team/new-payment">
         <table class="table" align="center">
             <caption>
                 <h2>My projects</h2>
-                <fieldset>
-                    <legend>Select project status</legend>
-                    <table>
-                        <tr>
-                            <select name="status" class="status">
-                                <option value="0" selected>all</option>
-                                <option value="2">prepared</option>
-                                <option value="3">active</option>
-                                <option value="4">cancelled</option>
-                                <option value="5">finished</option>
-                            </select>
-                        </tr>
-                    </table>
-                </fieldset>
             </caption>
             <tr>
                 <th>Project ID</th>
@@ -44,15 +31,12 @@
                     <td>${project.startDate}</td>
                     <td>${project.endDate}</td>
                     <td>${project.status}</td>
-                    <td>NOT IMPLEMENTED</td>
-                    <td>NOT IMPLEMENTED</td>
-                    <td>NOT IMPLEMENTED</td>
+                    <td>${project.costPlan}</td>
+                    <td>${project.amount}</td>
+                    <td>${project.costPlan-project.amount}</td>
                 </tr>
             </c:forEach>
         </table>
-        <div align="center">
-            <button type="submit" class="submit">Show</button>
-        </div>
         <table class="table" align="center">
             <caption>
                 <h2>Proceed payment</h2>
@@ -70,6 +54,7 @@
                         name="project_id"
                         placeholder="project_id"
                         pattern="[\d]+"
+                        value="0"
                 /></th>
                 <th><input
                         type="text"
@@ -80,9 +65,15 @@
             </tr>
 
         </table>
+            <div class="msg"><br>
+                <c:if test="${message != null}">
+                    <h4><c:out value="${message}" default="guest"/></h4>
+                </c:if>
+            </div>
         <div align="center">
             <button type="submit" class="submit">Confirm payment</button>
         </div>
         <div class="clear"></div>
+        </form>
     </jsp:body>
 </t:layout>
