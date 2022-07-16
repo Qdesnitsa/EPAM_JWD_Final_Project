@@ -61,7 +61,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             = "UPDATE team_position_level SET employee_level_id=? WHERE employee_id=?";
 
     @Override
-    public synchronized boolean add(int position, int level, User user, String password) throws DAOException {
+    public boolean add(int position, int level, User user, String password) throws DAOException {
         UserDAO userDAO = new UserDAOImpl();
         boolean isAdded = false;
         Connection connection = null;

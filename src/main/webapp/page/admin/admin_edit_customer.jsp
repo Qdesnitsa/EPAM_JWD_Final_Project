@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="${locale}" scope="session"/>
+<fmt:setBundle basename="pagecontent"/>
 <style>
     <%@include file="/page/css/styles.css"%>
 </style>
@@ -9,21 +12,21 @@
         <t:admin-actions/>
     </jsp:attribute>
     <jsp:body>
-        <form method="post" action="/IT_Team/edit-customer">
+        <form action="controller" method="POST">
         <table class="table" align="center">
             <caption>
-                <h2>Edit customer</h2>
+                <h2><fmt:message key="label.customer_edition"/></h2>
                 <fieldset>
-                    <legend>Please fill in employee ID</legend>
+                    <legend><fmt:message key="label.fill_customer_id"/></legend>
                     <table>
                         <tr>
                             <th width="33%">
-                                Customer ID<br/>
+                                <fmt:message key="label.customer_id"/><br/>
                                 <input
                                         type="text"
                                         name="customer_id"
                                         class="project_id"
-                                        placeholder="customer id"
+                                        placeholder="<fmt:message key="label.customer_id"/>"
                                         pattern="[\d]+"
                                 />
                                 <br/>
@@ -33,11 +36,11 @@
                 </fieldset>
             </caption>
             <tr>
-                <th>Customer ID</th>
-                <th>Email</th>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>Status</th>
+                <th><fmt:message key="label.customer_id"/></th>
+                <th><fmt:message key="label.email"/></th>
+                <th><fmt:message key="label.name"/></th>
+                <th><fmt:message key="label.surname"/></th>
+                <th><fmt:message key="label.status"/></th>
             </tr>
             <tr>
                 <td>${customer.id}</td>
@@ -48,15 +51,15 @@
             </tr>
         </table>
         <div align="center">
-            <button type="submit" class="submit" name="show_customer">Show</button>
+            <button type="submit" class="submit" name="command" value="show_customer_get"><fmt:message key="label.show"/></button>
         </div>
 
         <table class="table" align="center">
             <caption>
-                <h2>Customer data edition</h2>
+                <h2><fmt:message key="label.customer_data_edition"/></h2>
             </caption>
             <tr>
-                <th>Status</th>
+                <th><fmt:message key="label.status"/></th>
             </tr>
             <tr>
                 <th>
@@ -65,8 +68,8 @@
                         <option value="2">blocked</option>
                     </select
                     ><br/>
-                    <button type="submit" class="submit" name="change_status">
-                        Change status
+                    <button type="submit" class="submit" name="command" value="change_customer_status_post">
+                        <fmt:message key="label.change_status"/>
                     </button>
                 </th>
             </tr>

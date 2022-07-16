@@ -15,8 +15,22 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
     private static final String SQL_ADD_EMPLOYEE_TO_PROJECT
             = "INSERT INTO team_schedule (employee_id, project_id, date, hours_fact) " +
             "values(?,?,(SELECT projects.start_date FROM projects WHERE id=?),0)";
-    private static final String SQL_GET_PROJECT_START_DATE
-            = "SELECT start_date FROM projects WHERE id=?";
+    private static final String SQL_FIND_EMPLOYEES_ON_PROJECT
+            = """
+            SELECT team_schedule.employee_id AS id,
+            		 positions.position AS position,
+            		 levels.level AS level,
+            		 sum(team_schedule.hours_fact) as hours
+            FROM team_schedule
+            LEFT JOIN projects ON team_schedule.project_id=projects.id
+            LEFT JOIN team_position_level ON team_position_level.employee_id=team_schedule.employee_id
+            LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
+            LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
+            LEFT JOIN users ON team_position_level.employee_id=users.id
+                WHERE users.user_status_id=1
+                AND projects.id=?
+            GROUP BY id;
+            """;
     private static final String SQL_ADD_HOURS_TO_PROJECT
             ="INSERT INTO team_schedule(employee_id,project_id,date,hours_fact) values(?,?,?,?)";
     private static final String SQL_REMOVE_EMPLOYEE_FROM_PROJECT
@@ -116,6 +130,31 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
     }
 
     @Override
+    public List<EmployeeDto> findEmployeesOnProject(int projectId) throws DAOException {
+        List<EmployeeDto> users = new ArrayList<>();
+        ResultSet resultSet = null;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_EMPLOYEES_ON_PROJECT)) {
+            statement.setInt(1, projectId);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                users.add(retrieveFreeEmployee(resultSet));
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Failed attempt to find employees on project in the database", e);
+        } finally {
+            try {
+                if (resultSet != null) {
+                    resultSet.close();
+                }
+            } catch (SQLException e) {
+                throw new DAOException("Failed attempt to close resultSet", e);
+            }
+        }
+        return users;
+    }
+
+    @Override
     public List<EmployeeDto> findFreeEmployeesForProject(int projectId, String position, Level level, int limit) throws DAOException {
         List<EmployeeDto> users = new ArrayList<>();
         ResultSet resultSet = null;
@@ -131,7 +170,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             statement.setInt(8, projectId);
             statement.setInt(9, limit);
             resultSet = statement.executeQuery();
-            while (resultSet.next()) {
+            while (resultSet.next() && (resultSet.getInt("id") != 0)) {
                 users.add(retrieveFreeEmployee(resultSet));
             }
         } catch (SQLException e) {

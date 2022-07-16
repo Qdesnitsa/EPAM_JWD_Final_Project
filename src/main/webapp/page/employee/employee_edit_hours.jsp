@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="${locale}" scope="session"/>
+<fmt:setBundle basename="pagecontent"/>
 <style>
     <%@include file="/page/css/styles.css"%>
 </style>
@@ -9,37 +12,40 @@
         <t:employee-actions/>
     </jsp:attribute>
     <jsp:body>
-        <form method="post" action="/IT_Team/post-hours">
+        <form action="controller" method="POST">
             <table class="table" align="center">
                 <caption>
-                    <h2>Post working hours</h2>
+                    <h2><fmt:message key="label.post_hours"/></h2>
                     <fieldset>
-                        <legend>Select date and project ID</legend>
+                        <legend><fmt:message key="label.fill_in_all_fields"/></legend>
                         <table>
                             <tr>
                                 <th width="33%">
-                                    Select date<br/>
+                                    <fmt:message key="label.select_date"/><br/>
                                     <input
                                             type="date"
+                                            required
                                             name="date"
                                             class="date"
                                     />
                                 </th>
                                 <th width="33%">
-                                    Project ID<br/>
+                                    <fmt:message key="label.project_id"/><br/>
                                     <input
                                             type="text"
+                                            required
                                             name="project_id"
-                                            placeholder="project id"
+                                            placeholder="<fmt:message key="label.project_id"/>"
                                             pattern="[\d]+"
                                     />
                                 </th>
                                 <th width="33%">
-                                    Hours consumed<br/>
+                                    <fmt:message key="label.post_hours"/><br/>
                                     <input
                                             type="text"
+                                            required
                                             name="hours"
-                                            placeholder="hours 0-24"
+                                            placeholder="<fmt:message key="label.hours024"/>"
                                             pattern="^([0-9]|([1][0-9]|[2][0-4]))"
                                     />
                                 </th>
@@ -54,7 +60,8 @@
                 </c:if>
             </div>
             <div align="center">
-                <button type="submit" id="submit" class="submit">Submit</button>
+                <button type="submit" id="submit" class="submit" name="command" value="post_hours_post">
+                    <fmt:message key="label.submit"/></button>
             </div>
             <div class="clear"></div>
         </form>

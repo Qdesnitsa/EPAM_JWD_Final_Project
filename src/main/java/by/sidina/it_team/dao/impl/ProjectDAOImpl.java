@@ -6,7 +6,6 @@ import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.ProjectDAO;
 import by.sidina.it_team.entity.Project;
 import by.sidina.it_team.entity.ProjectStatus;
-import by.sidina.it_team.entity.UserStatus;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -34,7 +33,7 @@ public class ProjectDAOImpl implements ProjectDAO {
                      LEFT JOIN status_project ON projects.project_status_id = status_project.id
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
             GROUP BY id
-            ORDER BY length(project_status)
+            ORDER BY length(project_status), start_date
             """;
     private static final String SQL_FIND_PROJECTS_BY_CUSTOMER_ID
             = """
@@ -45,8 +44,8 @@ public class ProjectDAOImpl implements ProjectDAO {
                    status_project.status as project_status,
                    projects.requirement_comment as comment,
                    projects.customer_id as customer_id,
-                   sum(payments.amount) as payments,
-                   sum(team_schedule.hours_fact) as hours_fact,
+                   (SELECT sum(payments.amount) FROM payments WHERE projects.id = payments.project_id) as payments,
+                   (SELECT sum(team_schedule.hours_fact) FROM team_schedule WHERE projects.id = team_schedule.project_id) as hours_fact,
                    project_calculation.hours_plan as hours_plan,
                    project_calculation.cost_plan as cost_plan
             FROM projects
@@ -67,8 +66,8 @@ public class ProjectDAOImpl implements ProjectDAO {
                    status_project.status as project_status,
                    projects.requirement_comment as comment,
                    projects.customer_id as customer_id,
-                   sum(payments.amount) as payments,
-                   sum(team_schedule.hours_fact) as hours_fact,
+                   (SELECT sum(payments.amount) FROM payments WHERE projects.id = payments.project_id) as payments,
+                   (SELECT sum(team_schedule.hours_fact) FROM team_schedule WHERE projects.id = team_schedule.project_id) as hours_fact,
                    project_calculation.hours_plan as hours_plan,
                    project_calculation.cost_plan as cost_plan
             FROM projects

@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="${locale}" scope="session"/>
+<fmt:setBundle basename="pagecontent"/>
 <style>
     <%@include file="/page/css/styles.css"%>
 </style>
@@ -11,15 +14,15 @@
     <jsp:body>
         <table class="table" align="center">
             <caption>
-                <h2>My projects</h2>
+                <h2><fmt:message key="label.my_projects"/></h2>
             </caption>
             <tr>
-                <th>Project ID</th>
-                <th>Project name</th>
-                <th>Project status</th>
-                <th>Start date</th>
-                <th>End date</th>
-                <th>Hours FACT</th>
+                <th><fmt:message key="label.project_id"/></th>
+                <th><fmt:message key="label.project_name"/></th>
+                <th><fmt:message key="label.project_status"/></th>
+                <th><fmt:message key="label.project_start_date"/></th>
+                <th><fmt:message key="label.project_end_date"/></th>
+                <th><fmt:message key="label.project_hours_fact"/></th>
             </tr>
             <c:forEach var="project" items="${projects}">
                 <tr>
@@ -32,9 +35,6 @@
                 </tr>
             </c:forEach>
         </table>
-        <div align="center">
-            <button type="submit" id="submit" class="submit">Show</button>
-        </div>
         <div class="clear"></div>
     </jsp:body>
 </t:layout>

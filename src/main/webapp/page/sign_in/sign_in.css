@@ -1,5 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Inter:wght@500&family=Patua+One&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Inter:wght@500&family=Patua+One&family=Russo+One&display=swap');
 
 body {
     background-image: url("/IT_Team/page/image/background.png");
@@ -79,6 +78,22 @@ input:focus {
     font-size: 16px;
 }
 
+.language {
+    margin-right: 70px;
+    float: right;
+}
+
+.lang_btn {
+    float: right;
+    height: 20px;
+    width: 80px;
+    border-radius: 10%;
+    color: black;
+    background-color: cornflowerblue;
+    font-weight: 600;
+    font-size: 10px;
+}
+
 .login_btn:hover {
     color: black;
     background-color: white;
@@ -114,11 +129,15 @@ A {
 }
 
 .slogan {
-    color:midnightblue;
-    font-family: 'Patua One', cursive;
+    color: midnightblue;
     float: left;
     margin-left: 200px;
     margin-top: 100px;
-    font-size:60px;
-    font-weight:900;
+    font-size: 60px;
+    font-weight: 900;
+    font-family: 'Alfa Slab One', cursive;
+    font-family: 'Anton', sans-serif;
+    font-family: 'Inter', sans-serif;
+    font-family: 'Patua One', cursive;
+    font-family: 'Russo One', sans-serif;
 }

@@ -1,6 +1,9 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="${locale}" scope="session"/>
+<fmt:setBundle basename="pagecontent"/>
 <style>
     <%@include file="/page/css/styles.css"%>
 </style>
@@ -9,20 +12,20 @@
         <t:customer-actions/>
     </jsp:attribute>
     <jsp:body>
-        <form method="post" action="/IT_Team/new-payment">
+        <form action="controller" method="POST">
         <table class="table" align="center">
             <caption>
-                <h2>My projects</h2>
+                <h2><fmt:message key="label.my_projects"/></h2>
             </caption>
             <tr>
-                <th>Project ID</th>
-                <th>Project name</th>
-                <th>Start date</th>
-                <th>End date</th>
-                <th>Project status</th>
-                <th>Total amount</th>
-                <th>Amount already paid</th>
-                <th>Amount to pay</th>
+                <th><fmt:message key="label.project_id"/></th>
+                <th><fmt:message key="label.project_name"/></th>
+                <th><fmt:message key="label.project_start_date"/></th>
+                <th><fmt:message key="label.project_end_date"/></th>
+                <th><fmt:message key="label.project_status"/></th>
+                <th><fmt:message key="label.project_cost_plan"/></th>
+                <th><fmt:message key="label.project_amount_paid"/></th>
+                <th><fmt:message key="label.project_amount_topay"/></th>
             </tr>
             <c:forEach var="project" items="${projects}">
                 <tr>
@@ -39,14 +42,14 @@
         </table>
         <table class="table" align="center">
             <caption>
-                <h2>Proceed payment</h2>
+                <h2><fmt:message key="label.proceed_payment"/></h2>
                 <fieldset>
-                    <legend>Enter project ID and amount to pay</legend>
+                    <legend><fmt:message key="label.enter_data_payment"/></legend>
                 </fieldset>
             </caption>
             <tr>
-                <th>Project ID</th>
-                <th>Amount to pay</th>
+                <th><fmt:message key="label.project_id"/></th>
+                <th><fmt:message key="label.project_amount_topay"/></th>
             </tr>
             <tr>
                 <th><input
@@ -59,7 +62,7 @@
                 <th><input
                         type="text"
                         name="payment"
-                        placeholder="two numbers after point"
+                        placeholder="<fmt:message key="label.two_numbers_after_point"/>"
                         pattern="[\d]+[.]?[0-9]{0,2}"
                 /></th>
             </tr>
@@ -71,7 +74,8 @@
                 </c:if>
             </div>
         <div align="center">
-            <button type="submit" class="submit">Confirm payment</button>
+            <button type="submit" class="submit" name="command" value="new_payment_post">
+                <fmt:message key="label.confirm_payment"/></button>
         </div>
         <div class="clear"></div>
         </form>

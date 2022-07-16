@@ -2,6 +2,6 @@
 <!DOCTYPE html>
 <html>
 <body>
-<jsp:forward page="/home" />
+<jsp:forward page="controller?command=home_get"/>
 </body>
 </html>

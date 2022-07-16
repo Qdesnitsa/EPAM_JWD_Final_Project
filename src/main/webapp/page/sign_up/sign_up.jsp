@@ -1,23 +1,38 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="${locale}" scope="session"/>
+<fmt:setBundle basename="pagecontent"/>
 <style>
     <%@include file="/page/sign_up/sign_up.css"%>
 </style>
 <div class="container">
     <div class="slogan">
-        The best solutions<br/>
-        for your business
+        <fmt:message key="label.the_best_solutions"/><br/>
+        <fmt:message key="label.for_your_business"/>
     </div>
     <div class="card">
         <div class="card-header">
-            <h2>Registration form</h2>
+            <h2><fmt:message key="label.registration_form"/>
+                <form action="controller" method="POST">
+                        <span class="language">
+                            <button class="lang_btn" type="submit" name="language"
+                                    value="ru_RU">Русский
+                            </button>
+                            <button class="lang_btn" type="submit" name="language"
+                                    value="en_US">English (US)
+                            </button>
+                            <input type="hidden" name="command" value="select_locale">
+                        </span>
+                </form>
+            </h2>
         </div>
         <div class="card-body">
-            <form action="/IT_Team/sign-up" method="POST">
+            <form action="controller" method="POST">
                 <div class="input-form">
                     <input type="text"
                            required class="name"
-                           placeholder="name"
+                           placeholder="<fmt:message key="label.name"/>"
                            name="name"/>
                 </div>
                 <div class="input-form">
@@ -25,7 +40,7 @@
                             type="text"
                             required
                             class="surname"
-                            placeholder="surname"
+                            placeholder="<fmt:message key="label.surname"/>"
                             name="surname"
                     />
                 </div>
@@ -34,7 +49,7 @@
                             type="text"
                             required
                             class="email"
-                            placeholder="email"
+                            placeholder="<fmt:message key="label.email"/>"
                             pattern="[a-zA-Z]{1}[a-zA-Z\d\u002E\u005F]+@([a-zA-Z]+\u002E){1,2}[a-zA-Z]+"
                             name="email"
                     />
@@ -44,7 +59,7 @@
                             type="password"
                             required
                             class="password"
-                            placeholder="password"
+                            placeholder="<fmt:message key="label.password"/>"
                             name="password"
                     />
                 </div>
@@ -53,7 +68,7 @@
                             type="password"
                             required
                             class="check_password"
-                            placeholder="repeat password"
+                            placeholder="<fmt:message key="label.repeat_password"/>"
                     />
                 </div>
                 <div class="error"></div>
@@ -63,15 +78,17 @@
                                 ${error}
                         </div>
                     </c:if>
+                    <input type="hidden" name="command" value="sign_up">
                     <button type="submit" id="submit" class="login_btn">
-                        Sign up
+                        <fmt:message key="label.sign_up"/>
                     </button>
                 </div>
             </form>
         </div>
         <div class="card-footer">
             <div class="have-account">
-                Already have an account?<a href="/IT_Team/sign-in"> Sign In</a>
+                <fmt:message key="label.have_account"/>
+                <a href="/IT_Team/controller?command=sign_in_get"> <fmt:message key="label.sign_in"/></a>
             </div>
         </div>
     </div>
