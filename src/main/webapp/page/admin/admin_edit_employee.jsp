@@ -78,7 +78,7 @@
                         </button>
                     </th>
                     <th width="25%">
-                        <select name="employee_position">
+                        <select name="change_employee_position">
                             <option value="2">HTML/CSS/JS</option>
                             <option value="3">C++</option>
                             <option value="4">C#</option>
@@ -97,7 +97,7 @@
                         </button>
                     </th>
                     <th>
-                        <select name="employee_level">
+                        <select name="change_employee_level">
                             <option value="1">junior</option>
                             <option value="2">middle</option>
                             <option value="3">senior</option>
@@ -173,10 +173,10 @@
                     <th width="25%">
 
                         <select name="employee_position">
+                            <option value="1">Java</option>
                             <option value="2">HTML/CSS/JS</option>
                             <option value="3">C++</option>
                             <option value="4">C#</option>
-                            <option value="1">Java</option>
                             <option value="5">Python</option>
                             <option value="6">Ruby</option>
                             <option value="7">PHP</option>
@@ -192,7 +192,7 @@
                             <option value="1">junior</option>
                             <option value="2">middle</option>
                             <option value="3">senior</option>
-                            <option value="5">manager</option>
+                            <option value="4">manager</option>
                         </select
                         ><br/>
                     </th>

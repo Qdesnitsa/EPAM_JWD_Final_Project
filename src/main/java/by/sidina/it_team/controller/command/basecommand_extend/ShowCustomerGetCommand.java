@@ -2,6 +2,7 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.CustomerDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -35,7 +36,7 @@ public class ShowCustomerGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if ("" == request.getParameter("customer_id") || "0".equals(request.getParameter("customer_id"))) {
+        if (request.getParameter(ParameterName.PROJECT_ID).isEmpty()) {
             return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         } else {
             int customerId = Integer.parseInt(request.getParameter("customer_id"));

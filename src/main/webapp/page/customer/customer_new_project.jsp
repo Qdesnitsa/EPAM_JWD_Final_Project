@@ -75,7 +75,7 @@
                         ><input
                             type="text"
                             name="senior_quantity"
-                            maxlength="2"
+                            maxlength="3"
                             placeholder="<fmt:message key="label.employee_quantity"/>"
                             value="0"
                             pattern="[\d]+"
@@ -84,7 +84,7 @@
                         ><input
                             type="text"
                             name="middle_quantity"
-                            maxlength="2"
+                            maxlength="3"
                             placeholder="<fmt:message key="label.employee_quantity"/>"
                             value="0"
                             pattern="[\d]+"
@@ -93,7 +93,7 @@
                         ><input
                             type="text"
                             name="junior_quantity"
-                            maxlength="2"
+                            maxlength="3"
                             placeholder="<fmt:message key="label.employee_quantity"/>"
                             value="0"
                             pattern="[\d]+"

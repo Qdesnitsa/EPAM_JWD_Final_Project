@@ -158,7 +158,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public synchronized boolean add(User user, String password) throws DAOException {
+    public boolean add(User user, String password) throws DAOException {
         boolean isAdded;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_ADD_EMPLOYEE)) {

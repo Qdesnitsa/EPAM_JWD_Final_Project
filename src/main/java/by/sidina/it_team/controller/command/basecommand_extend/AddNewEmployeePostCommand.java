@@ -39,10 +39,18 @@ public class AddNewEmployeePostCommand extends BaseCommand {
         String password = request.getParameter("password");
         String name = request.getParameter("name");
         String surname = request.getParameter("surname");
-        int status = Integer.parseInt(request.getParameter("employee_status"));
-        int role = Integer.parseInt(request.getParameter("employee_role"));
-        int position = Integer.parseInt(request.getParameter("employee_position"));
-        int level = Integer.parseInt(request.getParameter("employee_level"));
+        int status = 0;
+        int role = 0;
+        int position = 0;
+        int level = 0;
+        try {
+            status = Integer.parseInt(request.getParameter("employee_status"));
+            role = Integer.parseInt(request.getParameter("employee_role"));
+            position = Integer.parseInt(request.getParameter("employee_position"));
+            level = Integer.parseInt(request.getParameter("employee_level"));
+        } catch (NumberFormatException e) {
+            return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+        }
         User userEmployee = new User(name, surname, role, email, status);
         UserDAOImpl userDaoImpl = new UserDAOImpl();
         Optional<User> existingUser = userDaoImpl.findUserByEmail(userEmployee.getEmail());

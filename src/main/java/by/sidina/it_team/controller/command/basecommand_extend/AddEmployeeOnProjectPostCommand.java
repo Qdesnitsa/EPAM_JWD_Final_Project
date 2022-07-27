@@ -38,7 +38,7 @@ public class AddEmployeeOnProjectPostCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.PROJECT_ID).isEmpty()) {
+        if (request.getParameter(ParameterName.PROJECT_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
             int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));

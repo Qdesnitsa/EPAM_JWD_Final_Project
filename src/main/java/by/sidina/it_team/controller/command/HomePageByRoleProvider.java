@@ -23,13 +23,25 @@ public class HomePageByRoleProvider {
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
         if(user.getRole_id() ==  Role.ADMIN.getId()) {
             List<ProjectDto> projects = null;
+            int countProjects;
+            String pageSizeString = (String) request.getSession().getAttribute("page_size");
+            String pageNumberString = (String) request.getSession().getAttribute("page_number");
+            int pageSize = null == pageSizeString ? 5 : Integer.parseInt(pageSizeString);
+            int pageNumber = null == pageNumberString ? 1 : Integer.parseInt(pageNumberString);
+
             try {
-                projects = projectDAO.findAllForAdmin();
+                int offset = pageSize * pageNumber - pageSize;
+                projects = projectDAO.findAllForAdmin(pageSize, offset);
+                countProjects = projectDAO.countAllForAdmin();
             } catch (DAOException e) {
                 throw new RuntimeException(e);
             }
+            int pageNumbers = (int)Math.ceil(countProjects/pageSize+0.5);
+            request.setAttribute("page_numbers", pageNumbers);
+            request.setAttribute("page_number", pageNumber);
+            request.setAttribute("page_size", pageSize);
             request.setAttribute(AttributeName.PROJECTS, projects);
-            request.setAttribute(AttributeName.CURRENT_DATE,currentDate);
+            request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
             return JSPPagePath.ADMIN_ALL_PROJECTS;
         } else if (user.getRole_id() == Role.EMPLOYEE.getId()) {
             List<ProjectDto> projects = null;

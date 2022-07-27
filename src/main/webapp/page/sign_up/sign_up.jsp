@@ -78,7 +78,7 @@
                                 ${error}
                         </div>
                     </c:if>
-                    <input type="hidden" name="command" value="sign_up">
+                    <input type="hidden" name="command" value="sign_up_post">
                     <button type="submit" id="submit" class="login_btn">
                         <fmt:message key="label.sign_up"/>
                     </button>

@@ -42,6 +42,10 @@ public class NewProjectPostCommand extends BaseCommand {
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
         String projectName = request.getParameter(ParameterName.PROJECT_NAME);
+        if (request.getParameter(ParameterName.START_DATE) == null
+                && request.getParameter(ParameterName.END_DATE) == null) {
+            return HomePageByRoleProvider.getProjectsPageForUser(user, request);
+        }
         Date startDate = Date.valueOf(request.getParameter(ParameterName.START_DATE));
         Date endDate = Date.valueOf(request.getParameter(ParameterName.END_DATE));
         if (startDate.compareTo(endDate) <= 0) {

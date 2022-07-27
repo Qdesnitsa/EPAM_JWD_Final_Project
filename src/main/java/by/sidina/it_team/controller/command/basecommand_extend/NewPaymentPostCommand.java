@@ -42,10 +42,10 @@ public class NewPaymentPostCommand extends BaseCommand {
         User user = (User)request.getSession().getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
-        if (projectId == 0) {
+        if (request.getParameter(ParameterName.PROJECT_ID).isEmpty()) {
             return JSPPagePath.CUSTOMER_PROJECTS;
         } else {
+            int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             List<ProjectDto> projects = projectDAO.findAllByCustomerID(user.getId());

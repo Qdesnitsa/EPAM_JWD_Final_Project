@@ -34,7 +34,10 @@ public class ProjectDAOImpl implements ProjectDAO {
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
             GROUP BY id
             ORDER BY length(project_status), start_date
+            LIMIT ? OFFSET ?
             """;
+    private static final String SQL_COUNT_ALL_PROJECTS
+            = "SELECT count(*) AS count FROM projects";
     private static final String SQL_FIND_PROJECTS_BY_CUSTOMER_ID
             = """
             SELECT projects.id as id,
@@ -109,11 +112,13 @@ public class ProjectDAOImpl implements ProjectDAO {
 
 
     @Override
-    public List<ProjectDto> findAllForAdmin() throws DAOException {
+    public List<ProjectDto> findAllForAdmin(int limit, int offset) throws DAOException {
         List<ProjectDto> projects = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_PROJECTS)) {
+            statement.setInt(1, limit);
+            statement.setInt(2, offset);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 projects.add(retrieve(resultSet));
@@ -128,6 +133,28 @@ public class ProjectDAOImpl implements ProjectDAO {
             }
         }
         return projects;
+    }
+
+    @Override
+    public int countAllForAdmin() throws DAOException {
+        int countProjects = 0;
+        ResultSet resultSet = null;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_COUNT_ALL_PROJECTS)) {
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                countProjects = resultSet.getInt("count");
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Failed attempt to count all projects in the database", e);
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                throw new DAOException("Failed attempt to close resultSet", e);
+            }
+        }
+        return countProjects;
     }
 
     @Override

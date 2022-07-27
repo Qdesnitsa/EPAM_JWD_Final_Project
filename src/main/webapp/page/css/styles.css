@@ -190,8 +190,41 @@ tbody tr:nth-child(even) {
     margin-bottom: 20px;
 }
 
-
 .post_hours:hover, .show:hover, .change:hover, .new:hover, .lang_btn:hover, .signout_btn:hover {
     background: white;
 }
+
+.paginator_active {
+    width: auto;
+    margin-top: 20px;
+    display: inline-flex;
+    margin-left: 40%;
+    background-color: rgb(210, 229, 233);
+    border-radius: 5px;
+    font-weight: normal;
+}
+
+.paginator {
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border-color: rgb(121, 127, 132);
+    font-weight: normal;
+}
+
+.paginator:hover, .paginator:focus {
+    margin-right: 7px;
+    text-align: center;
+    width: 28px;
+    height: 28px;
+    color: black;
+    background-color: white;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+
+
 

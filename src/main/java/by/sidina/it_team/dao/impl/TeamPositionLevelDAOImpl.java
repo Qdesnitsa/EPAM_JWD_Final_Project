@@ -66,11 +66,12 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
         boolean isAdded = false;
         Connection connection = null;
         PreparedStatement statement = null;
+        ConnectionPool connectionPool = null;
         try {
-            connection = ConnectionPool.getInstance().takeConnection();
-
+            connectionPool = ConnectionPool.getInstance();
+            connection = connectionPool.takeConnection();
             connection.setAutoCommit(false);
-
+            //connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             userDAO.add(user, password);
             Optional<User> userOptional = userDAO.findUserByEmail(user.getEmail());
             statement = connection.prepareStatement(SQL_ADD_POSITION_LEVEL);
@@ -83,9 +84,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             } else {
                 isAdded = false;
             }
-
             connection.commit();
-
         } catch (SQLException e) {
             try {
                 connection.rollback();
@@ -94,7 +93,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             }
             throw new DAOException("Failed attempt to add user and employee in 2 schemas to the database", e);
         } finally {
-            ConnectionPool.getInstance().closeConnection(connection, statement);
+            connectionPool.closeConnection(connection, statement);
         }
         return isAdded;
     }

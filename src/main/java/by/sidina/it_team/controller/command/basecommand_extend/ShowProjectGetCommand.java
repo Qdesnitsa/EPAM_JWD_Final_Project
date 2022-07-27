@@ -2,6 +2,7 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -32,7 +33,7 @@ public class ShowProjectGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if ("" == request.getParameter("project_id") || "0".equals(request.getParameter("project_id"))) {
+        if (request.getParameter(ParameterName.PROJECT_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
             int projectId = Integer.parseInt(request.getParameter("project_id"));

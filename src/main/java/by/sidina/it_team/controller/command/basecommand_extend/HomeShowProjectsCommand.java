@@ -2,6 +2,7 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.controller.command.HomePageByRoleProvider;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -25,6 +26,8 @@ public class HomeShowProjectsCommand extends BaseCommand {
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         HttpSession session = request.getSession();
         User user = (User)session.getAttribute(AttributeName.USER);
+        session.setAttribute("page_size",request.getParameter("page_size"));
+        session.setAttribute("page_number",request.getParameter("page_number"));
         return HomePageByRoleProvider.getProjectsPageForUser(user, request);
     }
 

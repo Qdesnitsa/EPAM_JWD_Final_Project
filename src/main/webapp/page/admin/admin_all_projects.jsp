@@ -12,37 +12,62 @@
         <t:admin-actions/>
     </jsp:attribute>
     <jsp:body>
-            <table class="table" align="center">
-                <caption>
-                    <h2><fmt:message key="label.all_projects"/></h2>
-                </caption>
+
+        <table class="table" align="center">
+            <caption>
+                <h2><fmt:message key="label.all_projects"/></h2>
+            </caption>
+            <tr>
+                <th><fmt:message key="label.customer_id"/></th>
+                <th><fmt:message key="label.project_id"/></th>
+                <th><fmt:message key="label.project_name"/></th>
+                <th><fmt:message key="label.project_status"/></th>
+                <th><fmt:message key="label.project_start_date"/></th>
+                <th><fmt:message key="label.project_end_date"/></th>
+                <th><fmt:message key="label.project_hours_plan"/></th>
+                <th><fmt:message key="label.project_hours_fact"/></th>
+                <th><fmt:message key="label.project_cost_plan"/></th>
+                <th><fmt:message key="label.project_amount_paid"/></th>
+            </tr>
+            <c:forEach var="project" items="${projects}">
                 <tr>
-                    <th><fmt:message key="label.customer_id"/></th>
-                    <th><fmt:message key="label.project_id"/></th>
-                    <th><fmt:message key="label.project_name"/></th>
-                    <th><fmt:message key="label.project_status"/></th>
-                    <th><fmt:message key="label.project_start_date"/></th>
-                    <th><fmt:message key="label.project_end_date"/></th>
-                    <th><fmt:message key="label.project_hours_plan"/></th>
-                    <th><fmt:message key="label.project_hours_fact"/></th>
-                    <th><fmt:message key="label.project_cost_plan"/></th>
-                    <th><fmt:message key="label.project_amount_paid"/></th>
+                    <td>${project.customerId}</td>
+                    <td>${project.id}</td>
+                    <td>${project.name}</td>
+                    <td>${project.status}</td>
+                    <td>${project.startDate}</td>
+                    <td>${project.endDate}</td>
+                    <td>${project.hoursPlan}</td>
+                    <td>${project.hoursFact}</td>
+                    <td>${project.costPlan}</td>
+                    <td>${project.amount}</td>
                 </tr>
-                <c:forEach var="project" items="${projects}">
-                    <tr>
-                        <td>${project.customerId}</td>
-                        <td>${project.id}</td>
-                        <td>${project.name}</td>
-                        <td>${project.status}</td>
-                        <td>${project.startDate}</td>
-                        <td>${project.endDate}</td>
-                        <td>${project.hoursPlan}</td>
-                        <td>${project.hoursFact}</td>
-                        <td>${project.costPlan}</td>
-                        <td>${project.amount}</td>
-                    </tr>
-                </c:forEach>
+            </c:forEach>
+        </table>
+
+        <div class="paginator_active">
+            <table border="1" cellpadding="5" cellspacing="5">
+                <tr>
+                    <c:forEach begin="1" end="${page_numbers}" var="i">
+                        <c:choose>
+                            <c:when test="${page_number eq i}">
+                                <td>${i}</td>
+                            </c:when>
+                            <c:otherwise>
+                                <td>
+                                    <form action="controller" method="POST">
+                                        <input type="hidden" name="command" value="show_projects">
+                                        <input type="hidden" name="page_number" value="${i}">
+                                        <button type="submit">${i}</button>
+                                    </form>
+                                </td>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:forEach>
+                </tr>
             </table>
-            <div class="clear"></div>
+        </div>
+
+        <div class="clear"></div>
     </jsp:body>
 </t:layout>

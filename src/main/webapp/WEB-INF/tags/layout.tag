@@ -24,17 +24,18 @@
                     <th class="lang">
                         <form action="controller" method="POST">
                             <button class="lang_btn" type="submit" name="language"
-                                    value="ru_RU">RU
+                                    value="en_US">ENG
                             </button>
                             <button class="lang_btn" type="submit" name="language"
-                                    value="en_US">ENG
+                                    value="ru_RU">RU
                             </button>
                             <input type="hidden" name="command" value="select_locale">
                         </form>
                     </th>
                     <th class="sign_out_btn" width="33.33%">
                         <form action="controller" method="POST">
-                            <button type="submit" id="sign_out" class="signout_btn" name="command" value="sign_out_post">
+                            <button type="submit" id="sign_out" class="signout_btn" name="command"
+                                    value="sign_out_post">
                                 <fmt:message key="label.sign_out"/>
                             </button>
                         </form>

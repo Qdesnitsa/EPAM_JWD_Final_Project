@@ -2,8 +2,6 @@
 <fmt:setLocale value="${locale}" scope="session"/>
 <fmt:setBundle basename="pagecontent"/>
 <form action="controller" method="POST">
-    <input type="text" style="display: none" name="page" value="${page}">
-    <input type="text" style="display: none" name="page_size" value="${page_size}">
     <button type="submit" class="show" name="command" value="show_projects">
         <fmt:message key="label.show_all_projects"/>
     </button>
