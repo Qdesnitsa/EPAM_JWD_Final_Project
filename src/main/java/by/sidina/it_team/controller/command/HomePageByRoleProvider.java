@@ -21,18 +21,18 @@ public class HomePageByRoleProvider {
         ProjectDAO projectDAO = new ProjectDAOImpl();
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
+        String projectStatusString = (String) request.getAttribute("project_status");
+        int projectStatus = null == projectStatusString ? 1 : Integer.parseInt(projectStatusString);
+        int pageSize = 5;
+        String pageNumberString = (String) request.getAttribute("page_number");
+        int pageNumber = null == pageNumberString ? 1 : Integer.parseInt(pageNumberString);
         if(user.getRole_id() ==  Role.ADMIN.getId()) {
             List<ProjectDto> projects = null;
             int countProjects;
-            String pageSizeString = (String) request.getSession().getAttribute("page_size");
-            String pageNumberString = (String) request.getSession().getAttribute("page_number");
-            int pageSize = null == pageSizeString ? 5 : Integer.parseInt(pageSizeString);
-            int pageNumber = null == pageNumberString ? 1 : Integer.parseInt(pageNumberString);
-
             try {
                 int offset = pageSize * pageNumber - pageSize;
-                projects = projectDAO.findAllForAdmin(pageSize, offset);
-                countProjects = projectDAO.countAllForAdmin();
+                projects = projectDAO.findAllForAdmin(pageSize, offset,projectStatus);
+                countProjects = projectDAO.countAllProjectsForAdmin(projectStatus);
             } catch (DAOException e) {
                 throw new RuntimeException(e);
             }

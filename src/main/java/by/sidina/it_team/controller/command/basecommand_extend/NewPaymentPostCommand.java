@@ -28,11 +28,8 @@ public class NewPaymentPostCommand extends BaseCommand {
     private final String MSG_WRONG_PROJECT_ID = "There is no such project ID in your account.";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
-        int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
-        boolean isNewProjectFormRequested = projectId != 0;
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
-        return (user != null && user.getRole_id() == Role.CUSTOMER.getId())
-                || !isNewProjectFormRequested;
+        return (user != null && user.getRole_id() == Role.CUSTOMER.getId());
     }
 
     @Override
@@ -42,11 +39,15 @@ public class NewPaymentPostCommand extends BaseCommand {
         User user = (User)request.getSession().getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.PROJECT_ID).isEmpty()) {
+        ProjectDAO projectDAO = null;
+        if (request.getParameter(ParameterName.PROJECT_ID) == null) {
+            projectDAO = new ProjectDAOImpl();
+            List<ProjectDto> projects = projectDAO.findAllByCustomerID(user.getId());
+            request.setAttribute(AttributeName.PROJECTS, projects);
             return JSPPagePath.CUSTOMER_PROJECTS;
         } else {
             int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
-            ProjectDAO projectDAO = new ProjectDAOImpl();
+            projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             List<ProjectDto> projects = projectDAO.findAllByCustomerID(user.getId());
             boolean hasCustomerThisProject = projects
@@ -57,7 +58,9 @@ public class NewPaymentPostCommand extends BaseCommand {
                     .isPresent();
             if (hasCustomerThisProject) {
                 PaymentDAO payment = new PaymentDAOImpl();
-                double amount = Double.parseDouble(request.getParameter("payment"));
+                double amount = request.getParameter("payment").isEmpty()
+                        ? 0
+                        : Double.parseDouble(request.getParameter("payment"));
                 boolean isAdded = payment.addPaymentByProjectAndCustomerID(project.get(), amount, Date.valueOf(currentDate));
                 if (isAdded) {
                     request.setAttribute("message", MSG_SUCCESS);

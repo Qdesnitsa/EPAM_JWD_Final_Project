@@ -1,9 +1,9 @@
 body {
     margin-top: 0;
-    margin: 2px;
+    margin: 0px;
     background-color:  midnightblue;
-    /*font-family: "Lobster", cursive;*/
     color: darkslategrey;
+    background-color: rgb(210, 229, 233);
 }
 
 h1 {
@@ -30,7 +30,7 @@ div img {
     text-align: center;
     width: 13em;
     background-color:midnightblue;
-    height: 88vh;
+    height: 50vh;
 }
 
 .header {
@@ -50,19 +50,19 @@ div img {
     background-color: rgb(210, 229, 233);
     margin-bottom: 0.2em;
     padding-top: 5px;
-    padding-left: 10px;
+    padding-left: 13em;
     padding-right: 10px;
     /*overflow: hidden;*/
-
 }
 
 .footer {
-    color: cadetblue;
+    color: midnightblue;
+    bottom: 0px;
     padding-left: 10px;
     padding-right: 10px;
-    position:absolute;
-    background-color:midnightblue;
-    width: 100%;
+    position:fixed;
+    background-color: rgb(210, 229, 233);
+    margin-top: 99.99%;
 }
 
 .greeting {
@@ -112,7 +112,7 @@ div img {
 
 .table {
     table-layout: fixed;
-    width: 80%;
+    width: 95%;
     border-collapse: collapse;
     border: 3px solid rgb(121, 127, 132);
     text-align: center;
@@ -137,12 +137,25 @@ tbody tr:nth-child(even) {
     color: rgb(210, 229, 233);
     font-weight: 700;
     background-color: midnightblue;
-    font-size: medium;
+    font-size: 13.5px;
     border-radius: 10px;
-    margin-bottom: 20px;
-    margin-top: 10px;
-    height: 40px;
-    width: 180px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    height: 30px;
+    width: 190px;
+}
+
+.submit_small {
+    justify-content: center;
+    color: rgb(210, 229, 233);
+    font-weight: 700;
+    background-color: midnightblue;
+    font-size: 13.5px;
+    border-radius: 10px;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    height: 30px;
+    width: 110px;
 }
 
 .big_button {
@@ -194,13 +207,10 @@ tbody tr:nth-child(even) {
     background: white;
 }
 
-.paginator_active {
-    width: auto;
+.paginator_block {
     margin-top: 20px;
     display: inline-flex;
     margin-left: 40%;
-    background-color: rgb(210, 229, 233);
-    border-radius: 5px;
     font-weight: normal;
 }
 
@@ -214,16 +224,20 @@ tbody tr:nth-child(even) {
     font-weight: normal;
 }
 
-.paginator:hover, .paginator:focus {
-    margin-right: 7px;
-    text-align: center;
-    width: 28px;
-    height: 28px;
-    color: black;
+.paginator_active {
     background-color: white;
+    font-size: 15px;
+    margin-top: -15px;
+    text-align: center;
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
     border-radius: 5px;
-    font-weight: bold;
+    border-color: rgb(121, 127, 132);
+    font-weight:bold;
 }
+
+
 
 
 

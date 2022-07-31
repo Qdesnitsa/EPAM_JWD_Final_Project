@@ -38,6 +38,7 @@ public class PostHoursGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
+        session.setAttribute("project_id", request.getParameter("project_id"));
         return JSPPagePath.EMPLOYEE_EDIT_HOURS;
     }
 

@@ -2,6 +2,7 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.controller.command.HomePageByRoleProvider;
 import by.sidina.it_team.dao.dto.EmployeeDto;
@@ -25,6 +26,7 @@ import java.util.Optional;
 public class EditEmployeeGetCommand extends BaseCommand {
     private final String MSG_SUCCESS = "Successfully";
     private final String MSG_FAIL = "Operation failed";
+    private static final String NO_SUCH_EMPLOYEE_ID = "Employee with this ID does not exist.";
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -40,6 +42,20 @@ public class EditEmployeeGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
+        session.setAttribute("employee_id", request.getParameter("employee_id"));
+        if (request.getParameter(ParameterName.EMPLOYEE_ID) == null) {
+            return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+        } else {
+            int employeeId = Integer.parseInt(request.getParameter("employee_id"));
+            TeamPositionLevelDAO teamPositionLevelDAO = new TeamPositionLevelDAOImpl();
+            Optional<EmployeeDto> employee = teamPositionLevelDAO.findByID(employeeId);
+            if (employee.isPresent()) {
+                session.setAttribute(AttributeName.EMPLOYEE, employee.get());
+                return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+            } else {
+                request.setAttribute("message", NO_SUCH_EMPLOYEE_ID);
+            }
+        }
         return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
     }
 

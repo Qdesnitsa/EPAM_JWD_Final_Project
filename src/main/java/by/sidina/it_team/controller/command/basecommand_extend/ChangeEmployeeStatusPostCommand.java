@@ -38,15 +38,16 @@ public class ChangeEmployeeStatusPostCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.EMPLOYEE_ID) == null ||
-                request.getParameter(ParameterName.EMPLOYEE_ID) == "") {
+        if (session.getAttribute(ParameterName.EMPLOYEE_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
         } else {
-            int employeeId = Integer.parseInt(request.getParameter("employee_id"));
+            int employeeId = Integer.parseInt(String.valueOf(session.getAttribute("employee_id")));
             TeamPositionLevelDAO teamPositionLevelDAO = new TeamPositionLevelDAOImpl();
             Optional<EmployeeDto> employee = teamPositionLevelDAO.findByID(employeeId);
             if (employee.isPresent()) {
-                int status = Integer.parseInt(request.getParameter("change_employee_status"));
+                int status = null == request.getParameter("change_employee_status")
+                        ? employee.get().getStatusId()
+                        : Integer.parseInt(request.getParameter("change_employee_status"));
                 UserDAO userDAO = new UserDAOImpl();
                 boolean isChanged = userDAO.changeStatus(employeeId, status);
                 if (isChanged) {

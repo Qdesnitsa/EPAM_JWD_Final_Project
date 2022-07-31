@@ -13,15 +13,18 @@ public class EmployeeDto {
     private Role role;
     private String email;
     private UserStatus status;
+    private int statusId;
     private String position;
+    private int positionId;
     private Level level;
+    private int levelId;
     private double rate;
     private double hours;
 
     private EmployeeDto() {}
 
     public EmployeeDto(String name, String surname, Role role, String email, UserStatus status, String position,
-                       Level level, double rate, double hours) {
+                       Level level, double rate, double hours, int positionId, int levelId, int statusId) {
         this.name = name;
         this.surname = surname;
         this.role = role;
@@ -31,6 +34,9 @@ public class EmployeeDto {
         this.level = level;
         this.rate = rate;
         this.hours = hours;
+        this.positionId = positionId;
+        this.levelId = levelId;
+        this.statusId = statusId;
     }
 
     public int getId() {
@@ -56,13 +62,20 @@ public class EmployeeDto {
     public UserStatus getStatus() {
         return status;
     }
+    public int getStatusId() { return statusId; }
 
     public String getPosition() {
         return position;
     }
+    public int getPositionId() {
+        return positionId;
+    }
 
     public Level getLevel() {
         return level;
+    }
+    public int getLevelId() {
+        return levelId;
     }
 
     public double getHours() {
@@ -78,15 +91,16 @@ public class EmployeeDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         EmployeeDto that = (EmployeeDto) o;
-        return id == that.id && Double.compare(that.rate, rate) == 0 && Double.compare(that.hours, hours) == 0 &&
-                Objects.equals(name, that.name) && Objects.equals(surname, that.surname) && role == that.role &&
-                Objects.equals(email, that.email) && status == that.status && Objects.equals(position, that.position) &&
-                level == that.level;
+        return id == that.id && statusId == that.statusId && positionId == that.positionId &&
+                levelId == that.levelId && Double.compare(that.rate, rate) == 0 &&
+                Double.compare(that.hours, hours) == 0 && Objects.equals(name, that.name) &&
+                Objects.equals(surname, that.surname) && role == that.role && Objects.equals(email, that.email) &&
+                status == that.status && Objects.equals(position, that.position) && level == that.level;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, surname, role, email, status, position, level, rate, hours);
+        return Objects.hash(id, name, surname, role, email, status, statusId, position, positionId, level, levelId, rate, hours);
     }
 
     @Override
@@ -98,10 +112,14 @@ public class EmployeeDto {
                 ", role=" + role +
                 ", email='" + email + '\'' +
                 ", status=" + status +
+                ", statusId=" + statusId +
                 ", position='" + position + '\'' +
+                ", positionId=" + positionId +
                 ", level=" + level +
+                ", levelId=" + levelId +
                 ", rate=" + rate +
-                "; ";
+                ", hours=" + hours +
+                " ;";
     }
 
     public static class Builder {
@@ -113,6 +131,21 @@ public class EmployeeDto {
 
         public EmployeeDto.Builder setId(int id) {
             this.employeeDto.id = id;
+            return this;
+        }
+
+        public EmployeeDto.Builder setPositionId(int positionId) {
+            this.employeeDto.positionId = positionId;
+            return this;
+        }
+
+        public EmployeeDto.Builder setLevelId(int levelId) {
+            this.employeeDto.levelId = levelId;
+            return this;
+        }
+
+        public EmployeeDto.Builder setStatusId(int statusId) {
+            this.employeeDto.statusId = statusId;
             return this;
         }
 

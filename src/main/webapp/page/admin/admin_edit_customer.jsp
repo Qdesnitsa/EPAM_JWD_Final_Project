@@ -16,24 +16,6 @@
         <table class="table" align="center">
             <caption>
                 <h2><fmt:message key="label.customer_edition"/></h2>
-                <fieldset>
-                    <legend><fmt:message key="label.fill_customer_id"/></legend>
-                    <table>
-                        <tr>
-                            <th width="33%">
-                                <fmt:message key="label.customer_id"/><br/>
-                                <input
-                                        type="text"
-                                        name="customer_id"
-                                        class="project_id"
-                                        placeholder="<fmt:message key="label.customer_id"/>"
-                                        pattern="[\d]+"
-                                />
-                                <br/>
-                            </th>
-                        </tr>
-                    </table>
-                </fieldset>
             </caption>
             <tr>
                 <th><fmt:message key="label.customer_id"/></th>
@@ -50,12 +32,8 @@
                 <td>${customer.status}</td>
             </tr>
         </table>
-        <div align="center">
-            <button type="submit" class="submit" name="command" value="show_customer_get"><fmt:message key="label.show"/></button>
-        </div>
-
         <table class="table" align="center">
-            <caption>
+            <caption><br>
                 <h2><fmt:message key="label.customer_data_edition"/></h2>
             </caption>
             <tr>

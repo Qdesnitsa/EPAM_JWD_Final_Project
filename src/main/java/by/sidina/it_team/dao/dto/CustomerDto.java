@@ -12,54 +12,41 @@ public class CustomerDto {
     private String surname;
     private String email;
     private UserStatus status;
+    private int statusId;
 
-    private CustomerDto() {}
+    private CustomerDto() {
+    }
 
-    public CustomerDto(String name, String surname, String email, UserStatus status) {
+    public CustomerDto(String name, String surname, String email, UserStatus status, int statusId) {
         this.name = name;
         this.surname = surname;
         this.email = email;
         this.status = status;
+        this.statusId = statusId;
     }
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getSurname() {
         return surname;
     }
 
-    public void setSurname(String surname) {
-        this.surname = surname;
-    }
-
     public String getEmail() {
         return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public UserStatus getStatus() {
         return status;
     }
 
-    public void setStatus(UserStatus status) {
-        this.status = status;
+    public int getStatusId() {
+        return statusId;
     }
 
     @Override
@@ -67,13 +54,13 @@ public class CustomerDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CustomerDto that = (CustomerDto) o;
-        return id == that.id && Objects.equals(name, that.name) && Objects.equals(surname, that.surname) &&
-                Objects.equals(email, that.email) && Objects.equals(status, that.status);
+        return id == that.id && statusId == that.statusId && Objects.equals(name, that.name) &&
+                Objects.equals(surname, that.surname) && Objects.equals(email, that.email) && status == that.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, surname, email, status);
+        return Objects.hash(id, name, surname, email, status, statusId);
     }
 
     @Override
@@ -83,8 +70,9 @@ public class CustomerDto {
                 ", name='" + name + '\'' +
                 ", surname='" + surname + '\'' +
                 ", email='" + email + '\'' +
-                ", status='" + status + '\'' +
-                "; ";
+                ", status=" + status +
+                ", statusId=" + statusId +
+                " ;";
     }
 
     public static class Builder {
@@ -96,6 +84,11 @@ public class CustomerDto {
 
         public CustomerDto.Builder setId(int id) {
             this.customerDto.id = id;
+            return this;
+        }
+
+        public CustomerDto.Builder setStatusId(int statusId) {
+            this.customerDto.statusId = statusId;
             return this;
         }
 

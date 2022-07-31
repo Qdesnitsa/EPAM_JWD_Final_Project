@@ -7,6 +7,7 @@ public class AttributeName {
     public static final String PROJECTS = "projects";
     public static final String PROJECT = "project";
     public static final String EMPLOYEES = "employees";
+    public static final String FREE_EMPLOYEES = "free_employees";
     public static final String CUSTOMERS = "customers";
     public static final String CUSTOMER = "customer";
     public static final String EMPLOYEE = "employee";

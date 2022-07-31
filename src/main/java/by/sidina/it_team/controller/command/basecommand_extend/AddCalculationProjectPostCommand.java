@@ -2,11 +2,12 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
+import by.sidina.it_team.dao.impl.ProjectCalculationDAOImpl;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
+import by.sidina.it_team.dao.repository.ProjectCalculationDAO;
 import by.sidina.it_team.dao.repository.ProjectDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
@@ -17,7 +18,7 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class ChangeProjectStatusPostCommand extends BaseCommand {
+public class AddCalculationProjectPostCommand extends BaseCommand {
     private final String MSG_SUCCESS = "Successfully";
     private final String MSG_FAIL = "Operation failed";
     private static final String NO_SUCH_PROJECT_ID = "Project with this ID does not exist.";
@@ -43,13 +44,10 @@ public class ChangeProjectStatusPostCommand extends BaseCommand {
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             if (project.isPresent()) {
-                String projectStatusString =
-                        (null == request.getParameter("project_status") || "".equals(request.getParameter("project_status")))
-                                ? String.valueOf(project.get().getStatus())
-                                : request.getParameter("project_status");
-                int status = Integer.parseInt(projectStatusString);
-                boolean isChanged = projectDAO.changeStatus(projectId, status);
-                if (isChanged) {
+                ProjectCalculationDAO projectCalculation = new ProjectCalculationDAOImpl();
+                boolean isAdded = projectCalculation.add(projectId);
+                boolean isChanged = projectDAO.changeStatus(projectId, 2);
+                if (isAdded) {
                     request.setAttribute("message", MSG_SUCCESS);
                     project = projectDAO.findByID(projectId);
                     request.setAttribute(AttributeName.PROJECT, project.get());

@@ -37,14 +37,18 @@ public class ChangeProjectEndDatePostCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.PROJECT_ID).isEmpty()) {
+        if (session.getAttribute("project_id") == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            int projectId = Integer.parseInt(request.getParameter("project_id"));
+            int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             if (project.isPresent()) {
-                Date endDate = Date.valueOf(request.getParameter("end_date"));
+                String endDateString =
+                        (null == request.getParameter("end_date") || "".equals(request.getParameter("end_date")))
+                        ? String.valueOf(project.get().getEndDate())
+                        : request.getParameter("end_date");
+                Date endDate = Date.valueOf(endDateString);
                 boolean isChanged = projectDAO.changeEndDate(projectId, endDate);
                 if (isChanged) {
                     request.setAttribute("message", MSG_SUCCESS);

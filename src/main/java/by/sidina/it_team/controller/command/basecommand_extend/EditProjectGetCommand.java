@@ -2,8 +2,12 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
+import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
+import by.sidina.it_team.dao.impl.ProjectDAOImpl;
+import by.sidina.it_team.dao.repository.ProjectDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
 
@@ -11,8 +15,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
+import java.util.Optional;
 
 public class EditProjectGetCommand extends BaseCommand {
+    private static final String NO_SUCH_PROJECT_ID = "Project with this ID does not exist.";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -27,7 +33,22 @@ public class EditProjectGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        return JSPPagePath.ADMIN_EDIT_PROJECT;
+        session.setAttribute("project_id",request.getParameter("project_id"));
+        if (request.getParameter(ParameterName.PROJECT_ID) == null) {
+            return JSPPagePath.ADMIN_EDIT_PROJECT;
+        } else {
+            int projectId = Integer.parseInt(request.getParameter("project_id"));
+            ProjectDAO projectDAO = new ProjectDAOImpl();
+            Optional<ProjectDto> project = projectDAO.findByID(projectId);
+            if (project.isPresent()) {
+                request.setAttribute(AttributeName.PROJECT, project.get());
+                return JSPPagePath.ADMIN_EDIT_PROJECT;
+            } else {
+                request.setAttribute("message", NO_SUCH_PROJECT_ID);
+                return JSPPagePath.ADMIN_EDIT_PROJECT;
+            }
+        }
+        //return JSPPagePath.ADMIN_EDIT_PROJECT;
     }
 
 

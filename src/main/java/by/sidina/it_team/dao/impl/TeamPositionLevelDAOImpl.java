@@ -24,8 +24,11 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
                 roles.role_types AS role,
                 users.email AS email,
                 status_user.status AS status,
+                status_user.id AS status_id,
                 levels.level AS level,
-                positions.position AS position
+                levels.id AS level_id,
+                positions.position AS position,
+                positions.id AS position_id
             FROM team_position_level
                 LEFT JOIN users ON users.id=team_position_level.employee_id
                 LEFT JOIN roles ON roles.id=users.role_id
@@ -33,9 +36,13 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
                 LEFT JOIN levels ON levels.id=team_position_level.employee_level_id
                 Left JOIN positions ON positions.id=team_position_level.employee_position_id
             ORDER BY surname, name
+            LIMIT ? OFFSET ?
             """;
     private static final String SQL_ADD_POSITION_LEVEL
             = "INSERT INTO team_position_level (employee_id, employee_position_id, employee_level_id) values(?,?,?)";
+
+    private static final String SQL_COUNT_ALL_EMPLOYEES
+            = "SELECT count(*) AS count FROM team_position_level";
     private static final String SQL_FIND_EMPLOYEE_BY_ID
             = """
             SELECT team_position_level.employee_id AS id,
@@ -44,8 +51,11 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
                 roles.role_types AS role,
                 users.email AS email,
                 status_user.status AS status,
+                status_user.id AS status_id,
                 levels.level AS level,
-                positions.position AS position
+                levels.id AS level_id,
+                positions.position AS position,
+                positions.id AS position_id
             FROM team_position_level
                 LEFT JOIN users ON users.id=team_position_level.employee_id
                 LEFT JOIN roles ON roles.id=users.role_id
@@ -71,7 +81,6 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             connectionPool = ConnectionPool.getInstance();
             connection = connectionPool.takeConnection();
             connection.setAutoCommit(false);
-            //connection.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             userDAO.add(user, password);
             Optional<User> userOptional = userDAO.findUserByEmail(user.getEmail());
             statement = connection.prepareStatement(SQL_ADD_POSITION_LEVEL);
@@ -124,11 +133,13 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
     }
 
     @Override
-    public List<EmployeeDto> findAll() throws DAOException {
+    public List<EmployeeDto> findAllForAdmin(int limit, int offset) throws DAOException {
         List<EmployeeDto> users = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_EMPLOYEES)) {
+            statement.setInt(1, limit);
+            statement.setInt(2, offset);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 users.add(retrieveEmployee(resultSet));
@@ -143,6 +154,28 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             }
         }
         return users;
+    }
+
+    @Override
+    public int countAllEmployeesForAdmin() throws DAOException {
+        int countEmployees = 0;
+        ResultSet resultSet = null;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_COUNT_ALL_EMPLOYEES)) {
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                countEmployees = resultSet.getInt("count");
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Failed attempt to count all projects in the database", e);
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                throw new DAOException("Failed attempt to close resultSet", e);
+            }
+        }
+        return countEmployees;
     }
 
     @Override
@@ -195,8 +228,11 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
                 .setRole(Role.valueOf(resultSet.getString("role").toUpperCase()))
                 .setEmail(resultSet.getString("email"))
                 .setStatus(UserStatus.valueOf(resultSet.getString("status").toUpperCase()))
+                .setStatusId(Integer.parseInt(resultSet.getString("status_id")))
                 .setLevel(Level.valueOf(resultSet.getString("level").toUpperCase()))
+                .setLevelId(Integer.parseInt(resultSet.getString("level_id")))
                 .setPosition(String.valueOf(resultSet.getString("position")))
+                .setPositionId(Integer.parseInt(resultSet.getString("position_id")))
                 .build();
     }
 }

@@ -14,7 +14,7 @@
     <jsp:body>
         <table class="table" align="center">
             <caption>
-                <h2><fmt:message key="label.my_projects"/></h2>
+                <h2><fmt:message key="label.my_projects"/></h2><br>
             </caption>
             <tr>
                 <th><fmt:message key="label.project_id"/></th>
@@ -22,12 +22,14 @@
                 <th><fmt:message key="label.project_status"/></th>
                 <th><fmt:message key="label.project_start_date"/></th>
                 <th><fmt:message key="label.project_end_date"/></th>
-                <th><fmt:message key="label.project_hours_fact"/></th>
+                <th><fmt:message key="label.project_spent_hours"/></th>
             </tr>
             <c:forEach var="project" items="${projects}">
                 <tr>
                     <td>${project.id}</td>
-                    <td>${project.name}</td>
+                    <form action="controller" method="POST">
+                    <td><a href="/IT_Team/controller?command=post_hours_get&project_id=${project.id}">${project.name}</a></td>
+                    </form>
                     <td>${project.status}</td>
                     <td>${project.startDate}</td>
                     <td>${project.endDate}</td>

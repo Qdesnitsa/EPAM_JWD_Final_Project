@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface UserDAO {
     List<User> findAll() throws DAOException;
-    List<CustomerDto> findAllCustomers() throws DAOException;
+    List<CustomerDto> findAllCustomers(int limit, int offset) throws DAOException;
     Optional<CustomerDto> findCustomerByID(int id) throws DAOException;
     Optional<User> findByID(int id) throws DAOException;
     boolean edit(int id, User entity) throws DAOException;
@@ -18,4 +18,5 @@ public interface UserDAO {
     Optional<User> findUserByEmailAndPassword(String email, String password) throws DAOException;
     Optional<String> findPasswordByEmail(String email) throws DAOException;
     boolean changeStatus(int id, int status) throws DAOException;
+    int countAllCustomersForAdmin() throws DAOException;
 }

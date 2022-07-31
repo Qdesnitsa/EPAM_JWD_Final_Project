@@ -32,9 +32,18 @@ public class ShowEmployeesGetCommand extends BaseCommand {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-
+        int pageSize = 5;
+        String pageNumberString = request.getParameter("page_number");
+        int pageNumber = null == pageNumberString ? 1 : Integer.parseInt(pageNumberString);
         TeamPositionLevelDAO teamPositionLevelDAO = new TeamPositionLevelDAOImpl();
-        List<EmployeeDto> employees = teamPositionLevelDAO.findAll();
+        int countEmployees;
+        int offset = pageSize * pageNumber - pageSize;
+        List<EmployeeDto> employees = teamPositionLevelDAO.findAllForAdmin(pageSize, offset);
+        countEmployees = teamPositionLevelDAO.countAllEmployeesForAdmin();
+        int pageNumbers = (int)Math.ceil(countEmployees/pageSize+0.5);
+        request.setAttribute("page_numbers", pageNumbers);
+        request.setAttribute("page_number", pageNumber);
+        request.setAttribute("page_size", pageSize);
         request.setAttribute(AttributeName.EMPLOYEES, employees);
         return JSPPagePath.ADMIN_ALL_EMPLOYEES;
     }

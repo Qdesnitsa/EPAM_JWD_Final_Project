@@ -42,7 +42,7 @@ public class PostHoursPostCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        int projectId = Integer.parseInt(request.getParameter("project_id"));
+        int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
         ProjectDAO projectDAO = new ProjectDAOImpl();
         List<ProjectDto> employeeProjects = projectDAO.findAllByEmployeeID(user.getId());
         boolean hasEmployeeThisProject = employeeProjects
@@ -52,8 +52,12 @@ public class PostHoursPostCommand extends BaseCommand {
                 .findAny()
                 .isPresent();
         if (hasEmployeeThisProject) {
-            Date date = Date.valueOf(request.getParameter("date"));
-            double hours = Double.parseDouble(request.getParameter("hours"));
+            Date date = null == request.getParameter("date")
+                    ? Date.valueOf(currentDate)
+                    : Date.valueOf(request.getParameter("date"));
+            double hours = null == request.getParameter("hours")
+                    ? 0
+                    : Double.parseDouble(request.getParameter("hours"));
             TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
             boolean isAdded = teamScheduleDAO.addHoursByEmployeeId(new TeamSchedule(user.getId(), projectId, date, hours));
             if (isAdded) {

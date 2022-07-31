@@ -36,14 +36,16 @@ public class ChangeCustomerStatusPostCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.PROJECT_ID).isEmpty()) {
+        if (session.getAttribute(ParameterName.CUSTOMER_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         } else {
-            int customerId = Integer.parseInt(request.getParameter("customer_id"));
+            int customerId = Integer.parseInt(String.valueOf(session.getAttribute("customer_id")));
             UserDAO userDAO = new UserDAOImpl();
             Optional<CustomerDto> customer = userDAO.findCustomerByID(customerId);
             if (customer.isPresent()) {
-                int status = Integer.parseInt(request.getParameter("change_customer_status"));
+                int status = null == request.getParameter("change_customer_status")
+                        ? customer.get().getStatusId()
+                        : Integer.parseInt(request.getParameter("change_customer_status"));
                 boolean isChanged = userDAO.changeStatus(customerId, status);
                 if (isChanged) {
                     customer = userDAO.findCustomerByID(customerId);

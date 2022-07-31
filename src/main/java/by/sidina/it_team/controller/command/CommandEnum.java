@@ -73,6 +73,11 @@ public enum CommandEnum {
             this.command = new ShowFreeEmployeesGetCommand();
         }
     },
+    SHOW_EMPLOYEES_ON_PROJECT_GET {
+        {
+            this.command = new ShowEmployeesOnProjectGetCommand();
+        }
+    },
     SHOW_EMPLOYEE_GET {
         {
             this.command = new ShowEmployeeGetCommand();
@@ -163,14 +168,19 @@ public enum CommandEnum {
             this.command = new AddNewEmployeePostCommand();
         }
     },
-    REMOVE_EMPLOYEE_POST {
+    REMOVE_EMPLOYEES_POST {
         {
             this.command = new RemoveEmployeeFromProjectPostCommand();
         }
     },
-    CALCULATE_PROJECT_POST {
+    ADD_CALCULATION_PROJECT_POST {
         {
-            this.command = new CalculateProjectPostCommand();
+            this.command = new AddCalculationProjectPostCommand();
+        }
+    },
+    REMOVE_CALCULATION_PROJECT_POST {
+        {
+            this.command = new RemoveCalculationProjectPostCommand();
         }
     };
 

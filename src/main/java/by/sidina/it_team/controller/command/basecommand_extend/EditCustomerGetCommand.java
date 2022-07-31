@@ -2,10 +2,14 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.CustomerDto;
+import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.exception.DAOException;
+import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
 import by.sidina.it_team.dao.impl.UserDAOImpl;
+import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
 import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
@@ -19,6 +23,7 @@ import java.util.Optional;
 public class EditCustomerGetCommand extends BaseCommand {
     private final String MSG_SUCCESS = "Successfully";
     private final String MSG_FAIL = "Operation failed";
+    private static final String NO_SUCH_CUSTOMER_ID = "Customer with this ID does not exist.";
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -34,6 +39,20 @@ public class EditCustomerGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
+        session.setAttribute("customer_id", request.getParameter("customer_id"));
+        if (request.getParameter(ParameterName.CUSTOMER_ID) == null) {
+            return JSPPagePath.ADMIN_EDIT_CUSTOMER;
+        } else {
+            int customerId = Integer.parseInt(request.getParameter("customer_id"));
+            UserDAO userDAO = new UserDAOImpl();
+            Optional<CustomerDto> customer = userDAO.findCustomerByID(customerId);
+            if (customer.isPresent()) {
+                session.setAttribute(AttributeName.CUSTOMER, customer.get());
+                return JSPPagePath.ADMIN_EDIT_CUSTOMER;
+            } else {
+                request.setAttribute("message", NO_SUCH_CUSTOMER_ID);
+            }
+        }
         return JSPPagePath.ADMIN_EDIT_CUSTOMER;
     }
 

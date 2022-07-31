@@ -26,8 +26,8 @@ public class HomeShowProjectsCommand extends BaseCommand {
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         HttpSession session = request.getSession();
         User user = (User)session.getAttribute(AttributeName.USER);
-        session.setAttribute("page_size",request.getParameter("page_size"));
-        session.setAttribute("page_number",request.getParameter("page_number"));
+        request.setAttribute("page_number",request.getParameter("page_number"));
+        request.setAttribute("project_status",request.getParameter("project_status"));
         return HomePageByRoleProvider.getProjectsPageForUser(user, request);
     }
 

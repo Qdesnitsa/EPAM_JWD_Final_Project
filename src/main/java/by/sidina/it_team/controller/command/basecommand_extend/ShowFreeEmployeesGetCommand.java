@@ -24,6 +24,7 @@ import java.util.Optional;
 
 public class ShowFreeEmployeesGetCommand extends BaseCommand {
     private static final String NO_SUCH_PROJECT_ID = "Project with this ID does not exist.";
+
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -38,43 +39,35 @@ public class ShowFreeEmployeesGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.PROJECT_ID) == null) {
+        if (session.getAttribute("project_id") == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            if ("0".equals(request.getParameter("quantity"))) {
-                int projectId = Integer.parseInt(request.getParameter("project_id"));
-                ProjectDAO projectDAO = new ProjectDAOImpl();
-                Optional<ProjectDto> project = projectDAO.findByID(projectId);
-                TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
-                List<EmployeeDto> employees = teamScheduleDAO.findEmployeesOnProject(projectId);
-                if (project.isPresent()) {
-                    request.setAttribute(AttributeName.PROJECT, project.get());
-                    request.setAttribute(AttributeName.EMPLOYEES, employees);
-                    return JSPPagePath.ADMIN_EDIT_PROJECT;
-                } else {
-                    request.setAttribute("message", NO_SUCH_PROJECT_ID);
-                    return JSPPagePath.ADMIN_EDIT_PROJECT;
-                }
+            int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
+            ProjectDAO projectDAO = new ProjectDAOImpl();
+            Optional<ProjectDto> project = projectDAO.findByID(projectId);
+            TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
+            String position = request.getParameter("employee_position");
+            String levelString = request.getParameter("level");
+            levelString = null == levelString ? "junior" : levelString;
+            Level level = Level.valueOf(levelString.toUpperCase());
+            String quantityString = request.getParameter("quantity");
+            quantityString = null == quantityString ? "0" : quantityString;
+            int quantity = Integer.parseInt(quantityString);
+            List<EmployeeDto> freeEmployees = teamScheduleDAO.findFreeEmployeesForProject(projectId, position, level, quantity);
+            if (project.isPresent()) {
+                session.setAttribute("quantity", quantity);
+                session.setAttribute("employee_position", position);
+                session.setAttribute("level", level);
+                request.setAttribute(AttributeName.PROJECT, project.get());
+                request.setAttribute(AttributeName.FREE_EMPLOYEES, freeEmployees);
+                return JSPPagePath.ADMIN_EDIT_PROJECT;
             } else {
-                int projectId = Integer.parseInt(request.getParameter("project_id"));
-                ProjectDAO projectDAO = new ProjectDAOImpl();
-                Optional<ProjectDto> project = projectDAO.findByID(projectId);
-                TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
-                String position = request.getParameter("employee_position");
-                Level level = Level.valueOf(request.getParameter("level").toUpperCase());
-                int quantity = Integer.parseInt(request.getParameter("quantity"));
-                List<EmployeeDto> employees = teamScheduleDAO.findFreeEmployeesForProject(projectId, position, level, quantity);
-                if (project.isPresent()) {
-                    request.setAttribute(AttributeName.PROJECT, project.get());
-                    request.setAttribute(AttributeName.EMPLOYEES, employees);
-                    return JSPPagePath.ADMIN_EDIT_PROJECT;
-                } else {
-                    request.setAttribute("message", NO_SUCH_PROJECT_ID);
-                    return JSPPagePath.ADMIN_EDIT_PROJECT;
-                }
+                request.setAttribute("message", NO_SUCH_PROJECT_ID);
+                return JSPPagePath.ADMIN_EDIT_PROJECT;
             }
         }
     }
+
 
     @Override
     public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) {

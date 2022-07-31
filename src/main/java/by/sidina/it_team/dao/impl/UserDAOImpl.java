@@ -27,12 +27,14 @@ public class UserDAOImpl implements UserDAO {
                 users.surname AS surname, 
                 roles.role_types AS role, 
                 users.email AS email,
-                status_user.status AS status
+                status_user.status AS status,
+                status_user.id AS status_id
             FROM users
             LEFT JOIN roles ON roles.id=users.role_id
             LEFT JOIN status_user ON status_user.id=users.user_status_id
             WHERE roles.role_types="CUSTOMER"
             ORDER BY status_user.status
+            LIMIT ? OFFSET ?
             """;
     private static final String SQL_FIND_CUSTOMER_BY_ID
             = """
@@ -42,13 +44,16 @@ public class UserDAOImpl implements UserDAO {
                 users.surname AS surname, 
                 roles.role_types AS role, 
                 users.email AS email,
-                status_user.status AS status
+                status_user.status AS status,
+                status_user.id AS status_id
             FROM users
             LEFT JOIN roles ON roles.id=users.role_id
             LEFT JOIN status_user ON status_user.id=users.user_status_id
             WHERE roles.role_types="CUSTOMER" AND users.id=?
             ORDER BY status_user.status
             """;
+    private static final String SQL_COUNT_ALL_CUSTOMERS
+            = "SELECT count(*) AS count FROM users WHERE role_id=3";
     private static final String SQL_FIND_USER_BY_ID
             = "SELECT id, name, surname, (SELECT role_types from roles WHERE id=users.role_id), email, " +
             "(SELECT status from status_user WHERE id=users.user_status_id) FROM users WHERE id=?";
@@ -88,11 +93,13 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public List<CustomerDto> findAllCustomers() throws DAOException {
+    public List<CustomerDto> findAllCustomers(int limit, int offset) throws DAOException {
         List<CustomerDto> users = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_CUSTOMERS)) {
+            statement.setInt(1, limit);
+            statement.setInt(2, offset);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 users.add(retrieveDto(resultSet));
@@ -155,6 +162,28 @@ public class UserDAOImpl implements UserDAO {
             }
         }
         return optional;
+    }
+
+    @Override
+    public int countAllCustomersForAdmin() throws DAOException {
+        int countCustomers = 0;
+        ResultSet resultSet = null;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_COUNT_ALL_CUSTOMERS)) {
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                countCustomers = resultSet.getInt("count");
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Failed attempt to count all customers in the database", e);
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                throw new DAOException("Failed attempt to close resultSet", e);
+            }
+        }
+        return countCustomers;
     }
 
     @Override
@@ -297,6 +326,7 @@ public class UserDAOImpl implements UserDAO {
                 .setSurname(resultSet.getString("surname"))
                 .setEmail(resultSet.getString("email"))
                 .setStatus(UserStatus.valueOf(resultSet.getString("status")))
+                .setStatusId(Integer.parseInt(resultSet.getString("status_id")))
                 .build();
     }
 }

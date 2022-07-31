@@ -79,7 +79,7 @@
                             placeholder="<fmt:message key="label.employee_quantity"/>"
                             value="0"
                             pattern="[\d]+"
-                    />
+                    /><br>
                         <small>Middle </small
                         ><input
                             type="text"
@@ -88,7 +88,7 @@
                             placeholder="<fmt:message key="label.employee_quantity"/>"
                             value="0"
                             pattern="[\d]+"
-                    />
+                    /><br>
                         <small>Junior </small
                         ><input
                             type="text"

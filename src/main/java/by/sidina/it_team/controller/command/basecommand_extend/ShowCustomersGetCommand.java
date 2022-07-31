@@ -4,8 +4,11 @@ import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.CustomerDto;
+import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.exception.DAOException;
+import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
 import by.sidina.it_team.dao.impl.UserDAOImpl;
+import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
 import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
@@ -32,8 +35,21 @@ public class ShowCustomersGetCommand extends BaseCommand {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
+
+        int pageSize = 4;
+        String pageNumberString = request.getParameter("page_number");
+        int pageNumber = null == pageNumberString ? 1 : Integer.parseInt(pageNumberString);
+        //TeamPositionLevelDAO teamPositionLevelDAO = new TeamPositionLevelDAOImpl();
+        int countCustomers;
+        int offset = pageSize * pageNumber - pageSize;
         UserDAO userDAO = new UserDAOImpl();
-        List<CustomerDto> customers = userDAO.findAllCustomers();
+        //List<CustomerDto> customers = userDAO.findAllCustomers(pageSize,offset);
+        List<CustomerDto> customers = userDAO.findAllCustomers(pageSize,offset);
+        countCustomers = userDAO.countAllCustomersForAdmin();
+        int pageNumbers = (int)Math.ceil(countCustomers/pageSize+0.5);
+        request.setAttribute("page_numbers", pageNumbers);
+        request.setAttribute("page_number", pageNumber);
+        request.setAttribute("page_size", pageSize);
         request.setAttribute(AttributeName.CUSTOMERS, customers);
         return JSPPagePath.ADMIN_ALL_CUSTOMERS;
     }

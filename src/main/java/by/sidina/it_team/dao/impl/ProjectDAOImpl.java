@@ -32,12 +32,14 @@ public class ProjectDAOImpl implements ProjectDAO {
             FROM projects
                      LEFT JOIN status_project ON projects.project_status_id = status_project.id
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
+            WHERE status_project.id=?
             GROUP BY id
             ORDER BY length(project_status), start_date
             LIMIT ? OFFSET ?
             """;
     private static final String SQL_COUNT_ALL_PROJECTS
-            = "SELECT count(*) AS count FROM projects";
+            = "SELECT count(*) AS count FROM projects " +
+            "LEFT JOIN status_project ON status_project.id=projects.project_status_id WHERE status_project.id=?";
     private static final String SQL_FIND_PROJECTS_BY_CUSTOMER_ID
             = """
             SELECT projects.id as id,
@@ -58,7 +60,6 @@ public class ProjectDAOImpl implements ProjectDAO {
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
             WHERE projects.customer_id=?
             GROUP BY id
-            ORDER BY length(project_status)
             """;
     private static final String SQL_FIND_PROJECTS_BY_EMPLOYEE_ID
             = """
@@ -80,7 +81,6 @@ public class ProjectDAOImpl implements ProjectDAO {
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
             WHERE team_schedule.employee_id=?
             GROUP BY id
-            ORDER BY length(project_status)
             """;
     private static final String SQL_FIND_PROJECT_BY_ID
             = """
@@ -112,13 +112,14 @@ public class ProjectDAOImpl implements ProjectDAO {
 
 
     @Override
-    public List<ProjectDto> findAllForAdmin(int limit, int offset) throws DAOException {
+    public List<ProjectDto> findAllForAdmin(int limit, int offset, int status) throws DAOException {
         List<ProjectDto> projects = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_ALL_PROJECTS)) {
-            statement.setInt(1, limit);
-            statement.setInt(2, offset);
+            statement.setInt(1, status);
+            statement.setInt(2, limit);
+            statement.setInt(3, offset);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 projects.add(retrieve(resultSet));
@@ -136,11 +137,12 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     @Override
-    public int countAllForAdmin() throws DAOException {
+    public int countAllProjectsForAdmin(int status) throws DAOException {
         int countProjects = 0;
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_COUNT_ALL_PROJECTS)) {
+            statement.setInt(1, status);
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 countProjects = resultSet.getInt("count");

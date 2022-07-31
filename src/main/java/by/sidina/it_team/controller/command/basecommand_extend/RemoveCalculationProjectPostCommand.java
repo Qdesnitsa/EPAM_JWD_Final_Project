@@ -2,7 +2,6 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -19,7 +18,7 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class CalculateProjectPostCommand extends BaseCommand {
+public class RemoveCalculationProjectPostCommand extends BaseCommand {
     private final String MSG_SUCCESS = "Successfully";
     private final String MSG_FAIL = "Operation failed";
     private static final String NO_SUCH_PROJECT_ID = "Project with this ID does not exist.";
@@ -38,15 +37,16 @@ public class CalculateProjectPostCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.PROJECT_ID).isEmpty()) {
+        if (session.getAttribute("project_id") == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            int projectId = Integer.parseInt(request.getParameter("project_id"));
+            int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             if (project.isPresent()) {
                 ProjectCalculationDAO projectCalculation = new ProjectCalculationDAOImpl();
-                boolean isAdded = projectCalculation.add(projectId);
+                boolean isAdded = projectCalculation.remove(projectId);
+                boolean isChanged = projectDAO.changeStatus(projectId, 1);
                 if (isAdded) {
                     request.setAttribute("message", MSG_SUCCESS);
                     project = projectDAO.findByID(projectId);

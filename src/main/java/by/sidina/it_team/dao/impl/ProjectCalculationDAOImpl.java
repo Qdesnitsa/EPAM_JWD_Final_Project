@@ -22,6 +22,8 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
             """;
     private static final String SQL_ADD_PROJECT_CALCULATION
             = "INSERT INTO project_calculation(project_id,hours_plan,cost_plan) values(?,?,?)";
+    private static final String SQL_REMOVE_PROJECT_CALCULATION
+            = "DELETE FROM project_calculation WHERE project_id=?";
 
     @Override
     public boolean add(int project_id) throws DAOException {
@@ -46,6 +48,24 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
             throw new DAOException("Failed attempt to add project calculation to the database", e);
         }
         return isAdded;
+    }
+
+    @Override
+    public boolean remove(int project_id) throws DAOException {
+        boolean isRemoved;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_REMOVE_PROJECT_CALCULATION)) {
+            statement.setInt(1, project_id);
+            int counter = statement.executeUpdate();
+            if (counter != 0) {
+                isRemoved = true;
+            } else {
+                isRemoved = false;
+            }
+        } catch (SQLException e) {
+            throw new DAOException("Failed attempt to remove project calculation from the database", e);
+        }
+        return isRemoved;
     }
 
     private static int countProjectWorkDays(int project_id) throws DAOException {

@@ -8,31 +8,13 @@
 </form>
 
 <form action="controller" method="POST">
-    <button type="submit" class="change" name="command" value="edit_project_get">
-        <fmt:message key="label.edit_project"/>
-    </button>
-</form>
-
-<form action="controller" method="POST">
     <button type="submit" class="show" name="command" value="show_employees_get">
         <fmt:message key="label.show_all_employees"/>
     </button>
 </form>
 
 <form action="controller" method="POST">
-    <button type="submit" class="change" name="command" value="edit_employee_get">
-        <fmt:message key="label.edit_employee"/>
-    </button>
-</form>
-
-<form action="controller" method="POST">
     <button type="submit" class="show" name="command" value="show_customers_get">
         <fmt:message key="label.show_all_customers"/>
-    </button>
-</form>
-
-<form action="controller" method="POST">
-    <button type="submit" class="change" name="command" value="edit_customer_get">
-        <fmt:message key="label.edit_customer"/>
     </button>
 </form>

@@ -30,16 +30,6 @@
                                     />
                                 </th>
                                 <th width="33%">
-                                    <fmt:message key="label.project_id"/><br/>
-                                    <input
-                                            type="text"
-                                            required
-                                            name="project_id"
-                                            placeholder="<fmt:message key="label.project_id"/>"
-                                            pattern="[\d]+"
-                                    />
-                                </th>
-                                <th width="33%">
                                     <fmt:message key="label.post_hours"/><br/>
                                     <input
                                             type="text"

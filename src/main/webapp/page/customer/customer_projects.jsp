@@ -15,7 +15,7 @@
         <form action="controller" method="POST">
         <table class="table" align="center">
             <caption>
-                <h2><fmt:message key="label.my_projects"/></h2>
+                <h2><fmt:message key="label.my_projects"/></h2><br>
             </caption>
             <tr>
                 <th><fmt:message key="label.project_id"/></th>
@@ -25,10 +25,13 @@
                 <th><fmt:message key="label.project_status"/></th>
                 <th><fmt:message key="label.project_cost_plan"/></th>
                 <th><fmt:message key="label.project_amount_paid"/></th>
+                <th><fmt:message key="label.debt"/></th>
                 <th><fmt:message key="label.project_amount_topay"/></th>
+                <th><fmt:message key="label.action"/></th>
             </tr>
             <c:forEach var="project" items="${projects}">
                 <tr>
+                    <form action="controller" method="POST">
                     <td>${project.id}</td>
                     <td>${project.name}</td>
                     <td>${project.startDate}</td>
@@ -37,46 +40,29 @@
                     <td>${project.costPlan}</td>
                     <td>${project.amount}</td>
                     <td>${project.costPlan-project.amount}</td>
+                    <td>
+                        <input style="width: 120px"
+                                type="text"
+                                name="payment"
+                                pattern="[\d]+[.]?[0-9]{0,2}"
+                        />
+                    </td>
+                    <td>
+                        <div align="center">
+                            <input type="hidden" name="project_id" value="${project.id}">
+                            <button type="submit" class="submit_small" name="command" value="new_payment_post">
+                                <fmt:message key="label.confirm"/></button>
+                        </div>
+                    </td>
+                    </form>
                 </tr>
             </c:forEach>
-        </table>
-        <table class="table" align="center">
-            <caption>
-                <h2><fmt:message key="label.proceed_payment"/></h2>
-                <fieldset>
-                    <legend><fmt:message key="label.enter_data_payment"/></legend>
-                </fieldset>
-            </caption>
-            <tr>
-                <th><fmt:message key="label.project_id"/></th>
-                <th><fmt:message key="label.project_amount_topay"/></th>
-            </tr>
-            <tr>
-                <th><input
-                        type="text"
-                        name="project_id"
-                        placeholder="project_id"
-                        pattern="[\d]+"
-                        value="0"
-                /></th>
-                <th><input
-                        type="text"
-                        name="payment"
-                        placeholder="<fmt:message key="label.two_numbers_after_point"/>"
-                        pattern="[\d]+[.]?[0-9]{0,2}"
-                /></th>
-            </tr>
-
         </table>
             <div class="msg"><br>
                 <c:if test="${message != null}">
                     <h4><c:out value="${message}" default="guest"/></h4>
                 </c:if>
             </div>
-        <div align="center">
-            <button type="submit" class="submit" name="command" value="new_payment_post">
-                <fmt:message key="label.confirm_payment"/></button>
-        </div>
         <div class="clear"></div>
         </form>
     </jsp:body>

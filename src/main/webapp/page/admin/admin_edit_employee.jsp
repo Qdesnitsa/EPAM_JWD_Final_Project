@@ -15,25 +15,7 @@
         <form action="controller" method="POST">
             <table class="table" align="center">
                 <caption>
-                    <h2><fmt:message key="label.edition_employee"/></h2>
-                    <fieldset>
-                        <legend><fmt:message key="label.fill_employee_id"/></legend>
-                        <table>
-                            <tr>
-                                <th width="33%">
-                                    <fmt:message key="label.employee_id"/><br/>
-                                    <input
-                                            type="text"
-                                            name="employee_id"
-                                            class="project_id"
-                                            placeholder="<fmt:message key="label.employee_id"/>"
-                                            pattern="[\d]+"
-                                    />
-                                    <br/>
-                                </th>
-                            </tr>
-                        </table>
-                    </fieldset>
+                    <h2><fmt:message key="label.edition_employee"/></h2><br>
                 </caption>
                 <tr>
                     <th><fmt:message key="label.employee_id"/></th>
@@ -54,11 +36,8 @@
                     <td>${employee.level}</td>
                 </tr>
             </table>
-            <div align="center">
-                <button type="submit" class="submit" name="command" value="show_employee_get"><fmt:message key="label.show"/></button>
-            </div>
             <table class="table" align="center">
-                <caption>
+                <caption><br>
                     <h2><fmt:message key="label.employee_parameters_edition"/></h2>
                 </caption>
                 <tr>
@@ -111,7 +90,7 @@
                 </tr>
             </table>
             <table class="table" align="center">
-                <caption>
+                <caption><br>
                     <h2><fmt:message key="label.addition_new_employee"/></h2>
                 </caption>
                 <tr>

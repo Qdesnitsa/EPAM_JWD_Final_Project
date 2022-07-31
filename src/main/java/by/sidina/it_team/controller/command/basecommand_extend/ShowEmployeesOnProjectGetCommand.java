@@ -2,12 +2,15 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 
 import by.sidina.it_team.controller.AttributeName;
 import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
+import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
+import by.sidina.it_team.dao.impl.TeamScheduleDAOImpl;
 import by.sidina.it_team.dao.repository.ProjectDAO;
+import by.sidina.it_team.dao.repository.TeamScheduleDAO;
+import by.sidina.it_team.entity.Level;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
 
@@ -15,12 +18,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
-public class ChangeProjectStatusPostCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Operation failed";
-    private static final String NO_SUCH_PROJECT_ID = "Project with this ID does not exist.";
+public class ShowEmployeesOnProjectGetCommand extends BaseCommand {
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -42,27 +43,14 @@ public class ChangeProjectStatusPostCommand extends BaseCommand {
             int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
-            if (project.isPresent()) {
-                String projectStatusString =
-                        (null == request.getParameter("project_status") || "".equals(request.getParameter("project_status")))
-                                ? String.valueOf(project.get().getStatus())
-                                : request.getParameter("project_status");
-                int status = Integer.parseInt(projectStatusString);
-                boolean isChanged = projectDAO.changeStatus(projectId, status);
-                if (isChanged) {
-                    request.setAttribute("message", MSG_SUCCESS);
-                    project = projectDAO.findByID(projectId);
-                    request.setAttribute(AttributeName.PROJECT, project.get());
-                    return JSPPagePath.ADMIN_EDIT_PROJECT;
-                } else {
-                    request.setAttribute("message", MSG_FAIL);
-                }
-            } else {
-                request.setAttribute("message", NO_SUCH_PROJECT_ID);
-            }
+            TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
+            List<EmployeeDto> employees = teamScheduleDAO.findEmployeesOnProject(projectId);
+            request.setAttribute(AttributeName.PROJECT, project.get());
+            request.setAttribute(AttributeName.EMPLOYEES, employees);
+            return JSPPagePath.ADMIN_EDIT_PROJECT;
         }
-        return JSPPagePath.ADMIN_EDIT_PROJECT;
     }
+
 
     @Override
     public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) {

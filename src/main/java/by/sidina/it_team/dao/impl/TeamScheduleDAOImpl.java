@@ -20,7 +20,9 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             SELECT team_schedule.employee_id AS id,
             		 positions.position AS position,
             		 levels.level AS level,
-            		 sum(team_schedule.hours_fact) as hours
+            		 sum(team_schedule.hours_fact) as hours,
+            		 users.name AS name,
+            		 users.surname AS surname
             FROM team_schedule
             LEFT JOIN projects ON team_schedule.project_id=projects.id
             LEFT JOIN team_position_level ON team_position_level.employee_id=team_schedule.employee_id
@@ -38,62 +40,88 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
     private static final String SQL_FIND_FREE_EMPLOYEES_FOR_PROJECT_ID
             = """
             SELECT team_position_level.employee_id AS id,
-            	    positions.position AS position,
-            		levels.level AS level,
-            		sum(team_schedule.hours_fact) as hours
-            FROM team_position_level
-            LEFT JOIN team_schedule ON team_position_level.employee_id=team_schedule.employee_id
-            LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
-            LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
-            LEFT JOIN users ON team_position_level.employee_id=users.id
-                WHERE team_schedule.employee_id IS NULL
-                    AND users.user_status_id=1
-                    AND position=?
-                    AND level=?
-                
-            UNION
-            
-            SELECT team_schedule.employee_id,
-            		 positions.position,
-            		 levels.level,
-            		 sum(team_schedule.hours_fact)
-            FROM team_schedule
-            LEFT JOIN projects ON team_schedule.project_id=projects.id
-            LEFT JOIN team_position_level ON team_position_level.employee_id=team_schedule.employee_id
-            LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
-            LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
-            LEFT JOIN users ON team_position_level.employee_id=users.id
-            	WHERE position=?
-            	    AND level=?
-            	    AND users.user_status_id=1
-                    AND (projects.start_date <
-            	        (SELECT projects.start_date
-            	        FROM projects
-            	        WHERE projects.id=?)
-            		AND projects.end_date <
-            	        (SELECT projects.start_date
-            	        FROM projects
-            	        WHERE projects.id=?)
-            		OR projects.start_date >
-            	        (SELECT projects.end_date
-            	        FROM projects
-            	        WHERE projects.id=?)
-            		AND projects.end_date >
-            	        (SELECT projects.end_date
-            	        FROM projects
-                        WHERE projects.id=?))
-            LIMIT ?
+                          positions.position AS POSITION,
+                          levels.level AS LEVEL,
+                          sum(team_schedule.hours_fact) AS hours,
+                          users.name AS name,
+                          users.surname AS surname
+                   FROM team_position_level
+                   LEFT JOIN team_schedule ON team_position_level.employee_id=team_schedule.employee_id
+                   LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
+                   LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
+                   LEFT JOIN users ON team_position_level.employee_id=users.id
+                   WHERE team_schedule.employee_id IS NULL
+                     AND users.user_status_id=1
+                     AND POSITION=?
+                     AND LEVEL=?
+                   GROUP BY team_position_level.employee_id
+                    
+                   UNION
+                   
+                   SELECT team_schedule.employee_id,
+                          positions.position,
+                          levels.level,
+                          sum(team_schedule.hours_fact),
+                          users.name,
+                          users.surname
+                   FROM team_schedule
+                   LEFT JOIN projects ON team_schedule.project_id=projects.id
+                   LEFT JOIN team_position_level ON team_position_level.employee_id=team_schedule.employee_id
+                   LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
+                   LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
+                   LEFT JOIN users ON team_position_level.employee_id=users.id
+                   WHERE POSITION=?
+                     AND LEVEL=?
+                     AND users.user_status_id=1
+                     AND team_schedule.employee_id NOT IN
+                       (SELECT DISTINCT team_schedule.employee_id
+                        FROM projects,
+                             team_schedule
+                        WHERE projects.id=team_schedule.project_id
+                          AND (projects.start_date <=
+                                 (SELECT projects.start_date
+                                  FROM projects
+                                  WHERE projects.id=?)
+                               AND projects.end_date >=
+                                 (SELECT projects.start_date
+                                  FROM projects
+                                  WHERE projects.id=?)
+                               OR projects.start_date >=
+                                 (SELECT projects.start_date
+                                  FROM projects
+                                  WHERE projects.id=?)
+                               AND projects.end_date <=
+                                 (SELECT projects.end_date
+                                  FROM projects
+                                  WHERE projects.id=?)
+                               OR projects.start_date <=
+                                 (SELECT projects.end_date
+                                  FROM projects
+                                  WHERE project_id=?)
+                               AND projects.end_date >=
+                                 (SELECT projects.end_date
+                                  FROM projects
+                                  WHERE project_id=?)
+                               OR projects.start_date <=
+                                 (SELECT projects.start_date
+                                  FROM projects
+                                  WHERE project_id=?)
+                               AND projects.end_date >=
+                                 (SELECT projects.end_date
+                                  FROM projects
+                                  WHERE project_id=?)) )
+                   GROUP BY employee_id
+                   LIMIT ?
             """;
 
     @Override
-    public boolean addEmployeeToProject(int employee_id, int project_id) throws DAOException {
+    public boolean addEmployeeToProject(int employeeId, int projectId) throws DAOException {
         boolean isAdded = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_ADD_EMPLOYEE_TO_PROJECT)) {
-            //Optional<Date> startDate = getStartDate(project_id);
-            statement.setInt(1, employee_id);
-            statement.setInt(2, project_id);
-            statement.setInt(3, project_id);
+            statement.setInt(1, employeeId);
+            statement.setInt(2, projectId);
+            statement.setInt(3, projectId);
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isAdded = true;
@@ -109,12 +137,12 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
     }
 
     @Override
-    public boolean removeEmployeeFromProject(int employee_id, int project_id) throws DAOException {
+    public boolean removeEmployeeFromProject(int employeeId, int projectId) throws DAOException {
         boolean isRemoved = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_REMOVE_EMPLOYEE_FROM_PROJECT)) {
-            statement.setInt(1, employee_id);
-            statement.setInt(2, project_id);
+            statement.setInt(1, employeeId);
+            statement.setInt(2, projectId);
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isRemoved = true;
@@ -168,7 +196,11 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             statement.setInt(6, projectId);
             statement.setInt(7, projectId);
             statement.setInt(8, projectId);
-            statement.setInt(9, limit);
+            statement.setInt(9, projectId);
+            statement.setInt(10, projectId);
+            statement.setInt(11, projectId);
+            statement.setInt(12, projectId);
+            statement.setInt(13, limit);
             resultSet = statement.executeQuery();
             while (resultSet.next() && (resultSet.getInt("id") != 0)) {
                 users.add(retrieveFreeEmployee(resultSet));
@@ -197,11 +229,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             statement.setDate(3, teamSchedule.getDate());
             statement.setDouble(4, teamSchedule.getHours_fact());
             int counter = statement.executeUpdate();
-            if (counter != 0) {
-                isAdded = true;
-            } else {
-                isAdded = false;
-            }
+            isAdded = counter != 0 ? true : false;
         } catch (SQLException e) {
             throw new DAOException("Failed attempt to add fact hours to the database", e);
         }
@@ -214,6 +242,8 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
                 .setHours(resultSet.getDouble("hours"))
                 .setPosition(String.valueOf(resultSet.getString("position")))
                 .setLevel(Level.valueOf(resultSet.getString("level").toUpperCase()))
+                .setName(resultSet.getString("name"))
+                .setSurname(resultSet.getString("surname"))
                 .build();
     }
 }
