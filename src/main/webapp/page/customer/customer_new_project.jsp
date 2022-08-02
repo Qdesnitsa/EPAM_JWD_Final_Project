@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setLocale value="${locale}" scope="session"/>
 <fmt:setBundle basename="pagecontent"/>
@@ -105,6 +106,11 @@
                 <button type="submit" id="submit" class="submit" name="command" value="new_project_post">
                     <fmt:message key="label.submit"/></button>
             </div>
+            <c:if test="${message_start_end_date != null}">
+                <div class="msg">
+                    <fmt:message key="label.message_start_end_date"/>
+                </div>
+            </c:if>
             <div class="clear"></div>
         </form>
     </jsp:body>

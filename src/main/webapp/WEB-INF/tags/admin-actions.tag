@@ -14,6 +14,12 @@
 </form>
 
 <form action="controller" method="POST">
+    <button type="submit" class="change" name="command" value="add_new_employee_get">
+        <fmt:message key="label.add_new_employee"/>
+    </button>
+</form>
+
+<form action="controller" method="POST">
     <button type="submit" class="show" name="command" value="show_customers_get">
         <fmt:message key="label.show_all_customers"/>
     </button>

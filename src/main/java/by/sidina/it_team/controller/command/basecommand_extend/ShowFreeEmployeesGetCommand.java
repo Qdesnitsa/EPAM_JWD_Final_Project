@@ -23,8 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ShowFreeEmployeesGetCommand extends BaseCommand {
-    private static final String NO_SUCH_PROJECT_ID = "Project with this ID does not exist.";
-
+    private final String MSG_FAIL = "Failed";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -62,7 +61,7 @@ public class ShowFreeEmployeesGetCommand extends BaseCommand {
                 request.setAttribute(AttributeName.FREE_EMPLOYEES, freeEmployees);
                 return JSPPagePath.ADMIN_EDIT_PROJECT;
             } else {
-                request.setAttribute("message", NO_SUCH_PROJECT_ID);
+                request.setAttribute("message_fail", MSG_FAIL);
                 return JSPPagePath.ADMIN_EDIT_PROJECT;
             }
         }

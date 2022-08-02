@@ -14,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 public class SignInPostCommand extends BaseCommand {
+    private static String MSG_INVALID_INPUT = "Invalid email or password";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
@@ -34,7 +35,7 @@ public class SignInPostCommand extends BaseCommand {
             session.setAttribute(AttributeName.USER, user.get());
             return JSPPagePath.INDEX;
         } else {
-            request.setAttribute("error", "Invalid email or password");
+            request.setAttribute("message_invalid_input", MSG_INVALID_INPUT);
             return JSPPagePath.SIGN_IN;
         }
     }

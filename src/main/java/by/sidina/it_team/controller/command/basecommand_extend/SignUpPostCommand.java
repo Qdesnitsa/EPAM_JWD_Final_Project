@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 public class SignUpPostCommand extends BaseCommand {
+    private static final String MSG_EMAIL_EXISTS = "Email already exists";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
@@ -35,7 +36,7 @@ public class SignUpPostCommand extends BaseCommand {
         UserDAOImpl userDaoImpl = new UserDAOImpl();
         Optional<User> existingUser = userDaoImpl.findUserByEmail(user.getEmail());
         if (existingUser.isPresent()) {
-            request.setAttribute("error", "Email already exists");
+            request.setAttribute("message_email_exists", MSG_EMAIL_EXISTS);
             return JSPPagePath.SIGN_UP;
         }
         userDaoImpl = new UserDAOImpl();

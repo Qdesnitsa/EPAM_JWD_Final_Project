@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setLocale value="${locale}" scope="session"/>
 <fmt:setBundle basename="pagecontent"/>
@@ -73,9 +74,9 @@
                 </div>
                 <div class="error"></div>
                 <div class="alert">
-                    <c:if test="${not empty error}">
+                    <c:if test="${message_email_exists != null}">
                         <div>
-                                ${error}
+                            <fmt:message key="label.message_email_exists"/>
                         </div>
                     </c:if>
                     <input type="hidden" name="command" value="sign_up_post">

@@ -18,7 +18,8 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public class EditProjectGetCommand extends BaseCommand {
-    private static final String NO_SUCH_PROJECT_ID = "Project with this ID does not exist.";
+    private final String MSG_FAIL = "Failed";
+
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -33,7 +34,7 @@ public class EditProjectGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        session.setAttribute("project_id",request.getParameter("project_id"));
+        session.setAttribute("project_id", request.getParameter("project_id"));
         if (request.getParameter(ParameterName.PROJECT_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
@@ -44,11 +45,10 @@ public class EditProjectGetCommand extends BaseCommand {
                 request.setAttribute(AttributeName.PROJECT, project.get());
                 return JSPPagePath.ADMIN_EDIT_PROJECT;
             } else {
-                request.setAttribute("message", NO_SUCH_PROJECT_ID);
+                request.setAttribute("message_fail", MSG_FAIL);
                 return JSPPagePath.ADMIN_EDIT_PROJECT;
             }
         }
-        //return JSPPagePath.ADMIN_EDIT_PROJECT;
     }
 
 

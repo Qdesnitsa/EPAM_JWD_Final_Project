@@ -23,8 +23,7 @@ import java.util.stream.Stream;
 
 public class PostHoursPostCommand extends BaseCommand {
     private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Operation failed";
-    private final String MSG_WRONG_PROJECT_ID = "There is no such project ID in your schedule.";
+    private final String MSG_FAIL = "Failed";
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -61,12 +60,12 @@ public class PostHoursPostCommand extends BaseCommand {
             TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
             boolean isAdded = teamScheduleDAO.addHoursByEmployeeId(new TeamSchedule(user.getId(), projectId, date, hours));
             if (isAdded) {
-                request.setAttribute("message", MSG_SUCCESS);
+                request.setAttribute("message_success", MSG_SUCCESS);
             } else {
-                request.setAttribute("message", MSG_FAIL);
+                request.setAttribute("message_fail", MSG_FAIL);
             }
         } else {
-            request.setAttribute("message", MSG_WRONG_PROJECT_ID);
+            request.setAttribute("message_fail", MSG_FAIL);
         }
         return JSPPagePath.EMPLOYEE_EDIT_HOURS;
     }

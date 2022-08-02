@@ -24,8 +24,7 @@ import java.util.Optional;
 
 public class AddEmployeeOnProjectPostCommand extends BaseCommand {
     private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Operation failed";
-    private static final String NO_SUCH_PROJECT_ID = "Project with this ID does not exist.";
+    private final String MSG_FAIL = "Failed";
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -62,10 +61,10 @@ public class AddEmployeeOnProjectPostCommand extends BaseCommand {
                     request.setAttribute(AttributeName.FREE_EMPLOYEES, freeEmployees);
                     return JSPPagePath.ADMIN_EDIT_PROJECT;
                 } else {
-                    request.setAttribute(AttributeName.MESSAGE, MSG_FAIL);
+                    request.setAttribute("message_fail", MSG_FAIL);
                 }
             } else {
-                request.setAttribute(AttributeName.MESSAGE, NO_SUCH_PROJECT_ID);
+                request.setAttribute("message_fail", MSG_FAIL);
             }
         }
         return JSPPagePath.ADMIN_EDIT_PROJECT;

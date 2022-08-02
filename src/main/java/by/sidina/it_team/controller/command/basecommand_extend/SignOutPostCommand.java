@@ -19,7 +19,6 @@ public class SignOutPostCommand extends BaseCommand {
         HttpSession session = request.getSession();
         session.setAttribute(AttributeName.USER, null);
         session.invalidate();
-        //request.setAttribute("called", "called");
         return JSPPagePath.INDEX;
     }
 

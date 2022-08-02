@@ -168,6 +168,11 @@ public enum CommandEnum {
             this.command = new AddNewEmployeePostCommand();
         }
     },
+    ADD_NEW_EMPLOYEE_GET {
+        {
+            this.command = new AddNewEmployeeGetCommand();
+        }
+    },
     REMOVE_EMPLOYEES_POST {
         {
             this.command = new RemoveEmployeeFromProjectPostCommand();

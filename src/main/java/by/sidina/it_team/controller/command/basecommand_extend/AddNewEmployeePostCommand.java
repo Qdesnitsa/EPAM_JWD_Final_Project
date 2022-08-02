@@ -17,8 +17,9 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 public class AddNewEmployeePostCommand extends BaseCommand {
+    private static final String MSG_EMAIL_EXISTS = "Email already exists";
     private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Operation failed";
+    private final String MSG_FAIL = "Failed";
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -49,22 +50,22 @@ public class AddNewEmployeePostCommand extends BaseCommand {
             position = Integer.parseInt(request.getParameter("employee_position"));
             level = Integer.parseInt(request.getParameter("employee_level"));
         } catch (NumberFormatException e) {
-            return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+            return JSPPagePath.ADMIN_NEW_EMPLOYEE;
         }
         User userEmployee = new User(name, surname, role, email, status);
         UserDAOImpl userDaoImpl = new UserDAOImpl();
         Optional<User> existingUser = userDaoImpl.findUserByEmail(userEmployee.getEmail());
         if (existingUser.isPresent()) {
-            request.setAttribute("message", "Email already exists");
-            return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+            request.setAttribute("message_email_exists", MSG_EMAIL_EXISTS);
+            return JSPPagePath.ADMIN_NEW_EMPLOYEE;
         }
         boolean isChanged = teamPositionLevelDAO.add(position, level, userEmployee, password);
         if (isChanged) {
-            request.setAttribute("message", MSG_SUCCESS);
+            request.setAttribute("message_success", MSG_SUCCESS);
         } else {
-            request.setAttribute("message", MSG_FAIL);
+            request.setAttribute("message_fail", MSG_FAIL);
         }
-        return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+        return JSPPagePath.ADMIN_NEW_EMPLOYEE;
     }
 
     @Override

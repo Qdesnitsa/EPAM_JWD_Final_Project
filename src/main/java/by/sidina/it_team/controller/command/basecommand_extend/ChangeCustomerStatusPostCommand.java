@@ -19,8 +19,7 @@ import java.util.Optional;
 
 public class ChangeCustomerStatusPostCommand extends BaseCommand {
     private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Operation failed";
-    private static final String NO_SUCH_CUSTOMER_ID = "Customer with this ID does not exist.";
+    private final String MSG_FAIL = "Failed";
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -50,13 +49,13 @@ public class ChangeCustomerStatusPostCommand extends BaseCommand {
                 if (isChanged) {
                     customer = userDAO.findCustomerByID(customerId);
                     request.setAttribute(AttributeName.CUSTOMER, customer.get());
-                    request.setAttribute("message", MSG_SUCCESS);
+                    request.setAttribute("message_success", MSG_SUCCESS);
                 } else {
-                    request.setAttribute("message", MSG_FAIL);
+                    request.setAttribute("message_fail", MSG_FAIL);
 
                 }
             } else {
-                request.setAttribute("message", NO_SUCH_CUSTOMER_ID);
+                request.setAttribute("message_fail", MSG_FAIL);
             }
             return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         }

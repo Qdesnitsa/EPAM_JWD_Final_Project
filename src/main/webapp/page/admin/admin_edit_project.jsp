@@ -187,9 +187,17 @@
                 <fmt:message key="label.add_calculate_project"/>
             </button>
             <div class="msg"><br>
-                <c:if test="${message != null}">
-                    <h4><c:out value="${message}" default="guest"/></h4>
-                </c:if>
+                <c:choose>
+                    <c:when test="${message_success != null}">
+                        <h4><fmt:message key="label.message_success"/></h4>
+                    </c:when>
+                    <c:when test="${message_fail != null}">
+                        <h4><fmt:message key="label.message_fail"/></h4>
+                    </c:when>
+                    <c:otherwise>
+
+                    </c:otherwise>
+                </c:choose>
             </div>
             <div align="center">
             </div>

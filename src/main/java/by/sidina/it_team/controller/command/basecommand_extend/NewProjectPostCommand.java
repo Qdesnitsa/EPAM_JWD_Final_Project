@@ -44,7 +44,7 @@ public class NewProjectPostCommand extends BaseCommand {
         String projectName = request.getParameter(ParameterName.PROJECT_NAME);
         if (request.getParameter(ParameterName.START_DATE) == null
                 && request.getParameter(ParameterName.END_DATE) == null) {
-            return HomePageByRoleProvider.getProjectsPageForUser(user, request);
+            return JSPPagePath.CUSTOMER_NEW_PROJECT;
         }
         Date startDate = Date.valueOf(request.getParameter(ParameterName.START_DATE));
         Date endDate = Date.valueOf(request.getParameter(ParameterName.END_DATE));
@@ -74,9 +74,9 @@ public class NewProjectPostCommand extends BaseCommand {
                             .toString())
                     .build());
         } else {
-            request.setAttribute("message",MSG_START_DATE_AFTER_END_DATE);
+            request.setAttribute("message_start_end_date",MSG_START_DATE_AFTER_END_DATE);
         }
-        return HomePageByRoleProvider.getProjectsPageForUser(user, request);
+        return JSPPagePath.CUSTOMER_NEW_PROJECT;
     }
 
     @Override

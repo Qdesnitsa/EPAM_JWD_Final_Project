@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@taglib prefix="t" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setLocale value="${locale}" scope="session"/>
 <fmt:setBundle basename="pagecontent"/>
@@ -49,9 +50,9 @@
                     />
                 </div>
                 <div class="alert">
-                    <c:if test="${not empty error}">
-                        <div class="alert">
-                                ${error}
+                    <c:if test="${message_invalid_input != null}">
+                        <div>
+                            <fmt:message key="label.message_invalid_input"/>
                         </div>
                     </c:if>
                     <input type="hidden" name="command" value="sign_in_post">

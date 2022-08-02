@@ -39,11 +39,9 @@ public class ShowCustomersGetCommand extends BaseCommand {
         int pageSize = 4;
         String pageNumberString = request.getParameter("page_number");
         int pageNumber = null == pageNumberString ? 1 : Integer.parseInt(pageNumberString);
-        //TeamPositionLevelDAO teamPositionLevelDAO = new TeamPositionLevelDAOImpl();
         int countCustomers;
         int offset = pageSize * pageNumber - pageSize;
         UserDAO userDAO = new UserDAOImpl();
-        //List<CustomerDto> customers = userDAO.findAllCustomers(pageSize,offset);
         List<CustomerDto> customers = userDAO.findAllCustomers(pageSize,offset);
         countCustomers = userDAO.countAllCustomersForAdmin();
         int pageNumbers = (int)Math.ceil(countCustomers/pageSize+0.5);

@@ -24,8 +24,7 @@ import java.util.stream.Stream;
 
 public class NewPaymentPostCommand extends BaseCommand {
     private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Operation failed";
-    private final String MSG_WRONG_PROJECT_ID = "There is no such project ID in your account.";
+    private final String MSG_FAIL = "Failed";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -63,12 +62,12 @@ public class NewPaymentPostCommand extends BaseCommand {
                         : Double.parseDouble(request.getParameter("payment"));
                 boolean isAdded = payment.addPaymentByProjectAndCustomerID(project.get(), amount, Date.valueOf(currentDate));
                 if (isAdded) {
-                    request.setAttribute("message", MSG_SUCCESS);
+                    request.setAttribute("message_success", MSG_SUCCESS);
                 } else {
-                    request.setAttribute("message", MSG_FAIL);
+                    request.setAttribute("message_fail", MSG_FAIL);
                 }
             } else {
-                request.setAttribute("message", MSG_WRONG_PROJECT_ID);
+                request.setAttribute("message_fail", MSG_FAIL);
             }
             projects = projectDAO.findAllByCustomerID(user.getId());
             request.setAttribute(AttributeName.PROJECTS, projects);

@@ -19,8 +19,7 @@ import java.util.Optional;
 
 public class ShowCustomerGetCommand extends BaseCommand {
     private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Operation failed";
-    private static final String NO_SUCH_CUSTOMER_ID = "Customer with this ID does not exist.";
+    private final String MSG_FAIL = "Failed";
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -45,7 +44,7 @@ public class ShowCustomerGetCommand extends BaseCommand {
             if (customer.isPresent()) {
                 request.setAttribute(AttributeName.CUSTOMER, customer.get());
             } else {
-                request.setAttribute("message", NO_SUCH_CUSTOMER_ID);
+                request.setAttribute("message_fail", MSG_FAIL);
             }
             return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         }
