@@ -19,24 +19,30 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
     private static final String SQL_FIND_ALL_EMPLOYEES
             = """
             SELECT team_position_level.employee_id AS id,
-                users.name AS name,
-                users.surname AS surname,
-                roles.role_types AS role,
-                users.email AS email,
-                status_user.status AS status,
-                status_user.id AS status_id,
-                levels.level AS level,
-                levels.id AS level_id,
-                positions.position AS position,
-                positions.id AS position_id
-            FROM team_position_level
-                LEFT JOIN users ON users.id=team_position_level.employee_id
-                LEFT JOIN roles ON roles.id=users.role_id
-                LEFT JOIN status_user ON status_user.id=users.user_status_id
-                LEFT JOIN levels ON levels.id=team_position_level.employee_level_id
-                Left JOIN positions ON positions.id=team_position_level.employee_position_id
-            ORDER BY surname, name
-            LIMIT ? OFFSET ?
+                   users.name                      AS name,
+                   users.surname                   AS surname,
+                   roles.role_types                AS role,
+                   users.email                     AS email,
+                   status_user.status              AS status,
+                   status_user.id                  AS status_id,
+                   levels.level                    AS level,
+                   levels.id                       AS level_id,
+                   positions.position              AS position,
+                   positions.id                    AS position_id
+            FROM   team_position_level
+                   LEFT JOIN users
+                          ON users.id = team_position_level.employee_id
+                   LEFT JOIN roles
+                          ON roles.id = users.role_id
+                   LEFT JOIN status_user
+                          ON status_user.id = users.user_status_id
+                   LEFT JOIN levels
+                          ON levels.id = team_position_level.employee_level_id
+                   LEFT JOIN positions
+                          ON positions.id = team_position_level.employee_position_id
+            ORDER  BY surname,
+                      name
+            LIMIT  ? offset ?
             """;
     private static final String SQL_ADD_POSITION_LEVEL
             = "INSERT INTO team_position_level (employee_id, employee_position_id, employee_level_id) values(?,?,?)";
@@ -46,23 +52,28 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
     private static final String SQL_FIND_EMPLOYEE_BY_ID
             = """
             SELECT team_position_level.employee_id AS id,
-                users.name AS name,
-                users.surname AS surname,
-                roles.role_types AS role,
-                users.email AS email,
-                status_user.status AS status,
-                status_user.id AS status_id,
-                levels.level AS level,
-                levels.id AS level_id,
-                positions.position AS position,
-                positions.id AS position_id
-            FROM team_position_level
-                LEFT JOIN users ON users.id=team_position_level.employee_id
-                LEFT JOIN roles ON roles.id=users.role_id
-                LEFT JOIN status_user ON status_user.id=users.user_status_id
-                LEFT JOIN levels ON levels.id=team_position_level.employee_level_id
-                Left JOIN positions ON positions.id=team_position_level.employee_position_id
-            WHERE team_position_level.employee_id=?
+                   users.name                      AS name,
+                   users.surname                   AS surname,
+                   roles.role_types                AS role,
+                   users.email                     AS email,
+                   status_user.status              AS status,
+                   status_user.id                  AS status_id,
+                   levels.level                    AS level,
+                   levels.id                       AS level_id,
+                   positions.position              AS position,
+                   positions.id                    AS position_id
+            FROM   team_position_level
+                   LEFT JOIN users
+                          ON users.id = team_position_level.employee_id
+                   LEFT JOIN roles
+                          ON roles.id = users.role_id
+                   LEFT JOIN status_user
+                          ON status_user.id = users.user_status_id
+                   LEFT JOIN levels
+                          ON levels.id = team_position_level.employee_level_id
+                   LEFT JOIN positions
+                          ON positions.id = team_position_level.employee_position_id
+            WHERE  team_position_level.employee_id =?
             """;
 
     private static final String SQL_CHANGE_EMPLOYEE_POSITION

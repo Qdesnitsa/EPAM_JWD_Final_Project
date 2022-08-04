@@ -41,7 +41,7 @@
         <div class="paginator_block">
             <table>
                 <tr>
-                    <c:forEach begin="1" end="${page_numbers}" var="i">
+                    <c:forEach begin="1" end="${page_quantity}" var="i">
                         <c:choose>
                             <c:when test="${page_number eq i}">
                                 <td>

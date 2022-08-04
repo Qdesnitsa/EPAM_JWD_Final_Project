@@ -1,8 +1,9 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
 import by.sidina.it_team.dao.impl.UserDAOImpl;
@@ -16,11 +17,9 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class AddNewEmployeePostCommand extends BaseCommand {
-    private static final String MSG_EMAIL_EXISTS = "Email already exists";
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class AddNewEmployeePostCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -36,34 +35,26 @@ public class AddNewEmployeePostCommand extends BaseCommand {
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
         TeamPositionLevelDAO teamPositionLevelDAO = new TeamPositionLevelDAOImpl();
-        String email = request.getParameter("email");
-        String password = request.getParameter("password");
-        String name = request.getParameter("name");
-        String surname = request.getParameter("surname");
-        int status = 0;
-        int role = 0;
-        int position = 0;
-        int level = 0;
-        try {
-            status = Integer.parseInt(request.getParameter("employee_status"));
-            role = Integer.parseInt(request.getParameter("employee_role"));
-            position = Integer.parseInt(request.getParameter("employee_position"));
-            level = Integer.parseInt(request.getParameter("employee_level"));
-        } catch (NumberFormatException e) {
-            return JSPPagePath.ADMIN_NEW_EMPLOYEE;
-        }
+        String email = request.getParameter(ParameterName.EMAIL);
+        String password = request.getParameter(ParameterName.PASSWORD);
+        String name = request.getParameter(ParameterName.NAME);
+        String surname = request.getParameter(ParameterName.SURNAME);
+        int status = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_STATUS));
+        int role = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_ROLE));
+        int position = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_POSITION));
+        int level = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_LEVEL));
         User userEmployee = new User(name, surname, role, email, status);
         UserDAOImpl userDaoImpl = new UserDAOImpl();
         Optional<User> existingUser = userDaoImpl.findUserByEmail(userEmployee.getEmail());
         if (existingUser.isPresent()) {
-            request.setAttribute("message_email_exists", MSG_EMAIL_EXISTS);
+            request.setAttribute(AttributeName.MESSAGE_EMAIL_EXISTS, MSG_EMAIL_EXISTS);
             return JSPPagePath.ADMIN_NEW_EMPLOYEE;
         }
         boolean isChanged = teamPositionLevelDAO.add(position, level, userEmployee, password);
         if (isChanged) {
-            request.setAttribute("message_success", MSG_SUCCESS);
+            request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
         } else {
-            request.setAttribute("message_fail", MSG_FAIL);
+            request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
         }
         return JSPPagePath.ADMIN_NEW_EMPLOYEE;
     }

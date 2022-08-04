@@ -16,17 +16,17 @@
             <h2 style="text-align: center"><fmt:message key="label.all_projects"/></h2>
             <div style="text-align: center"><fmt:message key="label.choose_status"/><br>
                 <form action="controller" method="POST">
-                <select name="project_status">
-                    <option value="1">new</option>
-                    <option value="2">prepared</option>
-                    <option value="3">active</option>
-                    <option value="4">cancelled</option>
-                    <option value="5">finished</option>
-                </select
-                ><br/>
-                <button type="submit" class="submit" name="command" value="show_projects">
-                    <fmt:message key="label.choose_status"/>
-                </button>
+                    <select name="project_status">
+                        <option value="1">new</option>
+                        <option value="2">prepared</option>
+                        <option value="3">active</option>
+                        <option value="4">cancelled</option>
+                        <option value="5">finished</option>
+                    </select
+                    ><br/>
+                    <button type="submit" class="submit" name="command" value="show_projects">
+                        <fmt:message key="label.choose_status"/>
+                    </button>
                 </form>
             </div>
             <tr>
@@ -60,11 +60,10 @@
                 </tr>
             </c:forEach>
         </table>
-
         <div class="paginator_block">
             <table>
                 <tr>
-                    <c:forEach begin="1" end="${page_numbers}" var="i">
+                    <c:forEach begin="1" end="${page_quantity}" var="i">
                         <c:choose>
                             <c:when test="${page_number eq i}">
                                 <td>

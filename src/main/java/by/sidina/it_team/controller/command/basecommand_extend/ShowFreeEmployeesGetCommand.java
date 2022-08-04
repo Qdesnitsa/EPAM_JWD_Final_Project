@@ -1,9 +1,9 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -22,8 +22,12 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
+
 public class ShowFreeEmployeesGetCommand extends BaseCommand {
-    private final String MSG_FAIL = "Failed";
+    public static final String EMPLOYEE_LEVEL_DEFAULT = "junior";
+    public static final String REQUIRED_QUANTITY_EMPLOYEES_DEFAULT = "0";
+
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -38,35 +42,38 @@ public class ShowFreeEmployeesGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (session.getAttribute("project_id") == null) {
+        if (session.getAttribute(AttributeName.PROJECT_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
+            int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
-            String position = request.getParameter("employee_position");
-            String levelString = request.getParameter("level");
-            levelString = null == levelString ? "junior" : levelString;
-            Level level = Level.valueOf(levelString.toUpperCase());
-            String quantityString = request.getParameter("quantity");
-            quantityString = null == quantityString ? "0" : quantityString;
-            int quantity = Integer.parseInt(quantityString);
-            List<EmployeeDto> freeEmployees = teamScheduleDAO.findFreeEmployeesForProject(projectId, position, level, quantity);
+            String position = request.getParameter(ParameterName.EMPLOYEE_POSITION);
+            String levelString = request.getParameter(ParameterName.LEVEL);
+            levelString = null == levelString
+                    ? EMPLOYEE_LEVEL_DEFAULT
+                    : levelString;
+            Level employeeLevel = Level.valueOf(levelString.toUpperCase());
+            String requiredQuantityOfEmployeesString = request.getParameter(ParameterName.QUANTITY);
+            requiredQuantityOfEmployeesString = null == requiredQuantityOfEmployeesString
+                    ? REQUIRED_QUANTITY_EMPLOYEES_DEFAULT
+                    : requiredQuantityOfEmployeesString;
+            int quantity = Integer.parseInt(requiredQuantityOfEmployeesString);
+            List<EmployeeDto> freeEmployees = teamScheduleDAO.findFreeEmployeesForProject(projectId, position, employeeLevel, quantity);
             if (project.isPresent()) {
-                session.setAttribute("quantity", quantity);
-                session.setAttribute("employee_position", position);
-                session.setAttribute("level", level);
+                session.setAttribute(AttributeName.QUANTITY, quantity);
+                session.setAttribute(AttributeName.EMPLOYEE_POSITION, position);
+                session.setAttribute(AttributeName.EMPLOYEE_LEVEL, employeeLevel);
                 request.setAttribute(AttributeName.PROJECT, project.get());
                 request.setAttribute(AttributeName.FREE_EMPLOYEES, freeEmployees);
                 return JSPPagePath.ADMIN_EDIT_PROJECT;
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 return JSPPagePath.ADMIN_EDIT_PROJECT;
             }
         }
     }
-
 
     @Override
     public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) {

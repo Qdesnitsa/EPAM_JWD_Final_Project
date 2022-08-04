@@ -9,7 +9,8 @@ public class Position implements Serializable {
     private int id;
     private String position;
 
-    private Position() {}
+    private Position() {
+    }
 
     public Position(String position) {
         this.position = position;

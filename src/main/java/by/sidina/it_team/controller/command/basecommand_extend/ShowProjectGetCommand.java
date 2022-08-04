@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -17,8 +17,9 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
+
 public class ShowProjectGetCommand extends BaseCommand {
-    private final String MSG_FAIL = "Failed";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -36,14 +37,14 @@ public class ShowProjectGetCommand extends BaseCommand {
         if (request.getParameter(ParameterName.PROJECT_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            int projectId = Integer.parseInt(request.getParameter("project_id"));
+            int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             if (project.isPresent()) {
                 request.setAttribute(AttributeName.PROJECT, project.get());
                 return JSPPagePath.ADMIN_EDIT_PROJECT;
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 return JSPPagePath.ADMIN_EDIT_PROJECT;
             }
         }

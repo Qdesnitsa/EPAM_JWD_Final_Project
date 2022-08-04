@@ -13,7 +13,8 @@ public class Payment implements Serializable {
     private double amount;
     private Date paymentDate;
 
-    private Payment() {}
+    private Payment() {
+    }
 
     public Payment(int projectID, int customerID, double amount, Date paymentDate) {
         this.projectID = projectID;

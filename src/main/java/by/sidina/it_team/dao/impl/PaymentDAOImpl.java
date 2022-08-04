@@ -13,6 +13,7 @@ import java.sql.SQLException;
 public class PaymentDAOImpl implements PaymentDAO {
     private static final String SQL_ADD_PAYMENT
             = "INSERT INTO payments (project_id, amount, payment_date) values(?,?,?)";
+
     @Override
     public boolean addPaymentByProjectAndCustomerID(ProjectDto projectDto, double amount, Date date) throws DAOException {
         boolean isAdded;

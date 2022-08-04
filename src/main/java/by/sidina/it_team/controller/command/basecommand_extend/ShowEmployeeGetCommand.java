@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -17,10 +17,9 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class ShowEmployeeGetCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class ShowEmployeeGetCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -36,18 +35,18 @@ public class ShowEmployeeGetCommand extends BaseCommand {
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
         if (request.getParameter(ParameterName.EMPLOYEE_ID) == null ||
-                request.getParameter(ParameterName.EMPLOYEE_ID) == "") {
+                request.getParameter(ParameterName.EMPLOYEE_ID).isEmpty()) {
             return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
         } else {
-            int employeeId = Integer.parseInt(request.getParameter("employee_id"));
+            int employeeId = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_ID));
             TeamPositionLevelDAO teamPositionLevelDAO = new TeamPositionLevelDAOImpl();
             Optional<EmployeeDto> employee = teamPositionLevelDAO.findByID(employeeId);
             if (employee.isPresent()) {
                 request.setAttribute(AttributeName.EMPLOYEE, employee.get());
-                request.setAttribute("message_success", MSG_SUCCESS);
+                request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                 return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
         }
         return JSPPagePath.ADMIN_EDIT_EMPLOYEE;

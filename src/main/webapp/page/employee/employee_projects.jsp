@@ -28,7 +28,9 @@
                 <tr>
                     <td>${project.id}</td>
                     <form action="controller" method="POST">
-                    <td><a href="/IT_Team/controller?command=post_hours_get&project_id=${project.id}">${project.name}</a></td>
+                        <td>
+                            <a href="/IT_Team/controller?command=post_hours_get&project_id=${project.id}">${project.name}</a>
+                        </td>
                     </form>
                     <td>${project.status}</td>
                     <td>${project.startDate}</td>

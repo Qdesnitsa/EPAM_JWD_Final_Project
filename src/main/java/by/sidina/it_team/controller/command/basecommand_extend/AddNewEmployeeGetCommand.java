@@ -1,12 +1,9 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.exception.DAOException;
-import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
-import by.sidina.it_team.dao.impl.UserDAOImpl;
-import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
 
@@ -14,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.util.Optional;
 
 public class AddNewEmployeeGetCommand extends BaseCommand {
 

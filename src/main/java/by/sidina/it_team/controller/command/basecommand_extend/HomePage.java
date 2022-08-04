@@ -1,7 +1,7 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.controller.command.HomePageByRoleProvider;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -12,8 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 public class HomePage extends BaseCommand {
-    private static HomePage instance = new HomePage();
-
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         return true;
@@ -33,9 +31,5 @@ public class HomePage extends BaseCommand {
     @Override
     public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) {
         return null;
-    }
-
-    public static HomePage getHomeRequest() {
-        return instance;
     }
 }

@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.CustomerDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -17,10 +17,9 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class ChangeCustomerStatusPostCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class ChangeCustomerStatusPostCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -38,24 +37,23 @@ public class ChangeCustomerStatusPostCommand extends BaseCommand {
         if (session.getAttribute(ParameterName.CUSTOMER_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         } else {
-            int customerId = Integer.parseInt(String.valueOf(session.getAttribute("customer_id")));
+            int customerId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.CUSTOMER_ID)));
             UserDAO userDAO = new UserDAOImpl();
             Optional<CustomerDto> customer = userDAO.findCustomerByID(customerId);
             if (customer.isPresent()) {
-                int status = null == request.getParameter("change_customer_status")
+                int status = null == request.getParameter(ParameterName.CHANGE_CUSTOMER_STATUS)
                         ? customer.get().getStatusId()
-                        : Integer.parseInt(request.getParameter("change_customer_status"));
+                        : Integer.parseInt(request.getParameter(ParameterName.CHANGE_CUSTOMER_STATUS));
                 boolean isChanged = userDAO.changeStatus(customerId, status);
                 if (isChanged) {
                     customer = userDAO.findCustomerByID(customerId);
                     request.setAttribute(AttributeName.CUSTOMER, customer.get());
-                    request.setAttribute("message_success", MSG_SUCCESS);
+                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                 } else {
-                    request.setAttribute("message_fail", MSG_FAIL);
-
+                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
             return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         }

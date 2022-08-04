@@ -3,11 +3,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setLocale value="${locale}" scope="session"/>
 <fmt:setBundle basename="pagecontent"/>
-
 <html>
 <title>${title}</title>
 <body>
-
 <style>
     <%@include file="/page/css/styles.css"%>
 </style>
@@ -45,7 +43,6 @@
             </table>
         </h2>
     </div>
-
     <div class="content">
         <div class="navigation">
             <h1 class="menu"><fmt:message key="label.menu"/></h1>
@@ -59,6 +56,5 @@
 <div class="footer">
     &copy; IT-Teams Studio (Elena Sidina). All rights reserved. 2022
 </div>
-
 </body>
 </html>

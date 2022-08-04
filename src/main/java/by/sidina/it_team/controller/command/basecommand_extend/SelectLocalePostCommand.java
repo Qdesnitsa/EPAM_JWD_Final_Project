@@ -3,6 +3,8 @@ package by.sidina.it_team.controller.command.basecommand_extend;
 import by.sidina.it_team.controller.Command;
 import by.sidina.it_team.controller.CommandProvider;
 import by.sidina.it_team.controller.command.BaseCommand;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,8 +20,8 @@ public class SelectLocalePostCommand extends BaseCommand {
     @Override
     public Command getExpectedCommand(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
-        session.setAttribute("locale", request.getParameter("language"));
-        String commandName = (String) session.getAttribute("last_command");
+        session.setAttribute(AttributeName.LOCALE, request.getParameter(ParameterName.LANGUAGE));
+        String commandName = (String) session.getAttribute(AttributeName.LAST_COMMAND);
         Command command = CommandProvider.defineCommand(commandName);
         return command;
     }

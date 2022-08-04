@@ -21,7 +21,8 @@ public class EmployeeDto {
     private double rate;
     private double hours;
 
-    private EmployeeDto() {}
+    private EmployeeDto() {
+    }
 
     public EmployeeDto(String name, String surname, Role role, String email, UserStatus status, String position,
                        Level level, double rate, double hours, int positionId, int levelId, int statusId) {
@@ -62,11 +63,15 @@ public class EmployeeDto {
     public UserStatus getStatus() {
         return status;
     }
-    public int getStatusId() { return statusId; }
+
+    public int getStatusId() {
+        return statusId;
+    }
 
     public String getPosition() {
         return position;
     }
+
     public int getPositionId() {
         return positionId;
     }
@@ -74,6 +79,7 @@ public class EmployeeDto {
     public Level getLevel() {
         return level;
     }
+
     public int getLevelId() {
         return levelId;
     }
@@ -119,7 +125,7 @@ public class EmployeeDto {
                 ", levelId=" + levelId +
                 ", rate=" + rate +
                 ", hours=" + hours +
-                " ;";
+                "; ";
     }
 
     public static class Builder {

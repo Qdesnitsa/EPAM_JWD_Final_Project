@@ -1,7 +1,7 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.dto.ProjectDto;
@@ -10,7 +10,6 @@ import by.sidina.it_team.dao.impl.ProjectDAOImpl;
 import by.sidina.it_team.dao.impl.TeamScheduleDAOImpl;
 import by.sidina.it_team.dao.repository.ProjectDAO;
 import by.sidina.it_team.dao.repository.TeamScheduleDAO;
-import by.sidina.it_team.entity.Level;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
 
@@ -37,10 +36,10 @@ public class ShowEmployeesOnProjectGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (session.getAttribute("project_id") == null) {
+        if (session.getAttribute(AttributeName.PROJECT_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
+            int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
@@ -50,7 +49,6 @@ public class ShowEmployeesOnProjectGetCommand extends BaseCommand {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         }
     }
-
 
     @Override
     public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) {

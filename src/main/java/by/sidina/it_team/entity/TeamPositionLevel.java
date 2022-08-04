@@ -11,7 +11,8 @@ public class TeamPositionLevel implements Serializable {
     private int employeePositionID;
     private int employeeLevelID;
 
-    private TeamPositionLevel() {}
+    private TeamPositionLevel() {
+    }
 
     public TeamPositionLevel(int employeeID, int employeePositionID, int employeeLevelID) {
         this.employeeID = employeeID;

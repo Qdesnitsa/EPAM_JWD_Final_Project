@@ -9,16 +9,23 @@ import java.sql.*;
 public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
     private static final int WORKING_HOURS_PER_DAY = 8;
     private static final String SQL_GET_PROJECT_WORKING_DAYS
-            = "SELECT start_date, end_date FROM projects WHERE id=?";
+            = """
+            SELECT start_date,
+                   end_date
+            FROM   projects
+            WHERE  id = ?
+            """;
     private static final String SQL_GET_SUM_AND_COUNT_RATES
             = """
-            SELECT sum(rates.rate) AS sum_rates,
+            SELECT sum(rates.rate)                  AS sum_rates,
                    count(team_schedule.employee_id) AS count_employees
             FROM   team_schedule
-                   LEFT JOIN team_position_level ON team_schedule.employee_id=team_position_level.employee_id
-                   LEFT JOIN rates ON (team_position_level.employee_position_id=rates.position_id AND 
-                                        team_position_level.employee_level_id=rates.level_id)
-            WHERE team_schedule.project_id=?                      
+                   LEFT JOIN team_position_level
+                          ON team_schedule.employee_id = team_position_level.employee_id
+                   LEFT JOIN rates
+                          ON ( team_position_level.employee_position_id = rates.position_id
+                               AND team_position_level.employee_level_id = rates.level_id )
+            WHERE  team_schedule.project_id = ?                     
             """;
     private static final String SQL_ADD_PROJECT_CALCULATION
             = "INSERT INTO project_calculation(project_id,hours_plan,cost_plan) values(?,?,?)";

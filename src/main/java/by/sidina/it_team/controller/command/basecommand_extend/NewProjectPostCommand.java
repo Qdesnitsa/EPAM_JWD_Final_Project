@@ -1,10 +1,9 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
-import by.sidina.it_team.controller.command.HomePageByRoleProvider;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
 import by.sidina.it_team.dao.impl.UserDAOImpl;
@@ -20,11 +19,12 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
 
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
+
 public class NewProjectPostCommand extends BaseCommand {
     private static final String EQUALS = "=";
     private static final String DELIMITER_SEMICOLON = "; ";
     private static final String DELIMITER_COMMA = ", ";
-    private static final String MSG_START_DATE_AFTER_END_DATE = "End date should be after start date.";
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -56,7 +56,6 @@ public class NewProjectPostCommand extends BaseCommand {
             UserDAO userDAO = new UserDAOImpl();
             Optional<User> userNew = userDAO.findUserByEmail(user.getEmail());
             int user_id = userNew.get().getId();
-
             ProjectDAOImpl projectDAO = new ProjectDAOImpl();
             projectDAO.add(new Project.Builder()
                     .setCustomerID(user_id)
@@ -74,7 +73,7 @@ public class NewProjectPostCommand extends BaseCommand {
                             .toString())
                     .build());
         } else {
-            request.setAttribute("message_start_end_date",MSG_START_DATE_AFTER_END_DATE);
+            request.setAttribute(AttributeName.MESSAGE_START_END_DATE, MSG_START_DATE_AFTER_END_DATE);
         }
         return JSPPagePath.CUSTOMER_NEW_PROJECT;
     }

@@ -102,7 +102,8 @@
                 </tr>
             </table>
             <div align="center">
-                <button type="submit" class="submit" name="command" value="add_new_employee_post"><fmt:message key="label.add"/></button>
+                <button type="submit" class="submit" name="command" value="add_new_employee_post"><fmt:message
+                        key="label.add"/></button>
             </div>
             <div class="msg"><br>
                 <c:choose>
@@ -125,4 +126,3 @@
         </form>
     </jsp:body>
 </t:layout>
-

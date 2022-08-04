@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.impl.UserDAOImpl;
@@ -15,8 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
+
 public class SignUpPostCommand extends BaseCommand {
-    private static final String MSG_EMAIL_EXISTS = "Email already exists";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
@@ -36,7 +37,7 @@ public class SignUpPostCommand extends BaseCommand {
         UserDAOImpl userDaoImpl = new UserDAOImpl();
         Optional<User> existingUser = userDaoImpl.findUserByEmail(user.getEmail());
         if (existingUser.isPresent()) {
-            request.setAttribute("message_email_exists", MSG_EMAIL_EXISTS);
+            request.setAttribute(AttributeName.MESSAGE_EMAIL_EXISTS, MSG_EMAIL_EXISTS);
             return JSPPagePath.SIGN_UP;
         }
         userDaoImpl = new UserDAOImpl();
@@ -48,6 +49,6 @@ public class SignUpPostCommand extends BaseCommand {
 
     @Override
     public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) {
-        return "/page/error/error.jsp";
+        return JSPPagePath.ERROR;
     }
 }

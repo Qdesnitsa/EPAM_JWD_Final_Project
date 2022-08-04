@@ -9,7 +9,7 @@
 </style>
 <div class="container">
     <div class="slogan">
-       <!-- <fmt:message key="label.the_best_solutions"/><br/>
+        <!-- <fmt:message key="label.the_best_solutions"/><br/>
         <fmt:message key="label.for_your_business"/>-->
     </div>
     <div class="card">

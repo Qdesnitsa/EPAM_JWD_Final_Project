@@ -9,11 +9,12 @@ public class User implements Serializable {
     private int id;
     private String name;
     private String surname;
-    private  int role_id;
+    private int role_id;
     private String email;
     private int status_id;
 
-    private User() {}
+    private User() {
+    }
 
     public User(String name, String surname, int role_id, String email, int status_id) {
         this.name = name;
@@ -75,6 +76,7 @@ public class User implements Serializable {
 
     public static class Builder {
         private final User newUser;
+
         public Builder() {
             newUser = new User();
         }

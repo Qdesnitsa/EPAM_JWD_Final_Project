@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.dto.ProjectDto;
@@ -21,10 +21,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public class RemoveEmployeeFromProjectPostCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class RemoveEmployeeFromProjectPostCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -47,20 +46,20 @@ public class RemoveEmployeeFromProjectPostCommand extends BaseCommand {
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             if (project.isPresent()) {
                 TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
-                int idToRemove = Integer.parseInt(request.getParameter("remove_id"));
+                int idToRemove = Integer.parseInt(request.getParameter(ParameterName.REMOVE_ID));
                 boolean isRemoved = teamScheduleDAO.removeEmployeeFromProject(idToRemove, projectId);
                 if (isRemoved) {
-                    request.setAttribute("message_success", MSG_SUCCESS);
+                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     project = projectDAO.findByID(projectId);
                     request.setAttribute(AttributeName.PROJECT, project.get());
                     List<EmployeeDto> employees = teamScheduleDAO.findEmployeesOnProject(projectId);
                     request.setAttribute(AttributeName.EMPLOYEES, employees);
                     return JSPPagePath.ADMIN_EDIT_PROJECT;
                 } else {
-                    request.setAttribute("message_fail", MSG_FAIL);
+                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
         }
         return JSPPagePath.ADMIN_EDIT_PROJECT;

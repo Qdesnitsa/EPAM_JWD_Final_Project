@@ -1,20 +1,22 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.impl.UserDAOImpl;
 import by.sidina.it_team.entity.User;
+import by.sidina.it_team.entity.UserStatus;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
+
 public class SignInPostCommand extends BaseCommand {
-    private static String MSG_INVALID_INPUT = "Invalid email or password";
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
@@ -31,17 +33,17 @@ public class SignInPostCommand extends BaseCommand {
         String password = request.getParameter(ParameterName.PASSWORD);
         UserDAOImpl userDaoImpl = new UserDAOImpl();
         Optional<User> user = userDaoImpl.findUserByEmailAndPassword(email, password);
-        if(user.isPresent() && user.get().getStatus_id() != 2) {
+        if (user.isPresent() && user.get().getStatus_id() != UserStatus.BLOCKED.getUserStatusID()) {
             session.setAttribute(AttributeName.USER, user.get());
             return JSPPagePath.INDEX;
         } else {
-            request.setAttribute("message_invalid_input", MSG_INVALID_INPUT);
+            request.setAttribute(AttributeName.MESSAGE_INVALID_INPUT, MSG_INVALID_EMAIL_PASSWORD);
             return JSPPagePath.SIGN_IN;
         }
     }
 
     @Override
     public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) {
-        return "/page/error/error.jsp";
+        return JSPPagePath.ERROR;
     }
 }

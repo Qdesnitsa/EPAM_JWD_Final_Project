@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.dto.ProjectDto;
@@ -22,10 +22,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public class AddEmployeeOnProjectPostCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class AddEmployeeOnProjectPostCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -51,20 +50,20 @@ public class AddEmployeeOnProjectPostCommand extends BaseCommand {
                 int idToAdd = Integer.parseInt(request.getParameter(ParameterName.ADD_ID));
                 boolean isAdded = teamScheduleDAO.addEmployeeToProject(idToAdd, projectId);
                 if (isAdded) {
-                    request.setAttribute(AttributeName.MESSAGE, MSG_SUCCESS);
+                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     project = projectDAO.findByID(projectId);
                     request.setAttribute(AttributeName.PROJECT, project.get());
-                    String position = (String) session.getAttribute("employee_position");
-                    Level level = Level.valueOf(String.valueOf(session.getAttribute("level")).toUpperCase());
-                    int quantity = (int) session.getAttribute("quantity");
-                    List<EmployeeDto> freeEmployees = teamScheduleDAO.findFreeEmployeesForProject(projectId, position, level, quantity);
+                    String position = (String) session.getAttribute(AttributeName.EMPLOYEE_POSITION);
+                    Level level = Level.valueOf(String.valueOf(session.getAttribute(AttributeName.EMPLOYEE_LEVEL)).toUpperCase());
+                    int requiredQuantityOfEmployees = (int) session.getAttribute(AttributeName.REQUIRED_QUANTITY);
+                    List<EmployeeDto> freeEmployees = teamScheduleDAO.findFreeEmployeesForProject(projectId, position, level, requiredQuantityOfEmployees);
                     request.setAttribute(AttributeName.FREE_EMPLOYEES, freeEmployees);
                     return JSPPagePath.ADMIN_EDIT_PROJECT;
                 } else {
-                    request.setAttribute("message_fail", MSG_FAIL);
+                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
         }
         return JSPPagePath.ADMIN_EDIT_PROJECT;

@@ -1,14 +1,12 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.dto.CustomerDto;
-import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.exception.DAOException;
-import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
 import by.sidina.it_team.dao.impl.UserDAOImpl;
-import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
 import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
@@ -20,6 +18,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ShowCustomersGetCommand extends BaseCommand {
+    public static final int PAGE_NUMBER_DEFAULT = 1;
+    public static final int PAGE_SIZE_DEFAULT = 5;
+
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
@@ -35,19 +36,20 @@ public class ShowCustomersGetCommand extends BaseCommand {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-
-        int pageSize = 4;
-        String pageNumberString = request.getParameter("page_number");
-        int pageNumber = null == pageNumberString ? 1 : Integer.parseInt(pageNumberString);
+        int pageSize = PAGE_SIZE_DEFAULT;
+        String pageNumberString = request.getParameter(ParameterName.PAGE_NUMBER);
+        int pageNumber = null == pageNumberString
+                ? PAGE_NUMBER_DEFAULT
+                : Integer.parseInt(pageNumberString);
         int countCustomers;
         int offset = pageSize * pageNumber - pageSize;
         UserDAO userDAO = new UserDAOImpl();
-        List<CustomerDto> customers = userDAO.findAllCustomers(pageSize,offset);
+        List<CustomerDto> customers = userDAO.findAllCustomers(pageSize, offset);
         countCustomers = userDAO.countAllCustomersForAdmin();
-        int pageNumbers = (int)Math.ceil(countCustomers/pageSize+0.5);
-        request.setAttribute("page_numbers", pageNumbers);
-        request.setAttribute("page_number", pageNumber);
-        request.setAttribute("page_size", pageSize);
+        int pageNumbers = (int) Math.ceil(countCustomers / pageSize + 0.5);
+        request.setAttribute(AttributeName.PAGE_QUANTITY, pageNumbers);
+        request.setAttribute(AttributeName.PAGE_NUMBER, pageNumber);
+        request.setAttribute(AttributeName.PAGE_SIZE, pageSize);
         request.setAttribute(AttributeName.CUSTOMERS, customers);
         return JSPPagePath.ADMIN_ALL_CUSTOMERS;
     }

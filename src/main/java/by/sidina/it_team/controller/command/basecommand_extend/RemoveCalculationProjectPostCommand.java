@@ -1,7 +1,7 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -9,6 +9,7 @@ import by.sidina.it_team.dao.impl.ProjectCalculationDAOImpl;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
 import by.sidina.it_team.dao.repository.ProjectCalculationDAO;
 import by.sidina.it_team.dao.repository.ProjectDAO;
+import by.sidina.it_team.entity.ProjectStatus;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
 
@@ -18,10 +19,9 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class RemoveCalculationProjectPostCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class RemoveCalculationProjectPostCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -36,26 +36,26 @@ public class RemoveCalculationProjectPostCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (session.getAttribute("project_id") == null) {
+        if (session.getAttribute(AttributeName.PROJECT_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
+            int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             if (project.isPresent()) {
                 ProjectCalculationDAO projectCalculation = new ProjectCalculationDAOImpl();
                 boolean isAdded = projectCalculation.remove(projectId);
-                boolean isChanged = projectDAO.changeStatus(projectId, 1);
+                boolean isChanged = projectDAO.changeStatus(projectId, ProjectStatus.NEW.getProjectStatusID());
                 if (isAdded) {
-                    request.setAttribute("message_success", MSG_SUCCESS);
+                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     project = projectDAO.findByID(projectId);
                     request.setAttribute(AttributeName.PROJECT, project.get());
                     return JSPPagePath.ADMIN_EDIT_PROJECT;
                 } else {
-                    request.setAttribute("message_fail", MSG_FAIL);
+                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
         }
         return JSPPagePath.ADMIN_EDIT_PROJECT;

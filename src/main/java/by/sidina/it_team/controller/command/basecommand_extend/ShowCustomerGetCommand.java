@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.CustomerDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -17,10 +17,9 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class ShowCustomerGetCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class ShowCustomerGetCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -38,13 +37,13 @@ public class ShowCustomerGetCommand extends BaseCommand {
         if (request.getParameter(ParameterName.PROJECT_ID).isEmpty()) {
             return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         } else {
-            int customerId = Integer.parseInt(request.getParameter("customer_id"));
+            int customerId = Integer.parseInt(request.getParameter(ParameterName.CUSTOMER_ID));
             UserDAO userDAO = new UserDAOImpl();
             Optional<CustomerDto> customer = userDAO.findCustomerByID(customerId);
             if (customer.isPresent()) {
                 request.setAttribute(AttributeName.CUSTOMER, customer.get());
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
             return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         }

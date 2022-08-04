@@ -1,7 +1,6 @@
 package by.sidina.it_team.dao.dto;
 
 import by.sidina.it_team.entity.ProjectStatus;
-import by.sidina.it_team.entity.UserStatus;
 
 import java.sql.Date;
 import java.util.Objects;
@@ -21,7 +20,6 @@ public class ProjectDto {
     private String requirementComment;
 
     private ProjectDto() {
-
     }
 
     public ProjectDto(int id, String name, Date startDate, Date endDate, ProjectStatus status, int customerId,
@@ -87,7 +85,8 @@ public class ProjectDto {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ProjectDto projectDto = (ProjectDto) o;
-        return id == projectDto.id && customerId == projectDto.customerId &&
+        return id == projectDto.id &&
+                customerId == projectDto.customerId &&
                 Double.compare(projectDto.amount, amount) == 0 &&
                 Double.compare(projectDto.hoursFact, hoursFact) == 0 &&
                 Double.compare(projectDto.hoursPlan, hoursPlan) == 0 &&

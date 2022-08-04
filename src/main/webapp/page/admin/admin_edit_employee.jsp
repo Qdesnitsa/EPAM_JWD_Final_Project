@@ -71,7 +71,8 @@
                             <option value="11">BA</option>
                         </select
                         ><br/>
-                        <button type="submit" class="big_button_middle" name="command" value="change_employee_position_post">
+                        <button type="submit" class="big_button_middle" name="command"
+                                value="change_employee_position_post">
                             <fmt:message key="label.change_position"/>
                         </button>
                     </th>
@@ -150,7 +151,6 @@
                         ><br/>
                     </th>
                     <th width="25%">
-
                         <select name="employee_position">
                             <option value="1">Java</option>
                             <option value="2">HTML/CSS/JS</option>
@@ -178,7 +178,8 @@
                 </tr>
             </table>
             <div align="center">
-                <button type="submit" class="submit" name="command" value="add_new_employee_post"><fmt:message key="label.add"/></button>
+                <button type="submit" class="submit" name="command" value="add_new_employee_post"><fmt:message
+                        key="label.add"/></button>
             </div>
             <div class="msg"><br>
                 <c:choose>
@@ -201,4 +202,3 @@
         </form>
     </jsp:body>
 </t:layout>
-

@@ -13,7 +13,8 @@ public class TeamSchedule implements Serializable {
     private Date date;
     private double hours_fact;
 
-    private TeamSchedule() {}
+    private TeamSchedule() {
+    }
 
     public TeamSchedule(int employee_id, int project_id, Date date, double hours_fact) {
         this.employee_id = employee_id;

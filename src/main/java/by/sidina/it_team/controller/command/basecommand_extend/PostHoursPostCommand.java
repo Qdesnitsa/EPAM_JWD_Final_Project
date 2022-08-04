@@ -1,8 +1,9 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
@@ -21,9 +22,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
+
 public class PostHoursPostCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+    public static int HOURS_DEFAULT = 0;
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -41,7 +43,7 @@ public class PostHoursPostCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
+        int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
         ProjectDAO projectDAO = new ProjectDAOImpl();
         List<ProjectDto> employeeProjects = projectDAO.findAllByEmployeeID(user.getId());
         boolean hasEmployeeThisProject = employeeProjects
@@ -51,21 +53,21 @@ public class PostHoursPostCommand extends BaseCommand {
                 .findAny()
                 .isPresent();
         if (hasEmployeeThisProject) {
-            Date date = null == request.getParameter("date")
+            Date date = null == request.getParameter(ParameterName.DATE)
                     ? Date.valueOf(currentDate)
-                    : Date.valueOf(request.getParameter("date"));
-            double hours = null == request.getParameter("hours")
-                    ? 0
-                    : Double.parseDouble(request.getParameter("hours"));
+                    : Date.valueOf(request.getParameter(ParameterName.DATE));
+            double hours = null == request.getParameter(ParameterName.HOURS)
+                    ? HOURS_DEFAULT
+                    : Double.parseDouble(request.getParameter(ParameterName.HOURS));
             TeamScheduleDAO teamScheduleDAO = new TeamScheduleDAOImpl();
             boolean isAdded = teamScheduleDAO.addHoursByEmployeeId(new TeamSchedule(user.getId(), projectId, date, hours));
             if (isAdded) {
-                request.setAttribute("message_success", MSG_SUCCESS);
+                request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
         } else {
-            request.setAttribute("message_fail", MSG_FAIL);
+            request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
         }
         return JSPPagePath.EMPLOYEE_EDIT_HOURS;
     }

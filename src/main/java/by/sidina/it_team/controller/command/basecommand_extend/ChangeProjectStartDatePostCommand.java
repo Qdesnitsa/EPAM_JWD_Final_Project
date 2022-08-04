@@ -1,9 +1,9 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
@@ -18,10 +18,9 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class ChangeProjectStartDatePostCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class ChangeProjectStartDatePostCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -36,29 +35,29 @@ public class ChangeProjectStartDatePostCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (session.getAttribute("project_id") == null) {
+        if (session.getAttribute(AttributeName.PROJECT_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            int projectId = Integer.parseInt(String.valueOf(session.getAttribute("project_id")));
+            int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
             ProjectDAO projectDAO = new ProjectDAOImpl();
             Optional<ProjectDto> project = projectDAO.findByID(projectId);
             if (project.isPresent()) {
                 String startDateString =
-                        (null == request.getParameter("start_date") || "".equals(request.getParameter("start_date")))
+                        null == request.getParameter(ParameterName.START_DATE) || request.getParameter(ParameterName.START_DATE).isEmpty()
                                 ? String.valueOf(project.get().getStartDate())
-                                : request.getParameter("start_date");
+                                : request.getParameter(ParameterName.START_DATE);
                 Date startDate = Date.valueOf(startDateString);
                 boolean isChanged = projectDAO.changeStartDate(projectId, startDate);
                 if (isChanged) {
-                    request.setAttribute("message_success", MSG_SUCCESS);
+                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     project = projectDAO.findByID(projectId);
                     request.setAttribute(AttributeName.PROJECT, project.get());
                     return JSPPagePath.ADMIN_EDIT_PROJECT;
                 } else {
-                    request.setAttribute("message_fail", MSG_FAIL);
+                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
         }
         return JSPPagePath.ADMIN_EDIT_PROJECT;

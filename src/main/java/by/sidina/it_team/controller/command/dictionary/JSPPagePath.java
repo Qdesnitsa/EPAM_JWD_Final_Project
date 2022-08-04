@@ -1,4 +1,4 @@
-package by.sidina.it_team.controller;
+package by.sidina.it_team.controller.command.dictionary;
 
 public final class JSPPagePath {
     public final static String ADMIN_ALL_PROJECTS = "/page/admin/admin_all_projects.jsp";

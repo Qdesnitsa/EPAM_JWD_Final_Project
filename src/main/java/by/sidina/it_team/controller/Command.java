@@ -10,4 +10,3 @@ import java.io.IOException;
 public interface Command {
     String execute(HttpServletRequest request, HttpServletResponse response) throws DAOException, ServletException, IOException;
 }
-

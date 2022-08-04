@@ -38,70 +38,95 @@ public class ProjectDAOImpl implements ProjectDAO {
             LIMIT ? OFFSET ?
             """;
     private static final String SQL_COUNT_ALL_PROJECTS
-            = "SELECT count(*) AS count FROM projects " +
-            "LEFT JOIN status_project ON status_project.id=projects.project_status_id WHERE status_project.id=?";
+            = """
+            SELECT count(*) AS count
+            FROM   projects
+                   LEFT JOIN status_project
+                          ON status_project.id = projects.project_status_id
+            WHERE  status_project.id =?
+            """;
     private static final String SQL_FIND_PROJECTS_BY_CUSTOMER_ID
             = """
-            SELECT projects.id as id,
-                   projects.name as name,
-                   projects.start_date as start_date,
-                   projects.end_date as end_date,
-                   status_project.status as project_status,
-                   projects.requirement_comment as comment,
-                   projects.customer_id as customer_id,
-                   (SELECT sum(payments.amount) FROM payments WHERE projects.id = payments.project_id) as payments,
-                   (SELECT sum(team_schedule.hours_fact) FROM team_schedule WHERE projects.id = team_schedule.project_id) as hours_fact,
-                   project_calculation.hours_plan as hours_plan,
-                   project_calculation.cost_plan as cost_plan
-            FROM projects
-                     LEFT JOIN status_project ON projects.project_status_id = status_project.id
-                     LEFT JOIN payments ON projects.id = payments.project_id
-                     LEFT JOIN team_schedule ON projects.id = team_schedule.project_id
-                     LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
-            WHERE projects.customer_id=?
-            GROUP BY id
+            SELECT projects.id                                     AS id,
+                   projects.name                                   AS name,
+                   projects.start_date                             AS start_date,
+                   projects.end_date                               AS end_date,
+                   status_project.status                           AS project_status,
+                   projects.requirement_comment                    AS comment,
+                   projects.customer_id                            AS customer_id,
+                   (SELECT sum(payments.amount)
+                    FROM   payments
+                    WHERE  projects.id = payments.project_id)      AS payments,
+                   (SELECT sum(team_schedule.hours_fact)
+                    FROM   team_schedule
+                    WHERE  projects.id = team_schedule.project_id) AS hours_fact,
+                   project_calculation.hours_plan                  AS hours_plan,
+                   project_calculation.cost_plan                   AS cost_plan
+            FROM   projects
+                   LEFT JOIN status_project
+                          ON projects.project_status_id = status_project.id
+                   LEFT JOIN payments
+                          ON projects.id = payments.project_id
+                   LEFT JOIN team_schedule
+                          ON projects.id = team_schedule.project_id
+                   LEFT JOIN project_calculation
+                          ON projects.id = project_calculation.project_id
+            WHERE  projects.customer_id =?
+            GROUP  BY id
             """;
     private static final String SQL_FIND_PROJECTS_BY_EMPLOYEE_ID
             = """
-            SELECT projects.id as id,
-                   projects.name as name,
-                   projects.start_date as start_date,
-                   projects.end_date as end_date,
-                   status_project.status as project_status,
-                   projects.requirement_comment as comment,
-                   projects.customer_id as customer_id,
-                   (SELECT sum(payments.amount) FROM payments WHERE projects.id = payments.project_id) as payments,
-                   (SELECT sum(team_schedule.hours_fact) FROM team_schedule WHERE projects.id = team_schedule.project_id) as hours_fact,
-                   project_calculation.hours_plan as hours_plan,
-                   project_calculation.cost_plan as cost_plan
-            FROM projects
-                     LEFT JOIN status_project ON projects.project_status_id = status_project.id
-                     LEFT JOIN payments ON projects.id = payments.project_id
-                     LEFT JOIN team_schedule ON projects.id = team_schedule.project_id
-                     LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
-            WHERE team_schedule.employee_id=?
-            GROUP BY id
+            SELECT projects.id                                     AS id,
+                   projects.name                                   AS name,
+                   projects.start_date                             AS start_date,
+                   projects.end_date                               AS end_date,
+                   status_project.status                           AS project_status,
+                   projects.requirement_comment                    AS comment,
+                   projects.customer_id                            AS customer_id,
+                   (SELECT sum(payments.amount)
+                    FROM   payments
+                    WHERE  projects.id = payments.project_id)      AS payments,
+                   (SELECT sum(team_schedule.hours_fact)
+                    FROM   team_schedule
+                    WHERE  projects.id = team_schedule.project_id) AS hours_fact,
+                   project_calculation.hours_plan                  AS hours_plan,
+                   project_calculation.cost_plan                   AS cost_plan
+            FROM   projects
+                   LEFT JOIN status_project
+                          ON projects.project_status_id = status_project.id
+                   LEFT JOIN payments
+                          ON projects.id = payments.project_id
+                   LEFT JOIN team_schedule
+                          ON projects.id = team_schedule.project_id
+                   LEFT JOIN project_calculation
+                          ON projects.id = project_calculation.project_id
+            WHERE  team_schedule.employee_id =?
+            GROUP  BY id
             """;
     private static final String SQL_FIND_PROJECT_BY_ID
             = """
-            SELECT projects.id as id,
-                   projects.name as name,
-                   projects.start_date as start_date,
-                   projects.end_date as end_date,
-                   status_project.status as project_status,
-                   projects.requirement_comment as comment,
-                   projects.customer_id as customer_id,
-                   sum(payments.amount)/count(team_schedule.project_id) as payments,
-                   sum(team_schedule.hours_fact)/count(team_schedule.project_id) as hours_fact,
-                   sum(project_calculation.hours_plan)/count(team_schedule.project_id) as hours_plan,
-                   sum(project_calculation.cost_plan)/count(team_schedule.project_id) as cost_plan
-            FROM projects
-                     LEFT JOIN status_project ON projects.project_status_id = status_project.id
-                     LEFT JOIN payments ON projects.id = payments.project_id
-                     LEFT JOIN team_schedule ON projects.id = team_schedule.project_id
-                     LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
-            WHERE projects.id=?
-            GROUP BY id
+            SELECT projects.id                                                           AS id,
+                   projects.name                                                         AS name,
+                   projects.start_date                                                   AS start_date,
+                   projects.end_date                                                     AS end_date,
+                   status_project.status                                                 AS project_status,
+                   projects.requirement_comment                                          AS comment,
+                   projects.customer_id                                                  AS customer_id,
+                   sum(payments.amount) / count(team_schedule.project_id)                AS payments,
+                   sum(team_schedule.hours_fact) / count(team_schedule.project_id)       AS hours_fact,
+                   sum(project_calculation.hours_plan) / count(team_schedule.project_id) AS hours_plan,
+                   sum(project_calculation.cost_plan) / count(team_schedule.project_id)  AS cost_plan
+            FROM   projects
+                   LEFT JOIN status_project
+                          ON projects.project_status_id = status_project.id
+                   LEFT JOIN payments
+                          ON projects.id = payments.project_id
+                   LEFT JOIN team_schedule
+                          ON projects.id = team_schedule.project_id
+                   LEFT JOIN project_calculation
+                          ON projects.id = project_calculation.project_id
+            WHERE  projects.id =?
+            GROUP  BY id
             """;
     private static final String SQL_CHANGE_PROJECT_STATUS
             = "UPDATE projects SET project_status_id=? WHERE id=?";
@@ -109,7 +134,6 @@ public class ProjectDAOImpl implements ProjectDAO {
             = "UPDATE projects SET start_date=? WHERE id=?";
     private static final String SQL_CHANGE_END_DATE
             = "UPDATE projects SET end_date=? WHERE id=?";
-
 
     @Override
     public List<ProjectDto> findAllForAdmin(int limit, int offset, int status) throws DAOException {
@@ -236,7 +260,7 @@ public class ProjectDAOImpl implements ProjectDAO {
             statement.setString(1, project.getName());
             statement.setDate(2, project.getStartDate());
             statement.setDate(3, project.getEndDate());
-            statement.setInt(4, 1);
+            statement.setInt(4, ProjectStatus.NEW.getProjectStatusID());
             statement.setString(5, project.getRequirementComment());
             statement.setInt(6, project.getCustomerID());
             int counter = statement.executeUpdate();

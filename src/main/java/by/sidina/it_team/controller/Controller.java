@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller;
 
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.exception.DAOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -46,8 +46,5 @@ public class Controller extends HttpServlet {
         String commandFromPage = request.getParameter(ParameterName.COMMAND);
         Command command = CommandProvider.defineCommand(commandFromPage);
         String page = command.execute(request, response);
-        //RequestDispatcher dispatcher = request.getRequestDispatcher(page);
-        //dispatcher.forward(request, response);
     }
-
 }

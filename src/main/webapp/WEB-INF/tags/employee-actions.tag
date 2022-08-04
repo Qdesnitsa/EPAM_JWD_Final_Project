@@ -6,4 +6,3 @@
         <fmt:message key="label.show_my_projects"/>
     </button>
 </form>
-

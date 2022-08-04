@@ -11,7 +11,8 @@ public class Rate implements Serializable {
     private int levelID;
     private double rate;
 
-    private Rate() {}
+    private Rate() {
+    }
 
     public Rate(int positionID, int levelID, double rate) {
         this.positionID = positionID;

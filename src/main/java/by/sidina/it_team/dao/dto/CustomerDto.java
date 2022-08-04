@@ -1,7 +1,5 @@
 package by.sidina.it_team.dao.dto;
 
-import by.sidina.it_team.entity.Level;
-import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.UserStatus;
 
 import java.util.Objects;
@@ -72,7 +70,7 @@ public class CustomerDto {
                 ", email='" + email + '\'' +
                 ", status=" + status +
                 ", statusId=" + statusId +
-                " ;";
+                "; ";
     }
 
     public static class Builder {

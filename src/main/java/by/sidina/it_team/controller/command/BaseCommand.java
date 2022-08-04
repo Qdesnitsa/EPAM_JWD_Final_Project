@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller.command;
 
 import by.sidina.it_team.controller.Command;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.exception.DAOException;
 
 import javax.servlet.ServletException;
@@ -13,7 +13,9 @@ import java.io.IOException;
 
 public abstract class BaseCommand implements Command {
     public abstract boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response);
+
     public abstract String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws DAOException, ServletException, IOException;
+
     public abstract String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response);
 
     public Command getExpectedCommand(HttpServletRequest request, HttpServletResponse response) {
@@ -25,9 +27,8 @@ public abstract class BaseCommand implements Command {
             HttpSession session = request.getSession();
             String commandName = request.getParameter(ParameterName.COMMAND);
             if (!commandName.toUpperCase().equals(CommandEnum.SELECT_LOCALE.name())) {
-                session.setAttribute("last_command", request.getParameter(ParameterName.COMMAND));
+                session.setAttribute(AttributeName.LAST_COMMAND, request.getParameter(ParameterName.COMMAND));
             }
-
             String jspPage = getExpectedJspPage(request, response);
             if (jspPage != null) {
                 try {

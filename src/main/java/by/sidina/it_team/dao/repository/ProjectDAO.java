@@ -10,14 +10,20 @@ import java.util.Optional;
 
 public interface ProjectDAO {
     List<ProjectDto> findAllForAdmin(int limit, int offset, int status) throws DAOException;
+
     List<ProjectDto> findAllByCustomerID(int id) throws DAOException;
+
     List<ProjectDto> findAllByEmployeeID(int id) throws DAOException;
+
     Optional<ProjectDto> findByID(int id) throws DAOException;
+
     int countAllProjectsForAdmin(int status) throws DAOException;
 
     boolean add(Project project) throws DAOException;
 
     boolean changeStatus(int id, int status) throws DAOException;
+
     boolean changeStartDate(int id, Date date) throws DAOException;
+
     boolean changeEndDate(int id, Date date) throws DAOException;
 }

@@ -17,46 +17,76 @@ import java.util.Optional;
 
 public class UserDAOImpl implements UserDAO {
     private static final String SQL_FIND_ALL_USERS
-            = "SELECT id, name, surname, (SELECT role_types from roles WHERE id=users.role_id), email, " +
-            "(SELECT status from status_user WHERE id=users.user_status_id) FROM users";
+            = """
+                        SELECT id,
+                               name,
+                               surname,
+                               (SELECT role_types
+                                FROM   roles
+                                WHERE  id = users.role_id),
+                               email,
+                               (SELECT status
+                                FROM   status_user
+                                WHERE  id = users.user_status_id)
+                        FROM   users
+            """;
     private static final String SQL_FIND_ALL_CUSTOMERS
             = """
-            SELECT 
-                users.id AS id, 
-                users.name AS name, 
-                users.surname AS surname, 
-                roles.role_types AS role, 
-                users.email AS email,
-                status_user.status AS status,
-                status_user.id AS status_id
-            FROM users
-            LEFT JOIN roles ON roles.id=users.role_id
-            LEFT JOIN status_user ON status_user.id=users.user_status_id
-            WHERE roles.role_types="CUSTOMER"
-            ORDER BY status_user.status
-            LIMIT ? OFFSET ?
+            SELECT users.id           AS id,
+                   users.name         AS name,
+                   users.surname      AS surname,
+                   roles.role_types   AS role,
+                   users.email        AS email,
+                   status_user.status AS status,
+                   status_user.id     AS status_id
+            FROM   users
+                   LEFT JOIN roles
+                          ON roles.id = users.role_id
+                   LEFT JOIN status_user
+                          ON status_user.id = users.user_status_id
+            WHERE  roles.role_types = "customer"
+            ORDER  BY status_user.status
+            LIMIT  ? offset ?
             """;
     private static final String SQL_FIND_CUSTOMER_BY_ID
             = """
-            SELECT 
-                users.id AS id, 
-                users.name AS name, 
-                users.surname AS surname, 
-                roles.role_types AS role, 
-                users.email AS email,
-                status_user.status AS status,
-                status_user.id AS status_id
-            FROM users
-            LEFT JOIN roles ON roles.id=users.role_id
-            LEFT JOIN status_user ON status_user.id=users.user_status_id
-            WHERE roles.role_types="CUSTOMER" AND users.id=?
-            ORDER BY status_user.status
+            SELECT users.id           AS id,
+                   users.name         AS name,
+                   users.surname      AS surname,
+                   roles.role_types   AS role,
+                   users.email        AS email,
+                   status_user.status AS status,
+                   status_user.id     AS status_id
+            FROM   users
+                   LEFT JOIN roles
+                          ON roles.id = users.role_id
+                   LEFT JOIN status_user
+                          ON status_user.id = users.user_status_id
+            WHERE  roles.role_types = "customer"
+                   AND users.id =?
+            ORDER  BY status_user.status\s
             """;
     private static final String SQL_COUNT_ALL_CUSTOMERS
-            = "SELECT count(*) AS count FROM users WHERE role_id=3";
+            = """
+            SELECT Count(*) AS count
+            FROM   users
+            WHERE  role_id = 3
+            """;
     private static final String SQL_FIND_USER_BY_ID
-            = "SELECT id, name, surname, (SELECT role_types from roles WHERE id=users.role_id), email, " +
-            "(SELECT status from status_user WHERE id=users.user_status_id) FROM users WHERE id=?";
+            = """
+            SELECT id,
+                   name,
+                   surname,
+                   (SELECT role_types
+                    FROM   roles
+                    WHERE  id = users.role_id),
+                   email,
+                   (SELECT status
+                    FROM   status_user
+                    WHERE  id = users.user_status_id)
+            FROM   users
+            WHERE  id =?
+            """;
     private static final String SQL_ADD_EMPLOYEE
             = "INSERT INTO users (name, surname, role_id, email, password, user_status_id) values(?,?,?,?,?,?)";
     private static final String SQL_EDIT_USER_STATUS_BY_ID
@@ -68,7 +98,7 @@ public class UserDAOImpl implements UserDAO {
     private static final String SQL_FIND_PASSWORD_BY_EMAIL
             = "SELECT password FROM users WHERE email=?";
     private static final String SQL_CHANGE_USER_STATUS
-            ="UPDATE users SET user_status_id=? WHERE id=?";
+            = "UPDATE users SET user_status_id=? WHERE id=?";
 
     @Override
     public List<User> findAll() throws DAOException {

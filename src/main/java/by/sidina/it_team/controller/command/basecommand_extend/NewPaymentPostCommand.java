@@ -1,8 +1,8 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
@@ -22,9 +22,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
+
 public class NewPaymentPostCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+    public static final int PAYMENT_DEFAULT = 0;
+
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -35,7 +37,7 @@ public class NewPaymentPostCommand extends BaseCommand {
     public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws DAOException {
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
-        User user = (User)request.getSession().getAttribute(AttributeName.USER);
+        User user = (User) request.getSession().getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
         ProjectDAO projectDAO = null;
@@ -57,17 +59,17 @@ public class NewPaymentPostCommand extends BaseCommand {
                     .isPresent();
             if (hasCustomerThisProject) {
                 PaymentDAO payment = new PaymentDAOImpl();
-                double amount = request.getParameter("payment").isEmpty()
-                        ? 0
-                        : Double.parseDouble(request.getParameter("payment"));
+                double amount = request.getParameter(ParameterName.PAYMENT).isEmpty()
+                        ? PAYMENT_DEFAULT
+                        : Double.parseDouble(request.getParameter(ParameterName.PAYMENT));
                 boolean isAdded = payment.addPaymentByProjectAndCustomerID(project.get(), amount, Date.valueOf(currentDate));
                 if (isAdded) {
-                    request.setAttribute("message_success", MSG_SUCCESS);
+                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                 } else {
-                    request.setAttribute("message_fail", MSG_FAIL);
+                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
             projects = projectDAO.findAllByCustomerID(user.getId());
             request.setAttribute(AttributeName.PROJECTS, projects);

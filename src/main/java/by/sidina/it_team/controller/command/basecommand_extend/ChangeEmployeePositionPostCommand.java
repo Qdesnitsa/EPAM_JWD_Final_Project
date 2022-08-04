@@ -1,15 +1,13 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
-import by.sidina.it_team.dao.impl.UserDAOImpl;
 import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
-import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
 
@@ -17,13 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
-import java.util.Base64;
 import java.util.Optional;
 
-public class ChangeEmployeePositionPostCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class ChangeEmployeePositionPostCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -41,24 +37,24 @@ public class ChangeEmployeePositionPostCommand extends BaseCommand {
         if (session.getAttribute(ParameterName.EMPLOYEE_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
         } else {
-            int employeeId = Integer.parseInt(String.valueOf(session.getAttribute("employee_id")));
+            int employeeId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.EMPLOYEE_ID)));
             TeamPositionLevelDAO teamPositionLevelDAO = new TeamPositionLevelDAOImpl();
             Optional<EmployeeDto> employee = teamPositionLevelDAO.findByID(employeeId);
             if (employee.isPresent()) {
-                int position = null == request.getParameter("change_employee_position")
+                int position = null == request.getParameter(ParameterName.CHANGE_EMPLOYEE_POSITION)
                         ? employee.get().getPositionId()
-                        : Integer.parseInt(request.getParameter("change_employee_position"));
+                        : Integer.parseInt(request.getParameter(ParameterName.CHANGE_EMPLOYEE_POSITION));
                 boolean isChanged = teamPositionLevelDAO.changePosition(employeeId, position);
                 if (isChanged) {
                     employee = teamPositionLevelDAO.findByID(employeeId);
                     request.setAttribute(AttributeName.EMPLOYEE, employee.get());
-                    request.setAttribute("message_success", MSG_SUCCESS);
+                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                 } else {
-                    request.setAttribute("message_fail", MSG_FAIL);
+                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
                 return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
         }
         return JSPPagePath.ADMIN_EDIT_EMPLOYEE;

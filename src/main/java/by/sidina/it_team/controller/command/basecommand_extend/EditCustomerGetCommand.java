@@ -1,15 +1,12 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.CustomerDto;
-import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.exception.DAOException;
-import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
 import by.sidina.it_team.dao.impl.UserDAOImpl;
-import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
 import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
@@ -20,10 +17,9 @@ import javax.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public class EditCustomerGetCommand extends BaseCommand {
-    private final String MSG_SUCCESS = "Successfully";
-    private final String MSG_FAIL = "Failed";
+import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
+public class EditCustomerGetCommand extends BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -38,18 +34,18 @@ public class EditCustomerGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        session.setAttribute("customer_id", request.getParameter("customer_id"));
+        session.setAttribute(AttributeName.CUSTOMER_ID, request.getParameter(ParameterName.CUSTOMER_ID));
         if (request.getParameter(ParameterName.CUSTOMER_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         } else {
-            int customerId = Integer.parseInt(request.getParameter("customer_id"));
+            int customerId = Integer.parseInt(request.getParameter(ParameterName.CUSTOMER_ID));
             UserDAO userDAO = new UserDAOImpl();
             Optional<CustomerDto> customer = userDAO.findCustomerByID(customerId);
             if (customer.isPresent()) {
                 session.setAttribute(AttributeName.CUSTOMER, customer.get());
                 return JSPPagePath.ADMIN_EDIT_CUSTOMER;
             } else {
-                request.setAttribute("message_fail", MSG_FAIL);
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
         }
         return JSPPagePath.ADMIN_EDIT_CUSTOMER;

@@ -13,51 +13,71 @@ import java.util.List;
 
 public class TeamScheduleDAOImpl implements TeamScheduleDAO {
     private static final String SQL_ADD_EMPLOYEE_TO_PROJECT
-            = "INSERT INTO team_schedule (employee_id, project_id, date, hours_fact) " +
-            "values(?,?,(SELECT projects.start_date FROM projects WHERE id=?),0)";
+            = """
+            INSERT INTO team_schedule
+                        (employee_id,
+                         project_id,
+                         date,
+                         hours_fact)
+            VALUES     (?,
+                        ?,
+                        (SELECT projects.start_date
+                         FROM   projects
+                         WHERE  id =? ),
+                        0)
+            """;
     private static final String SQL_FIND_EMPLOYEES_ON_PROJECT
             = """
-            SELECT team_schedule.employee_id AS id,
-            		 positions.position AS position,
-            		 levels.level AS level,
-            		 sum(team_schedule.hours_fact) as hours,
-            		 users.name AS name,
-            		 users.surname AS surname
-            FROM team_schedule
-            LEFT JOIN projects ON team_schedule.project_id=projects.id
-            LEFT JOIN team_position_level ON team_position_level.employee_id=team_schedule.employee_id
-            LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
-            LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
-            LEFT JOIN users ON team_position_level.employee_id=users.id
-                WHERE users.user_status_id=1
-                AND projects.id=?
-            GROUP BY id;
+            SELECT team_schedule.employee_id     AS id,
+                   positions.position            AS position,
+                   levels.level                  AS level,
+                   sum(team_schedule.hours_fact) AS hours,
+                   users.name                    AS name,
+                   users.surname                 AS surname
+            FROM   team_schedule
+                   LEFT JOIN projects
+                          ON team_schedule.project_id = projects.id
+                   LEFT JOIN team_position_level
+                          ON team_position_level.employee_id = team_schedule.employee_id
+                   LEFT JOIN positions
+                          ON team_position_level.employee_position_id = positions.id
+                   LEFT JOIN levels
+                          ON team_position_level.employee_level_id = levels.id
+                   LEFT JOIN users
+                          ON team_position_level.employee_id = users.id
+            WHERE  users.user_status_id = 1
+                   AND projects.id =?
+            GROUP  BY id
             """;
     private static final String SQL_ADD_HOURS_TO_PROJECT
-            ="INSERT INTO team_schedule(employee_id,project_id,date,hours_fact) values(?,?,?,?)";
+            = "INSERT INTO team_schedule(employee_id,project_id,date,hours_fact) values(?,?,?,?)";
     private static final String SQL_REMOVE_EMPLOYEE_FROM_PROJECT
             = "DELETE FROM team_schedule WHERE employee_id=? AND project_id=?";
     private static final String SQL_FIND_FREE_EMPLOYEES_FOR_PROJECT_ID
             = """
-            SELECT team_position_level.employee_id AS id,
-                          positions.position AS POSITION,
-                          levels.level AS LEVEL,
+            SELECT team_position_level.employee_id      AS id,
+                          positions.position            AS POSITION,
+                          levels.level                  AS LEVEL,
                           sum(team_schedule.hours_fact) AS hours,
-                          users.name AS name,
-                          users.surname AS surname
+                          users.name                    AS name,
+                          users.surname                 AS surname
                    FROM team_position_level
-                   LEFT JOIN team_schedule ON team_position_level.employee_id=team_schedule.employee_id
-                   LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
-                   LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
-                   LEFT JOIN users ON team_position_level.employee_id=users.id
+                   LEFT JOIN team_schedule 
+                        ON team_position_level.employee_id=team_schedule.employee_id
+                   LEFT JOIN positions 
+                        ON team_position_level.employee_position_id=positions.id
+                   LEFT JOIN levels 
+                        ON team_position_level.employee_level_id=levels.id
+                   LEFT JOIN users 
+                        ON team_position_level.employee_id=users.id
                    WHERE team_schedule.employee_id IS NULL
                      AND users.user_status_id=1
                      AND POSITION=?
                      AND LEVEL=?
                    GROUP BY team_position_level.employee_id
-                    
+
                    UNION
-                   
+
                    SELECT team_schedule.employee_id,
                           positions.position,
                           levels.level,
@@ -65,15 +85,21 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
                           users.name,
                           users.surname
                    FROM team_schedule
-                   LEFT JOIN projects ON team_schedule.project_id=projects.id
-                   LEFT JOIN team_position_level ON team_position_level.employee_id=team_schedule.employee_id
-                   LEFT JOIN positions ON team_position_level.employee_position_id=positions.id
-                   LEFT JOIN levels ON team_position_level.employee_level_id=levels.id
-                   LEFT JOIN users ON team_position_level.employee_id=users.id
+                   LEFT JOIN projects 
+                        ON team_schedule.project_id=projects.id
+                   LEFT JOIN team_position_level 
+                        ON team_position_level.employee_id=team_schedule.employee_id
+                   LEFT JOIN positions 
+                        ON team_position_level.employee_position_id=positions.id
+                   LEFT JOIN levels 
+                        ON team_position_level.employee_level_id=levels.id
+                   LEFT JOIN users 
+                        ON team_position_level.employee_id=users.id
                    WHERE POSITION=?
                      AND LEVEL=?
                      AND users.user_status_id=1
-                     AND team_schedule.employee_id NOT IN
+                     AND team_schedule.employee_id 
+                        NOT IN
                        (SELECT DISTINCT team_schedule.employee_id
                         FROM projects,
                              team_schedule
@@ -111,7 +137,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
                                   FROM projects
                                   WHERE project_id=?)) )
                    GROUP BY employee_id
-                   LIMIT ?
+                   LIMIT ?            
             """;
 
     @Override

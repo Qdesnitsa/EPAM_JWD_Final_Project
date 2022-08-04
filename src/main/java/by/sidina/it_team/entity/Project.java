@@ -16,7 +16,8 @@ public class Project implements Serializable {
 
     private int customerID;
 
-    private Project() {}
+    private Project() {
+    }
 
     public Project(String name, Date startDate, Date endDate, int projectStatusID, String requirementComment, int customerID) {
         this.name = name;
@@ -85,6 +86,7 @@ public class Project implements Serializable {
 
     public static class Builder {
         private final Project newProject;
+
         public Builder() {
             newProject = new Project();
         }

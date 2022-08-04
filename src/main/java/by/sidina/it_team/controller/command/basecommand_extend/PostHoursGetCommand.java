@@ -1,25 +1,17 @@
 package by.sidina.it_team.controller.command.basecommand_extend;
 
-import by.sidina.it_team.controller.AttributeName;
-import by.sidina.it_team.controller.JSPPagePath;
-import by.sidina.it_team.controller.ParameterName;
+import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.BaseCommand;
-import by.sidina.it_team.dao.dto.ProjectDto;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.exception.DAOException;
-import by.sidina.it_team.dao.impl.ProjectDAOImpl;
-import by.sidina.it_team.dao.impl.TeamScheduleDAOImpl;
-import by.sidina.it_team.dao.repository.ProjectDAO;
-import by.sidina.it_team.dao.repository.TeamScheduleDAO;
 import by.sidina.it_team.entity.Role;
-import by.sidina.it_team.entity.TeamSchedule;
 import by.sidina.it_team.entity.User;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Optional;
 
 public class PostHoursGetCommand extends BaseCommand {
 
@@ -38,7 +30,7 @@ public class PostHoursGetCommand extends BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        session.setAttribute("project_id", request.getParameter("project_id"));
+        session.setAttribute(AttributeName.PROJECT_ID, request.getParameter(ParameterName.PROJECT_ID));
         return JSPPagePath.EMPLOYEE_EDIT_HOURS;
     }
 

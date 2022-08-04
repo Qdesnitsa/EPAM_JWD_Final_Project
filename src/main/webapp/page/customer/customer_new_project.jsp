@@ -24,7 +24,7 @@
                     <th><fmt:message key="label.employee_position"/></th>
                     <th>
                         <fmt:message key="label.employee_level"/>
-                         &
+                        &
                         <fmt:message key="label.employee_quantity"/>
                     </th>
                 </tr>
@@ -40,12 +40,12 @@
                     </th>
                     <th width="33%">
                         <fmt:message key="label.project_start_date"/><br/>
-                        <input type="date" required name="startDate" class="date_period"/>
+                        <input type="date" required name="start_date" class="date_period"/>
                     </th>
 
                     <th width="33%">
                         <fmt:message key="label.project_end_date"/><br/>
-                        <input type="date" required name="endDate" class="date_period"/>
+                        <input type="date" required name="end_date" class="date_period"/>
                     </th>
 
                     <th>
