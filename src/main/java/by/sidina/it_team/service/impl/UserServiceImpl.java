@@ -4,7 +4,7 @@ import by.sidina.it_team.dao.dto.CustomerDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.User;
-import by.sidina.it_team.service.UserService;
+import by.sidina.it_team.service.repository.UserService;
 import by.sidina.it_team.service.exception.ServiceException;
 
 import java.util.List;

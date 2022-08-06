@@ -2,10 +2,10 @@ package by.sidina.it_team.service.impl;
 
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.ProjectCalculationDAO;
-import by.sidina.it_team.service.ProjectCalculationService;
+import by.sidina.it_team.service.repository.ProjectService;
 import by.sidina.it_team.service.exception.ServiceException;
 
-public class ProjectCalculationServiceImpl implements ProjectCalculationService {
+public class ProjectCalculationServiceImpl implements ProjectService.ProjectCalculationService {
     private final ProjectCalculationDAO projectCalculationDAO;
     public ProjectCalculationServiceImpl(ProjectCalculationDAO projectCalculationDAO) {
         this.projectCalculationDAO = projectCalculationDAO;

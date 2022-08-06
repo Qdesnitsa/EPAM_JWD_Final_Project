@@ -3,10 +3,8 @@ package by.sidina.it_team.service.impl;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.ProjectDAO;
-import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.Project;
-import by.sidina.it_team.entity.User;
-import by.sidina.it_team.service.ProjectService;
+import by.sidina.it_team.service.repository.ProjectService;
 import by.sidina.it_team.service.exception.ServiceException;
 
 import java.sql.Date;

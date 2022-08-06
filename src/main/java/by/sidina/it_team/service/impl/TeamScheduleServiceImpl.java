@@ -5,7 +5,7 @@ import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.TeamScheduleDAO;
 import by.sidina.it_team.entity.Level;
 import by.sidina.it_team.entity.TeamSchedule;
-import by.sidina.it_team.service.TeamScheduleService;
+import by.sidina.it_team.service.repository.TeamScheduleService;
 import by.sidina.it_team.service.exception.ServiceException;
 
 import java.util.ArrayList;

@@ -2,6 +2,7 @@ package by.sidina.it_team.controller;
 
 import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.exception.DAOException;
+import by.sidina.it_team.service.exception.ServiceException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -24,7 +25,7 @@ public class Controller extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } catch (DAOException e) {
+        } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
     }
@@ -34,17 +35,17 @@ public class Controller extends HttpServlet {
             throws ServletException, IOException {
         try {
             processRequest(request, response);
-        } catch (DAOException e) {
+        } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
     }
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, DAOException {
+            throws ServletException, IOException, ServiceException {
         request.setCharacterEncoding("UTF-8");
         response.setContentType("text/html; charset=UTF-8");
         String commandFromPage = request.getParameter(ParameterName.COMMAND);
         Command command = CommandProvider.defineCommand(commandFromPage);
-        String page = command.execute(request, response);
+        command.execute(request, response);
     }
 }

@@ -13,18 +13,18 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public interface BaseCommand extends Command {
-    public abstract boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response);
+    boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response);
 
-    public abstract String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws DAOException, ServletException, IOException, ServiceException;
+    String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
 
-    public abstract String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response);
+    String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response);
 
-    public default Command getExpectedCommand(HttpServletRequest request, HttpServletResponse response) {
+    default Command getExpectedCommand(HttpServletRequest request, HttpServletResponse response) {
         return null;
     }
 
     @Override
-    public default String execute(HttpServletRequest request, HttpServletResponse response) throws DAOException, ServletException, IOException {
+    default String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (canBeExpectedResponseReturned(request, response)) {
             HttpSession session = request.getSession();
             String commandName = request.getParameter(ParameterName.COMMAND);
@@ -33,15 +33,7 @@ public interface BaseCommand extends Command {
             }
             String jspPage = getExpectedJspPage(request, response);
             if (jspPage != null) {
-                try {
-                    request.getRequestDispatcher(jspPage).forward(request, response);
-                } catch (Exception e) {
-                    /**
-                     logger.log(e);
-                     return "error.jsp";
-                     */
-                    throw new RuntimeException(e);
-                }
+                request.getRequestDispatcher(jspPage).forward(request, response);
             } else {
                 Command command = getExpectedCommand(request, response);
                 if (command != null) {
@@ -49,11 +41,7 @@ public interface BaseCommand extends Command {
                 }
             }
         } else {
-            try {
-                request.getRequestDispatcher(getAlternativeJspPage(request, response)).forward(request, response);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
+            request.getRequestDispatcher(getAlternativeJspPage(request, response)).forward(request, response);
         }
         return null;
     }

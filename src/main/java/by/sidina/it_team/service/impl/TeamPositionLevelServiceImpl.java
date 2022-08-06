@@ -1,12 +1,10 @@
 package by.sidina.it_team.service.impl;
 
-import by.sidina.it_team.dao.dto.CustomerDto;
 import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
-import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.User;
-import by.sidina.it_team.service.TeamPositionLevelService;
+import by.sidina.it_team.service.repository.TeamPositionLevelService;
 import by.sidina.it_team.service.exception.ServiceException;
 
 import java.util.List;

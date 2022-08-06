@@ -2,9 +2,8 @@ package by.sidina.it_team.service.impl;
 
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.exception.DAOException;
-import by.sidina.it_team.dao.impl.PaymentDAOImpl;
 import by.sidina.it_team.dao.repository.PaymentDAO;
-import by.sidina.it_team.service.PaymentService;
+import by.sidina.it_team.service.repository.PaymentService;
 import by.sidina.it_team.service.exception.ServiceException;
 
 import java.sql.Date;
