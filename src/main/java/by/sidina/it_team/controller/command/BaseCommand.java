@@ -4,6 +4,7 @@ import by.sidina.it_team.controller.Command;
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.exception.DAOException;
+import by.sidina.it_team.service.exception.ServiceException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -11,18 +12,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-public abstract class BaseCommand implements Command {
+public interface BaseCommand extends Command {
     public abstract boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response);
 
-    public abstract String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws DAOException, ServletException, IOException;
+    public abstract String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws DAOException, ServletException, IOException, ServiceException;
 
     public abstract String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response);
 
-    public Command getExpectedCommand(HttpServletRequest request, HttpServletResponse response) {
+    public default Command getExpectedCommand(HttpServletRequest request, HttpServletResponse response) {
         return null;
     }
 
-    public String execute(HttpServletRequest request, HttpServletResponse response) throws DAOException, ServletException, IOException {
+    @Override
+    public default String execute(HttpServletRequest request, HttpServletResponse response) throws DAOException, ServletException, IOException {
         if (canBeExpectedResponseReturned(request, response)) {
             HttpSession session = request.getSession();
             String commandName = request.getParameter(ParameterName.COMMAND);

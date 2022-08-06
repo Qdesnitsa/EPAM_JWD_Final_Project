@@ -1,11 +1,11 @@
 package by.sidina.it_team.controller.command;
 
 import by.sidina.it_team.controller.Command;
-import by.sidina.it_team.controller.command.basecommand_extend.*;
-import by.sidina.it_team.controller.command.basecommand_extend.EditProjectGetCommand;
-import by.sidina.it_team.controller.command.basecommand_extend.HomeShowProjectsCommand;
-import by.sidina.it_team.controller.command.basecommand_extend.HomePage;
-import by.sidina.it_team.controller.command.basecommand_extend.ShowEmployeesGetCommand;
+import by.sidina.it_team.controller.command.basecommand_impl.*;
+import by.sidina.it_team.controller.command.basecommand_impl.EditProjectGetCommand;
+import by.sidina.it_team.controller.command.basecommand_impl.HomeShowProjectsCommand;
+import by.sidina.it_team.controller.command.basecommand_impl.HomePage;
+import by.sidina.it_team.controller.command.basecommand_impl.ShowEmployeesGetCommand;
 
 public enum CommandEnum {
     SELECT_LOCALE {

@@ -33,16 +33,16 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
             = "DELETE FROM project_calculation WHERE project_id=?";
 
     @Override
-    public boolean add(int project_id) throws DAOException {
+    public boolean add(int projectId) throws DAOException {
         boolean isAdded;
-        int workingDays = countProjectWorkDays(project_id);
-        int numberEmployees = countProjectNumberEmployees(project_id);
-        double costPerHour = countProjectCostPerDay(project_id);
+        int workingDays = countProjectWorkDays(projectId);
+        int numberEmployees = countProjectNumberEmployees(projectId);
+        double costPerHour = countProjectCostPerDay(projectId);
         int totalHoursOnProject = numberEmployees * WORKING_HOURS_PER_DAY * workingDays;
         double totalCostOfProject = costPerHour * WORKING_HOURS_PER_DAY * workingDays;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_ADD_PROJECT_CALCULATION)) {
-            statement.setInt(1, project_id);
+            statement.setInt(1, projectId);
             statement.setInt(2, totalHoursOnProject);
             statement.setDouble(3, totalCostOfProject);
             int counter = statement.executeUpdate();
@@ -58,11 +58,11 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
     }
 
     @Override
-    public boolean remove(int project_id) throws DAOException {
+    public boolean remove(int projectId) throws DAOException {
         boolean isRemoved;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_REMOVE_PROJECT_CALCULATION)) {
-            statement.setInt(1, project_id);
+            statement.setInt(1, projectId);
             int counter = statement.executeUpdate();
             if (counter != 0) {
                 isRemoved = true;
@@ -75,12 +75,12 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
         return isRemoved;
     }
 
-    private static int countProjectWorkDays(int project_id) throws DAOException {
+    private static int countProjectWorkDays(int projectId) throws DAOException {
         ResultSet resultSet = null;
         int workingDays = 0;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_GET_PROJECT_WORKING_DAYS)) {
-            statement.setInt(1, project_id);
+            statement.setInt(1, projectId);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 Date startDate = resultSet.getDate("start_date");
@@ -99,12 +99,12 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
         return workingDays;
     }
 
-    private static double countProjectCostPerDay(int project_id) throws DAOException {
+    private static double countProjectCostPerDay(int projectId) throws DAOException {
         ResultSet resultSet = null;
         double costPerDay = 0;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_GET_SUM_AND_COUNT_RATES)) {
-            statement.setInt(1, project_id);
+            statement.setInt(1, projectId);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 costPerDay = resultSet.getDouble("sum_rates");
@@ -121,12 +121,12 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
         return costPerDay;
     }
 
-    private static int countProjectNumberEmployees(int project_id) throws DAOException {
+    private static int countProjectNumberEmployees(int projectId) throws DAOException {
         ResultSet resultSet = null;
         int numberEmployees = 0;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_GET_SUM_AND_COUNT_RATES)) {
-            statement.setInt(1, project_id);
+            statement.setInt(1, projectId);
             resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 numberEmployees = resultSet.getInt("count_employees");

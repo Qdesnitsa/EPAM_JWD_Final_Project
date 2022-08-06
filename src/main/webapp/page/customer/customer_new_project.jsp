@@ -74,30 +74,27 @@
                     <th>
                         <small>Senior </small
                         ><input
-                            type="text"
+                            type="number"
                             name="senior_quantity"
                             maxlength="3"
                             placeholder="<fmt:message key="label.employee_quantity"/>"
                             value="0"
-                            pattern="[\d]+"
                     /><br>
                         <small>Middle </small
                         ><input
-                            type="text"
+                            type="number"
                             name="middle_quantity"
                             maxlength="3"
                             placeholder="<fmt:message key="label.employee_quantity"/>"
                             value="0"
-                            pattern="[\d]+"
                     /><br>
                         <small>Junior </small
                         ><input
-                            type="text"
+                            type="number"
                             name="junior_quantity"
                             maxlength="3"
                             placeholder="<fmt:message key="label.employee_quantity"/>"
                             value="0"
-                            pattern="[\d]+"
                     />
                     </th>
                 </tr>

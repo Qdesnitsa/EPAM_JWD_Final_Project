@@ -73,11 +73,10 @@
                                 <th width="25%">
                                     <fmt:message key="label.employee_quantity"/><br/>
                                     <input
-                                            type="text"
+                                            type="number"
                                             name="quantity"
                                             value="0"
                                             placeholder="quantity"
-                                            pattern="[\d]+"
                                     />
                                 </th>
                             </tr>
