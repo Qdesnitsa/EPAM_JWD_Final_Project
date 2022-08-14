@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProjectService {
-    List<ProjectDto> findAllForAdmin(int limit, int offset, int status) throws ServiceException;
+    List<ProjectDto> findAllForAdmin(int limit, int offset, String status) throws ServiceException;
 
     List<ProjectDto> findAllByCustomerID(int id) throws ServiceException;
 
@@ -21,14 +21,10 @@ public interface ProjectService {
 
     boolean add(Project project) throws ServiceException;
 
-    boolean changeStatus(int id, int status) throws ServiceException;
+    boolean changeStatus(int id, String status) throws ServiceException;
 
-    boolean changeStartDate(int id, Date date) throws ServiceException;
+    boolean changeStartDate(int id, String date) throws ServiceException;
 
-    boolean changeEndDate(int id, Date date) throws ServiceException;
+    boolean changeEndDate(int id, String date) throws ServiceException;
 
-    interface ProjectCalculationService {
-        boolean add(int projectId) throws ServiceException;
-        boolean remove(int projectId) throws ServiceException;
-    }
 }

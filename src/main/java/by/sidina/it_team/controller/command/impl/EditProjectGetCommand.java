@@ -37,19 +37,17 @@ public class EditProjectGetCommand implements BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        session.setAttribute(AttributeName.PROJECT_ID, request.getParameter(ParameterName.PROJECT_ID));
-        if (request.getParameter(ParameterName.PROJECT_ID) == null) {
+        if (session.getAttribute(ParameterName.PROJECT_ID) == null) {
+            session.setAttribute(AttributeName.PROJECT_ID, request.getParameter(ParameterName.PROJECT_ID));
+        }
+        int projectId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.PROJECT_ID)));
+        Optional<ProjectDto> project = projectService.findByID(projectId);
+        if (project.isPresent()) {
+            session.setAttribute(AttributeName.PROJECT, project.get());
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
-            Optional<ProjectDto> project = projectService.findByID(projectId);
-            if (project.isPresent()) {
-                request.setAttribute(AttributeName.PROJECT, project.get());
-                return JSPPagePath.ADMIN_EDIT_PROJECT;
-            } else {
-                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
-                return JSPPagePath.ADMIN_EDIT_PROJECT;
-            }
+            request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+            return JSPPagePath.ADMIN_EDIT_PROJECT;
         }
     }
 

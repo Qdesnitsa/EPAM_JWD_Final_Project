@@ -48,7 +48,7 @@
                                 type="text"
                                 name="name"
                                 placeholder="<fmt:message key="label.name"/>"
-                                pattern="[a-zA-Zа-яА-Я]+"
+                                pattern="[a-zA-Zа-яА-Я]{1,100}"
                         /><br/>
                     </th>
                     <th>
@@ -56,7 +56,7 @@
                                 type="text"
                                 name="surname"
                                 placeholder="<fmt:message key="label.surname"/>"
-                                pattern="[a-zA-Zа-яА-Я]+"
+                                pattern="[a-zA-Zа-яА-Я]{1,100}"
                         /><br/>
                     </th>
                     <th>

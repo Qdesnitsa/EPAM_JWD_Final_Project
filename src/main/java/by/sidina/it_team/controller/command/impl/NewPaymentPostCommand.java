@@ -29,7 +29,6 @@ import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 public class NewPaymentPostCommand implements BaseCommand {
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
     private static final PaymentService paymentService = new PaymentServiceImpl(new PaymentDAOImpl());
-    public static final int PAYMENT_DEFAULT = 0;
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
@@ -59,9 +58,7 @@ public class NewPaymentPostCommand implements BaseCommand {
                     .findAny()
                     .isPresent();
             if (hasCustomerThisProject) {
-                double amount = request.getParameter(ParameterName.PAYMENT).isEmpty()
-                        ? PAYMENT_DEFAULT
-                        : Double.parseDouble(request.getParameter(ParameterName.PAYMENT));
+                String amount = request.getParameter(ParameterName.PAYMENT);
                 boolean isAdded = paymentService.addPaymentByProjectAndCustomerID(project.get(), amount, Date.valueOf(currentDate));
                 if (isAdded) {
                     request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);

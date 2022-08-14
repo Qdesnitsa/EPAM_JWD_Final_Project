@@ -6,6 +6,8 @@ import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.ProjectDAO;
 import by.sidina.it_team.entity.Project;
 import by.sidina.it_team.entity.ProjectStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ProjectDAOImpl implements ProjectDAO {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String SQL_ADD_PROJECT
             = "INSERT INTO projects (name, start_date, end_date, project_status_id, requirement_comment,customer_id) " +
             "values(?,?,?,?,?,?)";
@@ -137,6 +140,7 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public List<ProjectDto> findAllForAdmin(int limit, int offset, int status) throws DAOException {
+        LOGGER.info("Attempt to find all projects in the database");
         List<ProjectDto> projects = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -149,11 +153,13 @@ public class ProjectDAOImpl implements ProjectDAO {
                 projects.add(retrieve(resultSet));
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find all projects in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -162,6 +168,7 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public int countAllProjectsForAdmin(int status) throws DAOException {
+        LOGGER.info("Attempt to count all projects in the database");
         int countProjects = 0;
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -172,11 +179,13 @@ public class ProjectDAOImpl implements ProjectDAO {
                 countProjects = resultSet.getInt("count");
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to count all projects in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -185,6 +194,7 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public List<ProjectDto> findAllByCustomerID(int id) throws DAOException {
+        LOGGER.info("Attempt to find projects by customer ID in the database");
         List<ProjectDto> projects = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -195,11 +205,13 @@ public class ProjectDAOImpl implements ProjectDAO {
                 projects.add(retrieve(resultSet));
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find projects by customer ID in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -207,6 +219,7 @@ public class ProjectDAOImpl implements ProjectDAO {
     }
 
     public List<ProjectDto> findAllByEmployeeID(int id) throws DAOException {
+        LOGGER.info("Attempt to find projects by employee ID in the database");
         List<ProjectDto> projects = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -217,11 +230,13 @@ public class ProjectDAOImpl implements ProjectDAO {
                 projects.add(retrieve(resultSet));
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find projects by employee ID in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -230,6 +245,7 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public Optional<ProjectDto> findByID(int id) throws DAOException {
+        LOGGER.info("Attempt to find project by project ID in the database");
         Optional<ProjectDto> optional = Optional.empty();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -241,11 +257,13 @@ public class ProjectDAOImpl implements ProjectDAO {
                 optional = Optional.of(project);
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find project by project ID in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -254,6 +272,7 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public boolean add(Project project) throws DAOException {
+        LOGGER.info("Attempt to add new project to the database");
         boolean isAdded;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_ADD_PROJECT)) {
@@ -266,10 +285,13 @@ public class ProjectDAOImpl implements ProjectDAO {
             int counter = statement.executeUpdate();
             if (counter != 0) {
                 isAdded = true;
+                LOGGER.info("New project has been added");
             } else {
                 isAdded = false;
+                LOGGER.error("New project has not been added");
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to add new project to the database", e);
         }
         return isAdded;
@@ -277,6 +299,7 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public boolean changeStatus(int id, int status) throws DAOException {
+        LOGGER.info("Attempt to change project status in the database");
         boolean isChanged = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_PROJECT_STATUS)) {
@@ -285,12 +308,12 @@ public class ProjectDAOImpl implements ProjectDAO {
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isChanged = true;
-                //LOGGER.info("Project status has been changed");
+                LOGGER.info("Project status has been changed");
             } else {
-                //LOGGER.error("Project status has not been changed");
+                LOGGER.error("Project status has not been changed");
             }
         } catch (SQLException e) {
-            //LOGGER.error("Failed attempt to change project status in the database");
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to change project status in the database", e);
         }
         return isChanged;
@@ -298,6 +321,7 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public boolean changeStartDate(int id, Date date) throws DAOException {
+        LOGGER.info("Attempt to change project start_date in the database");
         boolean isChanged = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_START_DATE)) {
@@ -306,12 +330,12 @@ public class ProjectDAOImpl implements ProjectDAO {
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isChanged = true;
-                //LOGGER.info("Project start_date has been changed");
+                LOGGER.info("Project start_date has been changed");
             } else {
-                //LOGGER.error("Project start_date has not been changed");
+                LOGGER.error("Project start_date has not been changed");
             }
         } catch (SQLException e) {
-            //LOGGER.error("Failed attempt to change project start_date in the database");
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to change project start_date in the database", e);
         }
         return isChanged;
@@ -319,6 +343,7 @@ public class ProjectDAOImpl implements ProjectDAO {
 
     @Override
     public boolean changeEndDate(int id, Date date) throws DAOException {
+        LOGGER.info("Attempt to change project end_date in the database");
         boolean isChanged = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_END_DATE)) {
@@ -327,12 +352,12 @@ public class ProjectDAOImpl implements ProjectDAO {
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isChanged = true;
-                //LOGGER.info("Project end_date has been changed");
+                LOGGER.info("Project end_date has been changed");
             } else {
-                //LOGGER.error("Project end_date has not been changed");
+                LOGGER.error("Project end_date has not been changed");
             }
         } catch (SQLException e) {
-            //LOGGER.error("Failed attempt to change project end_date in the database");
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to change project end_date in the database", e);
         }
         return isChanged;

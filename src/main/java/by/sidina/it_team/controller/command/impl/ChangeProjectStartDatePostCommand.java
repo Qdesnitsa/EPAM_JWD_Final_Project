@@ -44,16 +44,12 @@ public class ChangeProjectStartDatePostCommand implements BaseCommand {
             int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
             Optional<ProjectDto> project = projectService.findByID(projectId);
             if (project.isPresent()) {
-                String startDateString =
-                        null == request.getParameter(ParameterName.START_DATE) || request.getParameter(ParameterName.START_DATE).isEmpty()
-                                ? String.valueOf(project.get().getStartDate())
-                                : request.getParameter(ParameterName.START_DATE);
-                Date startDate = Date.valueOf(startDateString);
+                String startDate = request.getParameter(ParameterName.START_DATE);
                 boolean isChanged = projectService.changeStartDate(projectId, startDate);
                 if (isChanged) {
                     request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     project = projectService.findByID(projectId);
-                    request.setAttribute(AttributeName.PROJECT, project.get());
+                    session.setAttribute(AttributeName.PROJECT, project.get());
                     return JSPPagePath.ADMIN_EDIT_PROJECT;
                 } else {
                     request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);

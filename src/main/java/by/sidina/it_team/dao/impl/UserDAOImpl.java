@@ -6,6 +6,8 @@ import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.User;
 import by.sidina.it_team.entity.UserStatus;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class UserDAOImpl implements UserDAO {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String SQL_FIND_ALL_USERS
             = """
                         SELECT id,
@@ -97,11 +100,10 @@ public class UserDAOImpl implements UserDAO {
             "SELECT id, name, surname, role_id, email, user_status_id FROM users WHERE email=? AND password=?";
     private static final String SQL_FIND_PASSWORD_BY_EMAIL
             = "SELECT password FROM users WHERE email=?";
-    private static final String SQL_CHANGE_USER_STATUS
-            = "UPDATE users SET user_status_id=? WHERE id=?";
 
     @Override
     public List<User> findAll() throws DAOException {
+        LOGGER.info("Attempt to find all users in the database");
         List<User> users = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -111,11 +113,13 @@ public class UserDAOImpl implements UserDAO {
                 users.add(retrieve(resultSet));
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find all users in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -124,6 +128,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public List<CustomerDto> findAllCustomers(int limit, int offset) throws DAOException {
+        LOGGER.info("Attempt to find all customers in the database");
         List<CustomerDto> users = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -135,11 +140,13 @@ public class UserDAOImpl implements UserDAO {
                 users.add(retrieveDto(resultSet));
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find all customers in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -148,6 +155,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public Optional<User> findByID(int id) throws DAOException {
+        LOGGER.info("Attempt to find user by user ID in the database");
         Optional<User> optional = Optional.empty();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -159,11 +167,13 @@ public class UserDAOImpl implements UserDAO {
                 optional = Optional.of(user);
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find user by user ID in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -172,6 +182,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public Optional<CustomerDto> findCustomerByID(int id) throws DAOException {
+        LOGGER.info("Attempt to find customer by user ID in the database");
         Optional<CustomerDto> optional = Optional.empty();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -183,11 +194,13 @@ public class UserDAOImpl implements UserDAO {
                 optional = Optional.of(customer);
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find customer by user ID in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -196,6 +209,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public int countAllCustomersForAdmin() throws DAOException {
+        LOGGER.info("Attempt to count all customers in the database");
         int countCustomers = 0;
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -205,11 +219,13 @@ public class UserDAOImpl implements UserDAO {
                 countCustomers = resultSet.getInt("count");
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to count all customers in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -218,6 +234,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean add(User user, String password) throws DAOException {
+        LOGGER.info("Attempt to add new user to the database");
         boolean isAdded;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_ADD_EMPLOYEE)) {
@@ -230,10 +247,13 @@ public class UserDAOImpl implements UserDAO {
             int counter = statement.executeUpdate();
             if (counter != 0) {
                 isAdded = true;
+                LOGGER.info("New user has been added");
             } else {
                 isAdded = false;
+                LOGGER.error("New user has not been added");
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to add new user to the database", e);
         }
         return isAdded;
@@ -241,6 +261,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean edit(int id, User user) throws DAOException {
+        LOGGER.info("Attempt to change user status in the database");
         boolean isChanged = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_EDIT_USER_STATUS_BY_ID)) {
@@ -249,10 +270,13 @@ public class UserDAOImpl implements UserDAO {
             int counter = statement.executeUpdate();
             if (counter != 0) {
                 isChanged = true;
+                LOGGER.info("User status was changed");
             } else {
                 isChanged = false;
+                LOGGER.error("User status has not been changed");
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to change user status in the database", e);
         }
         return isChanged;
@@ -260,6 +284,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public Optional<User> findUserByEmail(String email) throws DAOException {
+        LOGGER.info("Attempt to find user by email in the database");
         Optional<User> optional;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_EMAIL)) {
@@ -272,6 +297,7 @@ public class UserDAOImpl implements UserDAO {
                 optional = Optional.empty();
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find user by email in the database", e);
         }
         return optional;
@@ -279,6 +305,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) throws DAOException {
+        LOGGER.info("Attempt to find user by email and password in the database");
         Optional<User> optional;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_FIND_USER_BY_EMAIL_AND_PASSWORD)) {
@@ -292,6 +319,7 @@ public class UserDAOImpl implements UserDAO {
                 optional = Optional.empty();
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find user by email and password in the database", e);
         }
         return optional;
@@ -299,6 +327,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public Optional<String> findPasswordByEmail(String email) throws DAOException {
+        LOGGER.info("Attempt to find password by email in the database");
         Optional<String> optional;
         String password;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -312,6 +341,7 @@ public class UserDAOImpl implements UserDAO {
                 optional = Optional.empty();
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find password by email in the database", e);
         }
         return optional;
@@ -319,20 +349,21 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean changeStatus(int id, int status) throws DAOException {
+        LOGGER.info("Attempt to change employee status in the database");
         boolean isChanged = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
-             PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_USER_STATUS)) {
+             PreparedStatement statement = connection.prepareStatement(SQL_EDIT_USER_STATUS_BY_ID)) {
             statement.setInt(1, status);
             statement.setInt(2, id);
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isChanged = true;
-                //LOGGER.info("Project status has been changed");
+                LOGGER.info("User status has been changed");
             } else {
-                //LOGGER.error("Project status has not been changed");
+                LOGGER.error("User status has not been changed");
             }
         } catch (SQLException e) {
-            //LOGGER.error("Failed attempt to change project status in the database");
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to change employee status in the database", e);
         }
         return isChanged;

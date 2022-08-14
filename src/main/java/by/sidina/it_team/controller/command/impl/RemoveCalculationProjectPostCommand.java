@@ -10,6 +10,7 @@ import by.sidina.it_team.dao.repository.ProjectCalculationDAO;
 import by.sidina.it_team.entity.ProjectStatus;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
+import by.sidina.it_team.service.repository.ProjectCalculationService;
 import by.sidina.it_team.service.repository.ProjectService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.ProjectCalculationServiceImpl;
@@ -25,7 +26,7 @@ import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class RemoveCalculationProjectPostCommand implements BaseCommand {
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
-    private static final ProjectService.ProjectCalculationService projectCalculationService
+    private static final ProjectCalculationService projectCalculationService
             = new ProjectCalculationServiceImpl(new ProjectCalculationDAOImpl());
 
     @Override
@@ -48,9 +49,8 @@ public class RemoveCalculationProjectPostCommand implements BaseCommand {
             int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
             Optional<ProjectDto> project = projectService.findByID(projectId);
             if (project.isPresent()) {
-                ProjectCalculationDAO projectCalculation = new ProjectCalculationDAOImpl();
                 boolean isAdded = projectCalculationService.remove(projectId);
-                boolean isChanged = projectService.changeStatus(projectId, ProjectStatus.NEW.getProjectStatusID());
+                boolean isChanged = projectService.changeStatus(projectId, String.valueOf(ProjectStatus.NEW.getProjectStatusID()));
                 if (isAdded) {
                     request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     project = projectService.findByID(projectId);

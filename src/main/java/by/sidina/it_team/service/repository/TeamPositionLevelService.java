@@ -9,15 +9,15 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TeamPositionLevelService {
-    boolean add(int position, int level, User user, String password) throws ServiceException;
+    boolean add(String position, String level, User user, String password) throws ServiceException;
 
     Optional<EmployeeDto> findByID(int id) throws ServiceException;
 
     List<EmployeeDto> findAllForAdmin(int limit, int offset) throws ServiceException;
 
-    boolean changePosition(int id, int position) throws ServiceException;
+    boolean changePosition(int id, String position) throws ServiceException;
 
-    boolean changeLevel(int id, int level) throws ServiceException;
+    boolean changeLevel(int id, String level) throws ServiceException;
 
     int countAllEmployeesForAdmin() throws ServiceException;
 }

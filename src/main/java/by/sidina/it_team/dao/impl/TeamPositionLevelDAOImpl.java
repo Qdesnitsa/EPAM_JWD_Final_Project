@@ -6,6 +6,8 @@ import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.TeamPositionLevelDAO;
 import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.*;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String SQL_FIND_ALL_EMPLOYEES
             = """
             SELECT team_position_level.employee_id AS id,
@@ -83,6 +86,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
 
     @Override
     public boolean add(int position, int level, User user, String password) throws DAOException {
+        LOGGER.info("Attempt to add user and employee in 2 schemas to the database");
         UserDAO userDAO = new UserDAOImpl();
         boolean isAdded = false;
         Connection connection = null;
@@ -101,16 +105,20 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             int counter = statement.executeUpdate();
             if (counter != 0) {
                 isAdded = true;
+                LOGGER.info("User and employee has been added");
             } else {
                 isAdded = false;
+                LOGGER.error("User and employee has not been added");
             }
             connection.commit();
         } catch (SQLException e) {
             try {
                 connection.rollback();
             } catch (SQLException ex) {
+                LOGGER.error(ex);
                 throw new DAOException("Failed attempt to rollback operation of adding user/employee to the database", e);
             }
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to add user and employee in 2 schemas to the database", e);
         } finally {
             connectionPool.closeConnection(connection, statement);
@@ -121,6 +129,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
 
     @Override
     public Optional<EmployeeDto> findByID(int id) throws DAOException {
+        LOGGER.info("Attempt to find employee by ID in the database");
         Optional<EmployeeDto> optional = Optional.empty();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -132,11 +141,13 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
                 optional = Optional.of(employee);
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find employee by ID in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -145,6 +156,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
 
     @Override
     public List<EmployeeDto> findAllForAdmin(int limit, int offset) throws DAOException {
+        LOGGER.info("Attempt to find all employees in the database");
         List<EmployeeDto> users = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -156,11 +168,13 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
                 users.add(retrieveEmployee(resultSet));
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find all employees in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -169,6 +183,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
 
     @Override
     public int countAllEmployeesForAdmin() throws DAOException {
+        LOGGER.info("Attempt to count all employees in the database");
         int countEmployees = 0;
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -178,11 +193,13 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
                 countEmployees = resultSet.getInt("count");
             }
         } catch (SQLException e) {
-            throw new DAOException("Failed attempt to count all projects in the database", e);
+            LOGGER.error(e);
+            throw new DAOException("Failed attempt to count all employees in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -191,6 +208,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
 
     @Override
     public boolean changePosition(int id, int position) throws DAOException {
+        LOGGER.info("Attempt to change employee position in the database");
         boolean isChanged = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_EMPLOYEE_POSITION)) {
@@ -199,12 +217,12 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isChanged = true;
-                //LOGGER.info("Project status has been changed");
+                LOGGER.info("Employee position has been changed");
             } else {
-                //LOGGER.error("Project status has not been changed");
+                LOGGER.error("Employee position has not been changed");
             }
         } catch (SQLException e) {
-            //LOGGER.error("Failed attempt to change project status in the database");
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to change employee position in the database", e);
         }
         return isChanged;
@@ -212,6 +230,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
 
     @Override
     public boolean changeLevel(int id, int level) throws DAOException {
+        LOGGER.info("Attempt to change employee level in the database");
         boolean isChanged = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_CHANGE_EMPLOYEE_LEVEL)) {
@@ -220,13 +239,13 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isChanged = true;
-                //LOGGER.info("Project status has been changed");
+                LOGGER.info("Employee level has been changed");
             } else {
-                //LOGGER.error("Project status has not been changed");
+                LOGGER.error("Employee level has not been changed");
             }
         } catch (SQLException e) {
-            //LOGGER.error("Failed attempt to change project status in the database");
-            throw new DAOException("Failed attempt to change employee position in the database", e);
+            LOGGER.error(e);
+            throw new DAOException("Failed attempt to change employee level in the database", e);
         }
         return isChanged;
     }

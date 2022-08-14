@@ -38,18 +38,17 @@ public class EditEmployeeGetCommand implements BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        session.setAttribute(AttributeName.EMPLOYEE_ID, request.getParameter(ParameterName.EMPLOYEE_ID));
-        if (request.getParameter(ParameterName.EMPLOYEE_ID) == null) {
+        if (session.getAttribute(ParameterName.EMPLOYEE_ID) == null) {
+            session.setAttribute(AttributeName.EMPLOYEE_ID, request.getParameter(ParameterName.EMPLOYEE_ID));
+        }
+        int employeeId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.EMPLOYEE_ID)));
+        Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
+        if (employee.isPresent()) {
+            session.setAttribute(AttributeName.EMPLOYEE, employee.get());
             return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
         } else {
-            int employeeId = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_ID));
-            Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
-            if (employee.isPresent()) {
-                session.setAttribute(AttributeName.EMPLOYEE, employee.get());
-                return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
-            } else {
-                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
-            }
+            request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+
         }
         return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
     }

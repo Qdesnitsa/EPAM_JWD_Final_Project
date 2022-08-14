@@ -40,20 +40,15 @@ public class ChangeProjectStatusPostCommand implements BaseCommand {
         if (session.getAttribute(AttributeName.PROJECT_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
-            int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID) == null));
+            int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
             Optional<ProjectDto> project = projectService.findByID(projectId);
             if (project.isPresent()) {
-                String projectStatusString =
-                        null == request.getParameter(ParameterName.PROJECT_STATUS) ||
-                                request.getParameter(ParameterName.PROJECT_STATUS).isEmpty()
-                                ? String.valueOf(project.get().getStatus())
-                                : request.getParameter(ParameterName.PROJECT_STATUS);
-                int status = Integer.parseInt(projectStatusString);
-                boolean isChanged = projectService.changeStatus(projectId, status);
+                String projectStatus = request.getParameter(ParameterName.PROJECT_STATUS);
+                boolean isChanged = projectService.changeStatus(projectId, projectStatus);
                 if (isChanged) {
                     request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     project = projectService.findByID(projectId);
-                    request.setAttribute(AttributeName.PROJECT, project.get());
+                    session.setAttribute(AttributeName.PROJECT, project.get());
                     return JSPPagePath.ADMIN_EDIT_PROJECT;
                 } else {
                     request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);

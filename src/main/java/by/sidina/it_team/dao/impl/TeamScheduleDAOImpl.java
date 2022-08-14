@@ -6,12 +6,15 @@ import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.TeamScheduleDAO;
 import by.sidina.it_team.entity.Level;
 import by.sidina.it_team.entity.TeamSchedule;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TeamScheduleDAOImpl implements TeamScheduleDAO {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final String SQL_ADD_EMPLOYEE_TO_PROJECT
             = """
             INSERT INTO team_schedule
@@ -142,6 +145,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
 
     @Override
     public boolean addEmployeeToProject(int employeeId, int projectId) throws DAOException {
+        LOGGER.info("Attempt to add employee to project to the database");
         boolean isAdded = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_ADD_EMPLOYEE_TO_PROJECT)) {
@@ -151,12 +155,12 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isAdded = true;
-                //LOGGER.info("New employee to project has been added:");
+                LOGGER.info("New employee has been added to project");
             } else {
-                //LOGGER.error("New employee to project has not been added");
+                LOGGER.error("New employee has not been added to project");
             }
         } catch (SQLException e) {
-            //LOGGER.error("Failed attempt to add new application in the database");
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to add employee to project to the database", e);
         }
         return isAdded;
@@ -164,6 +168,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
 
     @Override
     public boolean removeEmployeeFromProject(int employeeId, int projectId) throws DAOException {
+        LOGGER.info("Attempt to remove employee from project in the database");
         boolean isRemoved = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_REMOVE_EMPLOYEE_FROM_PROJECT)) {
@@ -172,12 +177,12 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             int rowCount = statement.executeUpdate();
             if (rowCount != 0) {
                 isRemoved = true;
-                //LOGGER.info("Employee has been removed from project");
+                LOGGER.info("Employee has been removed from project");
             } else {
-                //LOGGER.info("Employee has not been removed from project");
+                LOGGER.info("Employee has not been removed from project");
             }
         } catch (SQLException e) {
-            //LOGGER.error("Failed attempt to remove employee from project in the database");
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to remove employee from project in the database", e);
         }
         return isRemoved;
@@ -185,6 +190,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
 
     @Override
     public List<EmployeeDto> findEmployeesOnProject(int projectId) throws DAOException {
+        LOGGER.info("Attempt to find employees on project in the database");
         List<EmployeeDto> users = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -195,6 +201,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
                 users.add(retrieveFreeEmployee(resultSet));
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find employees on project in the database", e);
         } finally {
             try {
@@ -202,6 +209,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
                     resultSet.close();
                 }
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -210,6 +218,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
 
     @Override
     public List<EmployeeDto> findFreeEmployeesForProject(int projectId, String position, Level level, int limit) throws DAOException {
+        LOGGER.info("Attempt to find free employees in the database");
         List<EmployeeDto> users = new ArrayList<>();
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -232,6 +241,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
                 users.add(retrieveFreeEmployee(resultSet));
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find free employees in the database", e);
         } finally {
             try {
@@ -239,6 +249,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
                     resultSet.close();
                 }
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -247,6 +258,7 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
 
     @Override
     public boolean addHoursByEmployeeId(TeamSchedule teamSchedule) throws DAOException {
+        LOGGER.info("Attempt to add fact hours to the database");
         boolean isAdded;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_ADD_HOURS_TO_PROJECT)) {
@@ -255,8 +267,15 @@ public class TeamScheduleDAOImpl implements TeamScheduleDAO {
             statement.setDate(3, teamSchedule.getDate());
             statement.setDouble(4, teamSchedule.getHours_fact());
             int counter = statement.executeUpdate();
-            isAdded = counter != 0 ? true : false;
+            if (counter != 0) {
+                isAdded = true;
+                LOGGER.info("Hours has been added bi employee ID");
+            } else {
+                isAdded = false;
+                LOGGER.error("Hours has not been added bi employee ID");
+            }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to add fact hours to the database", e);
         }
         return isAdded;

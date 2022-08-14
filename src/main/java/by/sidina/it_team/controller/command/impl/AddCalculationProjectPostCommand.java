@@ -9,6 +9,7 @@ import by.sidina.it_team.dao.impl.ProjectDAOImpl;
 import by.sidina.it_team.entity.ProjectStatus;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
+import by.sidina.it_team.service.repository.ProjectCalculationService;
 import by.sidina.it_team.service.repository.ProjectService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.ProjectCalculationServiceImpl;
@@ -24,7 +25,7 @@ import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class AddCalculationProjectPostCommand implements BaseCommand {
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
-    private static final ProjectService.ProjectCalculationService projectCalculationService
+    private static final ProjectCalculationService projectCalculationService
             = new ProjectCalculationServiceImpl(new ProjectCalculationDAOImpl());
 
     @Override
@@ -48,7 +49,7 @@ public class AddCalculationProjectPostCommand implements BaseCommand {
             Optional<ProjectDto> project = projectService.findByID(projectId);
             if (project.isPresent()) {
                 boolean isAdded = projectCalculationService.add(projectId);
-                boolean isChanged = projectService.changeStatus(projectId, ProjectStatus.PREPARED.getProjectStatusID());
+                projectService.changeStatus(projectId, String.valueOf(ProjectStatus.PREPARED.getProjectStatusID()));
                 if (isAdded) {
                     request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     project = projectService.findByID(projectId);

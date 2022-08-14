@@ -43,9 +43,7 @@ public class ChangeCustomerStatusPostCommand implements BaseCommand {
             int customerId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.CUSTOMER_ID)));
             Optional<CustomerDto> customer = userService.findCustomerByID(customerId);
             if (customer.isPresent()) {
-                int status = null == request.getParameter(ParameterName.CHANGE_CUSTOMER_STATUS)
-                        ? customer.get().getStatusId()
-                        : Integer.parseInt(request.getParameter(ParameterName.CHANGE_CUSTOMER_STATUS));
+                String status = request.getParameter(ParameterName.CHANGE_CUSTOMER_STATUS);
                 boolean isChanged = userService.changeStatus(customerId, status);
                 if (isChanged) {
                     customer = userService.findCustomerByID(customerId);

@@ -48,9 +48,7 @@ public class ChangeEmployeeStatusPostCommand implements BaseCommand {
             int employeeId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.EMPLOYEE_ID)));
             Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
             if (employee.isPresent()) {
-                int status = null == request.getParameter(ParameterName.CHANGE_EMPLOYEE_STATUS)
-                        ? employee.get().getStatusId()
-                        : Integer.parseInt(request.getParameter(ParameterName.CHANGE_EMPLOYEE_STATUS));
+                String status = request.getParameter(ParameterName.CHANGE_EMPLOYEE_STATUS);
                 boolean isChanged = userService.changeStatus(employeeId, status);
                 if (isChanged) {
                     employee = teamPositionLevelService.findByID(employeeId);

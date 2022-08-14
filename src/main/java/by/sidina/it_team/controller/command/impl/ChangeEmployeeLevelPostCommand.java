@@ -43,9 +43,7 @@ public class ChangeEmployeeLevelPostCommand implements BaseCommand {
             int employeeId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.EMPLOYEE_ID)));
             Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
             if (employee.isPresent()) {
-                int level = null == request.getParameter(ParameterName.CHANGE_EMPLOYEE_LEVEL)
-                        ? employee.get().getLevelId()
-                        : Integer.parseInt(request.getParameter(ParameterName.CHANGE_EMPLOYEE_LEVEL));
+                String level = request.getParameter(ParameterName.CHANGE_EMPLOYEE_LEVEL);
                 boolean isChanged = teamPositionLevelService.changeLevel(employeeId, level);
                 if (isChanged) {
                     employee = teamPositionLevelService.findByID(employeeId);

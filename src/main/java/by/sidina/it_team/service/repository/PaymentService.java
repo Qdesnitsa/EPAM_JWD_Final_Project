@@ -6,5 +6,5 @@ import by.sidina.it_team.service.exception.ServiceException;
 import java.sql.Date;
 
 public interface PaymentService {
-    boolean addPaymentByProjectAndCustomerID(ProjectDto projectDto, double amount, Date date) throws ServiceException;
+    boolean addPaymentByProjectAndCustomerID(ProjectDto projectDto, String amount, Date date) throws ServiceException;
 }

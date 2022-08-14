@@ -20,13 +20,11 @@ public interface UserService {
 
     boolean add(User user, String password) throws ServiceException;
 
-    boolean edit(int id, User user) throws ServiceException;
-
     Optional<User> findUserByEmail(String email) throws ServiceException;
 
     Optional<User> findUserByEmailAndPassword(String email, String password) throws ServiceException;
 
     Optional<String> findPasswordByEmail(String email) throws ServiceException;
 
-    boolean changeStatus(int id, int status) throws ServiceException;
+    boolean changeStatus(int id, String status) throws ServiceException;
 }

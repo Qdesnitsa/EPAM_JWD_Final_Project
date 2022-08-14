@@ -15,7 +15,6 @@ import by.sidina.it_team.service.impl.ProjectServiceImpl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -44,20 +43,16 @@ public class ChangeProjectEndDatePostCommand implements BaseCommand {
             int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
             Optional<ProjectDto> project = projectService.findByID(projectId);
             if (project.isPresent()) {
-                String endDateString =
-                        null == request.getParameter(ParameterName.END_DATE) || request.getParameter(ParameterName.END_DATE).isEmpty()
-                                ? String.valueOf(project.get().getEndDate())
-                                : request.getParameter(ParameterName.END_DATE);
-                Date endDate = Date.valueOf(endDateString);
+                String endDate = request.getParameter(ParameterName.END_DATE);
                 boolean isChanged = projectService.changeEndDate(projectId, endDate);
                 if (isChanged) {
-                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     project = projectService.findByID(projectId);
                     request.setAttribute(AttributeName.PROJECT, project.get());
-                    return JSPPagePath.ADMIN_EDIT_PROJECT;
+                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                 } else {
                     request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
+                return JSPPagePath.ADMIN_EDIT_PROJECT;
             } else {
                 request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }

@@ -3,10 +3,13 @@ package by.sidina.it_team.dao.impl;
 import by.sidina.it_team.dao.connection.ConnectionPool;
 import by.sidina.it_team.dao.exception.DAOException;
 import by.sidina.it_team.dao.repository.ProjectCalculationDAO;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 
 public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final int WORKING_HOURS_PER_DAY = 8;
     private static final String SQL_GET_PROJECT_WORKING_DAYS
             = """
@@ -34,6 +37,7 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
 
     @Override
     public boolean add(int projectId) throws DAOException {
+        LOGGER.info("Attempt to add project calculation to the database");
         boolean isAdded;
         int workingDays = countProjectWorkDays(projectId);
         int numberEmployees = countProjectNumberEmployees(projectId);
@@ -48,10 +52,13 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
             int counter = statement.executeUpdate();
             if (counter != 0) {
                 isAdded = true;
+                LOGGER.info("Project calculation has been added");
             } else {
                 isAdded = false;
+                LOGGER.error("Project calculation has not been added");
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to add project calculation to the database", e);
         }
         return isAdded;
@@ -59,6 +66,7 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
 
     @Override
     public boolean remove(int projectId) throws DAOException {
+        LOGGER.info("Attempt to remove project calculation from the database");
         boolean isRemoved;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_REMOVE_PROJECT_CALCULATION)) {
@@ -66,16 +74,20 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
             int counter = statement.executeUpdate();
             if (counter != 0) {
                 isRemoved = true;
+                LOGGER.info("Project calculation has been removed");
             } else {
                 isRemoved = false;
+                LOGGER.error("Project calculation has not been removed");
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to remove project calculation from the database", e);
         }
         return isRemoved;
     }
 
     private static int countProjectWorkDays(int projectId) throws DAOException {
+        LOGGER.info("Attempt to find start and end days of project in the database");
         ResultSet resultSet = null;
         int workingDays = 0;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -88,11 +100,13 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
                 workingDays = countWorkDays(startDate, endDate);
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find start and end days of project in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -100,6 +114,7 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
     }
 
     private static double countProjectCostPerDay(int projectId) throws DAOException {
+        LOGGER.info("Attempt to find rates for project in the database");
         ResultSet resultSet = null;
         double costPerDay = 0;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -110,11 +125,13 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
                 costPerDay = resultSet.getDouble("sum_rates");
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find rates for project in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }
@@ -122,6 +139,7 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
     }
 
     private static int countProjectNumberEmployees(int projectId) throws DAOException {
+        LOGGER.info("Attempt to find rates for project in the database");
         ResultSet resultSet = null;
         int numberEmployees = 0;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
@@ -132,11 +150,13 @@ public class ProjectCalculationDAOImpl implements ProjectCalculationDAO {
                 numberEmployees = resultSet.getInt("count_employees");
             }
         } catch (SQLException e) {
+            LOGGER.error(e);
             throw new DAOException("Failed attempt to find rates for project in the database", e);
         } finally {
             try {
                 resultSet.close();
             } catch (SQLException e) {
+                LOGGER.error(e);
                 throw new DAOException("Failed attempt to close resultSet", e);
             }
         }

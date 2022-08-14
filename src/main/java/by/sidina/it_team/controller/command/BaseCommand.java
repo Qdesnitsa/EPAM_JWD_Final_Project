@@ -15,7 +15,7 @@ import java.io.IOException;
 public interface BaseCommand extends Command {
     boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response);
 
-    String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+    String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ServiceException;
 
     String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response);
 
@@ -24,7 +24,7 @@ public interface BaseCommand extends Command {
     }
 
     @Override
-    default String execute(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    default String execute(HttpServletRequest request, HttpServletResponse response) throws ServiceException, IOException, ServletException {
         if (canBeExpectedResponseReturned(request, response)) {
             HttpSession session = request.getSession();
             String commandName = request.getParameter(ParameterName.COMMAND);

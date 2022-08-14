@@ -6,11 +6,15 @@ import by.sidina.it_team.dao.repository.UserDAO;
 import by.sidina.it_team.entity.User;
 import by.sidina.it_team.service.repository.UserService;
 import by.sidina.it_team.service.exception.ServiceException;
+import by.sidina.it_team.service.util.Validator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Optional;
 
 public class UserServiceImpl implements UserService {
+    private static final Logger LOGGER = LogManager.getLogger();
     private final UserDAO userDAO;
 
     public UserServiceImpl(UserDAO userDAO) {
@@ -23,8 +27,8 @@ public class UserServiceImpl implements UserService {
         try {
             users = userDAO.findAll();
         } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+            LOGGER.error(e);
+            throw new ServiceException("Failed to find all users from DAO", e);
         }
         return users;
     }
@@ -35,8 +39,8 @@ public class UserServiceImpl implements UserService {
         try {
             customers = userDAO.findAllCustomers(limit, offset);
         } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+            LOGGER.error(e);
+            throw new ServiceException("Failed to find all customers from DAO", e);
         }
         return customers;
     }
@@ -47,8 +51,8 @@ public class UserServiceImpl implements UserService {
         try {
             optional = userDAO.findByID(id);
         } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+            LOGGER.error(e);
+            throw new ServiceException("Failed to find user by ID from DAO", e);
         }
         return optional;
     }
@@ -59,8 +63,8 @@ public class UserServiceImpl implements UserService {
         try {
             optional = userDAO.findCustomerByID(id);
         } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+            LOGGER.error(e);
+            throw new ServiceException("Failed to find customer by ID from DAO", e);
         }
         return optional;
     }
@@ -71,44 +75,36 @@ public class UserServiceImpl implements UserService {
         try {
             countCustomers = userDAO.countAllCustomersForAdmin();
         } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+            LOGGER.error(e);
+            throw new ServiceException("Failed to count all customers from DAO", e);
         }
         return countCustomers;
     }
 
     @Override
     public boolean add(User user, String password) throws ServiceException {
-        boolean isAdded;
-        try {
-            isAdded = userDAO.add(user, password);
-        } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+        boolean isAdded = false;
+        if (Validator.isValidPassword(password) && user != null) {
+            try {
+                isAdded = userDAO.add(user, password);
+            } catch (DAOException e) {
+                LOGGER.error(e);
+                throw new ServiceException("Failed to add new user from DAO", e);
+            }
         }
         return isAdded;
     }
 
     @Override
-    public boolean edit(int id, User user) throws ServiceException {
-        boolean isChanged = false;
-        try {
-            isChanged = userDAO.edit(id, user);
-        } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
-        }
-        return isChanged;
-    }
-
-    @Override
     public Optional<User> findUserByEmail(String email) throws ServiceException {
         Optional<User> optional = Optional.empty();
-        try {
-            optional = userDAO.findUserByEmail(email);
-        } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+        if (Validator.isValidEmail(email)) {
+            try {
+                optional = userDAO.findUserByEmail(email);
+            } catch (DAOException e) {
+                LOGGER.error(e);
+                throw new ServiceException("Failed to find user by email from DAO", e);
+            }
         }
         return optional;
     }
@@ -116,11 +112,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) throws ServiceException {
         Optional<User> optional = Optional.empty();
-        try {
-            optional = userDAO.findUserByEmailAndPassword(email, password);
-        } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+        if (Validator.isValidEmail(email) && Validator.isValidPassword(password)) {
+            try {
+                optional = userDAO.findUserByEmailAndPassword(email, password);
+            } catch (DAOException e) {
+                LOGGER.error(e);
+                throw new ServiceException("Failed to find user by email and password from DAO", e);
+            }
         }
         return optional;
     }
@@ -128,23 +126,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<String> findPasswordByEmail(String email) throws ServiceException {
         Optional<String> optional = Optional.empty();
-        try {
-            optional = userDAO.findPasswordByEmail(email);
-        } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+        if (Validator.isValidEmail(email)) {
+            try {
+                optional = userDAO.findPasswordByEmail(email);
+            } catch (DAOException e) {
+                LOGGER.error(e);
+                throw new ServiceException("Failed to find password by email from DAO", e);
+            }
         }
         return optional;
     }
 
     @Override
-    public boolean changeStatus(int id, int status) throws ServiceException {
+    public boolean changeStatus(int id, String status) throws ServiceException {
         boolean isChanged = false;
-        try {
-            isChanged = userDAO.changeStatus(id, status);
-        } catch (DAOException e) {
-            //LOGGER.error(e);
-            throw new ServiceException(e);
+        if (Validator.isValidUserStatus(status)) {
+            try {
+                isChanged = userDAO.changeStatus(id, Integer.parseInt(status));
+            } catch (DAOException e) {
+                LOGGER.error(e);
+                throw new ServiceException("Failed to change user status from DAO", e);
+            }
         }
         return isChanged;
     }

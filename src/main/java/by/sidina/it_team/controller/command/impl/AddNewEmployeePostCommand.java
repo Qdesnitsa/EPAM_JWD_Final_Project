@@ -47,8 +47,8 @@ public class AddNewEmployeePostCommand implements BaseCommand {
         String surname = request.getParameter(ParameterName.SURNAME);
         int status = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_STATUS));
         int role = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_ROLE));
-        int position = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_POSITION));
-        int level = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_LEVEL));
+        String position = request.getParameter(ParameterName.EMPLOYEE_POSITION);
+        String level = request.getParameter(ParameterName.EMPLOYEE_LEVEL);
         User userEmployee = new User(name, surname, role, email, status);
         Optional<User> existingUser = userService.findUserByEmail(userEmployee.getEmail());
         if (existingUser.isPresent()) {

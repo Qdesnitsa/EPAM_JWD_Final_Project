@@ -81,7 +81,7 @@
                             <option value="1">junior</option>
                             <option value="2">middle</option>
                             <option value="3">senior</option>
-                            <option value="5">manager</option>
+                            <option value="4">manager</option>
                         </select
                         ><br/>
                         <button type="submit" class="submit" name="command" value="change_employee_level_post">
@@ -125,7 +125,7 @@
                                 type="text"
                                 name="name"
                                 placeholder="<fmt:message key="label.name"/>"
-                                pattern="[a-zA-Zа-яА-Я]+"
+                                pattern="[a-zA-Zа-яА-Я]{1,100}"
                         /><br/>
                     </th>
                     <th>
@@ -133,7 +133,7 @@
                                 type="text"
                                 name="surname"
                                 placeholder="<fmt:message key="label.surname"/>"
-                                pattern="[a-zA-Zа-яА-Я]+"
+                                pattern="[a-zA-Zа-яА-Я]{1,100}"
                         /><br/>
                     </th>
                     <th>
