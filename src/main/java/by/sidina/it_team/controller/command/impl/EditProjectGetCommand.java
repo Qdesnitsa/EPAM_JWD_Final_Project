@@ -11,6 +11,8 @@ import by.sidina.it_team.entity.User;
 import by.sidina.it_team.service.repository.ProjectService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.ProjectServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +23,7 @@ import java.util.Optional;
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class EditProjectGetCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
 
     @Override
@@ -30,24 +33,28 @@ public class EditProjectGetCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (session.getAttribute(ParameterName.PROJECT_ID) == null) {
+        if (request.getParameter(ParameterName.PROJECT_ID) != null) {
             session.setAttribute(AttributeName.PROJECT_ID, request.getParameter(ParameterName.PROJECT_ID));
-        }
-        int projectId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.PROJECT_ID)));
-        Optional<ProjectDto> project = projectService.findByID(projectId);
-        if (project.isPresent()) {
-            session.setAttribute(AttributeName.PROJECT, project.get());
-            return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
             request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+            return JSPPagePath.ADMIN_ALL_PROJECTS;
+        }
+        int projectId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.PROJECT_ID)));
+        try {
+            Optional<ProjectDto> project = projectService.findByID(projectId);
+            session.removeAttribute(AttributeName.PROJECT);
+            session.setAttribute(AttributeName.PROJECT, project.get());
             return JSPPagePath.ADMIN_EDIT_PROJECT;
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            return JSPPagePath.ERROR;
         }
     }
 

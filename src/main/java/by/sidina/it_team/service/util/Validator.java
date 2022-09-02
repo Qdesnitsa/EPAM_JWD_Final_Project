@@ -21,7 +21,7 @@ public final class Validator {
 
     public static boolean isValidEmail(String email) {
         boolean isValid;
-        if (!email.isBlank()) {
+        if (email != null && !email.isBlank()) {
             Pattern pattern = Pattern.compile(EMAIL_REGEX);
             Matcher matcher = pattern.matcher(email);
             isValid = matcher.matches();

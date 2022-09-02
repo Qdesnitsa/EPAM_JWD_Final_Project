@@ -88,7 +88,8 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
     public boolean add(int position, int level, User user, String password) throws DAOException {
         LOGGER.info("Attempt to add user and employee in 2 schemas to the database");
         UserDAO userDAO = new UserDAOImpl();
-        boolean isAdded = false;
+        boolean isPositionAndLevelAdded = false;
+        boolean isUserAdded = false;
         Connection connection = null;
         PreparedStatement statement = null;
         ConnectionPool connectionPool = null;
@@ -96,7 +97,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             connectionPool = ConnectionPool.getInstance();
             connection = connectionPool.takeConnection();
             connection.setAutoCommit(false);
-            userDAO.add(user, password);
+            isUserAdded = userDAO.add(user, password);
             Optional<User> userOptional = userDAO.findUserByEmail(user.getEmail());
             statement = connection.prepareStatement(SQL_ADD_POSITION_LEVEL);
             statement.setInt(1, userOptional.get().getId());
@@ -104,13 +105,17 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
             statement.setInt(3, level);
             int counter = statement.executeUpdate();
             if (counter != 0) {
-                isAdded = true;
-                LOGGER.info("User and employee has been added");
+                isPositionAndLevelAdded = true;
             } else {
-                isAdded = false;
-                LOGGER.error("User and employee has not been added");
+                isPositionAndLevelAdded = false;
             }
-            connection.commit();
+            if (isUserAdded && isPositionAndLevelAdded) {
+                LOGGER.info("User and employee has been added");
+                connection.commit();
+            } else {
+                LOGGER.error("User and employee has not been added");
+                connection.rollback();
+            }
         } catch (SQLException e) {
             try {
                 connection.rollback();
@@ -123,7 +128,7 @@ public class TeamPositionLevelDAOImpl implements TeamPositionLevelDAO {
         } finally {
             connectionPool.closeConnection(connection, statement);
         }
-        return isAdded;
+        return isPositionAndLevelAdded;
     }
 
 

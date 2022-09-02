@@ -10,6 +10,8 @@ import by.sidina.it_team.entity.UserStatus;
 import by.sidina.it_team.service.repository.UserService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.UserServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import java.util.Optional;
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class SignInPostCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
 
     @Override
@@ -31,16 +34,21 @@ public class SignInPostCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         String email = request.getParameter(ParameterName.EMAIL);
         String password = request.getParameter(ParameterName.PASSWORD);
-        Optional<User> user = userService.findUserByEmailAndPassword(email, password);
-        if (user.isPresent() && user.get().getStatus_id() != UserStatus.BLOCKED.getUserStatusID()) {
-            session.setAttribute(AttributeName.USER, user.get());
-            return JSPPagePath.INDEX;
-        } else {
-            request.setAttribute(AttributeName.MESSAGE_INVALID_INPUT, MSG_INVALID_EMAIL_PASSWORD);
+        try {
+            Optional<User> user = userService.findUserByEmailAndPassword(email, password);
+            if (user.isPresent() && user.get().getStatus_id() != UserStatus.BLOCKED.getUserStatusID()) {
+                session.setAttribute(AttributeName.USER, user.get());
+                return JSPPagePath.INDEX;
+            } else {
+                request.setAttribute(AttributeName.MESSAGE_INVALID_INPUT, MSG_INVALID_EMAIL_PASSWORD);
+                return JSPPagePath.SIGN_IN;
+            }
+        } catch (ServiceException e) {
+            LOGGER.error(e);
             return JSPPagePath.SIGN_IN;
         }
     }

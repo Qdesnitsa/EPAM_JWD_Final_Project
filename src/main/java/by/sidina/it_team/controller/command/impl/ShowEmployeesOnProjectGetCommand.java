@@ -14,6 +14,8 @@ import by.sidina.it_team.service.repository.TeamScheduleService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.ProjectServiceImpl;
 import by.sidina.it_team.service.impl.TeamScheduleServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class ShowEmployeesOnProjectGetCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
     private static final TeamScheduleService teamScheduleService = new TeamScheduleServiceImpl(new TeamScheduleDAOImpl());
 
@@ -33,7 +36,7 @@ public class ShowEmployeesOnProjectGetCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
@@ -44,10 +47,15 @@ public class ShowEmployeesOnProjectGetCommand implements BaseCommand {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
             int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
-            Optional<ProjectDto> project = projectService.findByID(projectId);
-            List<EmployeeDto> employees = teamScheduleService.findEmployeesOnProject(projectId);
-            request.setAttribute(AttributeName.PROJECT, project.get());
-            request.setAttribute(AttributeName.EMPLOYEES, employees);
+            try {
+                Optional<ProjectDto> project = projectService.findByID(projectId);
+                List<EmployeeDto> employees = teamScheduleService.findEmployeesOnProject(projectId);
+                request.setAttribute(AttributeName.PROJECT, project.get());
+                request.setAttribute(AttributeName.EMPLOYEES, employees);
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
+            }
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         }
     }

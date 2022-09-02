@@ -26,7 +26,9 @@ public class HomeShowProjectsCommand implements BaseCommand {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.PAGE_NUMBER, request.getParameter(ParameterName.PAGE_NUMBER));
-        request.setAttribute(AttributeName.PROJECT_STATUS, request.getParameter(ParameterName.PROJECT_STATUS));
+        if (request.getParameter(ParameterName.PROJECT_STATUS) != null) {
+            session.setAttribute(AttributeName.PROJECT_STATUS, request.getParameter(ParameterName.PROJECT_STATUS));
+        }
         return HomePageByRoleProvider.getProjectsPageForUser(user, request);
     }
 

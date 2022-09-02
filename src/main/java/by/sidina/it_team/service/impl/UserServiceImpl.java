@@ -105,13 +105,15 @@ public class UserServiceImpl implements UserService {
                 LOGGER.error(e);
                 throw new ServiceException("Failed to find user by email from DAO", e);
             }
+        } else {
+            throw new ServiceException("Email is invalid");
         }
         return optional;
     }
 
     @Override
     public Optional<User> findUserByEmailAndPassword(String email, String password) throws ServiceException {
-        Optional<User> optional = Optional.empty();
+        Optional<User> optional;
         if (Validator.isValidEmail(email) && Validator.isValidPassword(password)) {
             try {
                 optional = userDAO.findUserByEmailAndPassword(email, password);
@@ -119,6 +121,8 @@ public class UserServiceImpl implements UserService {
                 LOGGER.error(e);
                 throw new ServiceException("Failed to find user by email and password from DAO", e);
             }
+        } else {
+            throw new ServiceException("Email and password are invalid");
         }
         return optional;
     }

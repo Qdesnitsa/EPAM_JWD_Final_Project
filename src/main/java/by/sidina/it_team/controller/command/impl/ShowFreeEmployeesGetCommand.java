@@ -16,6 +16,8 @@ import by.sidina.it_team.service.repository.TeamScheduleService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.ProjectServiceImpl;
 import by.sidina.it_team.service.impl.TeamScheduleServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +29,7 @@ import java.util.Optional;
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class ShowFreeEmployeesGetCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final String EMPLOYEE_LEVEL_DEFAULT = "junior";
     public static final String REQUIRED_QUANTITY_EMPLOYEES_DEFAULT = "0";
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
@@ -39,7 +42,7 @@ public class ShowFreeEmployeesGetCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
@@ -50,29 +53,34 @@ public class ShowFreeEmployeesGetCommand implements BaseCommand {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
             int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
-            Optional<ProjectDto> project = projectService.findByID(projectId);
-            String position = request.getParameter(ParameterName.EMPLOYEE_POSITION);
-            String levelString = request.getParameter(ParameterName.LEVEL);
-            levelString = null == levelString
-                    ? EMPLOYEE_LEVEL_DEFAULT
-                    : levelString;
-            Level employeeLevel = Level.valueOf(levelString.toUpperCase());
-            String requiredQuantityOfEmployeesString = request.getParameter(ParameterName.QUANTITY);
-            requiredQuantityOfEmployeesString = null == requiredQuantityOfEmployeesString
-                    ? REQUIRED_QUANTITY_EMPLOYEES_DEFAULT
-                    : requiredQuantityOfEmployeesString;
-            int quantity = Integer.parseInt(requiredQuantityOfEmployeesString);
-            List<EmployeeDto> freeEmployees = teamScheduleService.findFreeEmployeesForProject(projectId, position, employeeLevel, quantity);
-            if (project.isPresent()) {
-                session.setAttribute(AttributeName.QUANTITY, quantity);
-                session.setAttribute(AttributeName.EMPLOYEE_POSITION, position);
-                session.setAttribute(AttributeName.EMPLOYEE_LEVEL, employeeLevel);
-                request.setAttribute(AttributeName.PROJECT, project.get());
-                request.setAttribute(AttributeName.FREE_EMPLOYEES, freeEmployees);
-                return JSPPagePath.ADMIN_EDIT_PROJECT;
-            } else {
-                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
-                return JSPPagePath.ADMIN_EDIT_PROJECT;
+            try {
+                Optional<ProjectDto> project = projectService.findByID(projectId);
+                String position = request.getParameter(ParameterName.EMPLOYEE_POSITION);
+                String levelString = request.getParameter(ParameterName.LEVEL);
+                levelString = null == levelString
+                        ? EMPLOYEE_LEVEL_DEFAULT
+                        : levelString;
+                Level employeeLevel = Level.valueOf(levelString.toUpperCase());
+                String requiredQuantityOfEmployeesString = request.getParameter(ParameterName.QUANTITY);
+                requiredQuantityOfEmployeesString = null == requiredQuantityOfEmployeesString
+                        ? REQUIRED_QUANTITY_EMPLOYEES_DEFAULT
+                        : requiredQuantityOfEmployeesString;
+                int quantity = Integer.parseInt(requiredQuantityOfEmployeesString);
+                List<EmployeeDto> freeEmployees = teamScheduleService.findFreeEmployeesForProject(projectId, position, employeeLevel, quantity);
+                if (project.isPresent()) {
+                    session.setAttribute(AttributeName.QUANTITY, quantity);
+                    session.setAttribute(AttributeName.EMPLOYEE_POSITION, position);
+                    session.setAttribute(AttributeName.EMPLOYEE_LEVEL, employeeLevel);
+                    request.setAttribute(AttributeName.PROJECT, project.get());
+                    request.setAttribute(AttributeName.FREE_EMPLOYEES, freeEmployees);
+                    return JSPPagePath.ADMIN_EDIT_PROJECT;
+                } else {
+                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+                    return JSPPagePath.ADMIN_EDIT_PROJECT;
+                }
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
             }
         }
     }

@@ -16,6 +16,8 @@ import by.sidina.it_team.service.repository.TeamScheduleService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.ProjectServiceImpl;
 import by.sidina.it_team.service.impl.TeamScheduleServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +29,7 @@ import java.util.Optional;
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class AddEmployeeOnProjectPostCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
     private static final TeamScheduleService teamScheduleService = new TeamScheduleServiceImpl(new TeamScheduleDAOImpl());
 
@@ -37,23 +40,26 @@ public class AddEmployeeOnProjectPostCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (session.getAttribute(ParameterName.PROJECT_ID) == null) {
+        if (session.getAttribute(AttributeName.PROJECT_ID) == null ||
+                request.getParameter(ParameterName.ADD_ID) == null) {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
             int projectId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.PROJECT_ID)));
-            Optional<ProjectDto> project = projectService.findByID(projectId);
-            if (project.isPresent()) {
-                int idToAdd = Integer.parseInt(request.getParameter(ParameterName.ADD_ID));
-                boolean isAdded = teamScheduleService.addEmployeeToProject(idToAdd, projectId);
-                if (isAdded) {
-                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
+            try {
+                Optional<ProjectDto> project = projectService.findByID(projectId);
+                if (project.isPresent()) {
+                    int idToAdd = Integer.parseInt(request.getParameter(ParameterName.ADD_ID));
+                    boolean isAdded = teamScheduleService.addEmployeeToProject(idToAdd, projectId);
+                    if (isAdded) {
+                        request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
+                    }
                     project = projectService.findByID(projectId);
                     request.setAttribute(AttributeName.PROJECT, project.get());
                     String position = (String) session.getAttribute(AttributeName.EMPLOYEE_POSITION);
@@ -65,8 +71,9 @@ public class AddEmployeeOnProjectPostCommand implements BaseCommand {
                 } else {
                     request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
-            } else {
-                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
             }
         }
         return JSPPagePath.ADMIN_EDIT_PROJECT;

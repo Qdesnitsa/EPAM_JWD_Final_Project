@@ -11,6 +11,8 @@ import by.sidina.it_team.entity.User;
 import by.sidina.it_team.service.repository.UserService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.UserServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public class ShowCustomersGetCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final int PAGE_NUMBER_DEFAULT = 1;
     public static final int PAGE_SIZE_DEFAULT = 5;
     private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
@@ -32,7 +35,7 @@ public class ShowCustomersGetCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -45,13 +48,18 @@ public class ShowCustomersGetCommand implements BaseCommand {
                 : Integer.parseInt(pageNumberString);
         int countCustomers;
         int offset = pageSize * pageNumber - pageSize;
-        List<CustomerDto> customers = userService.findAllCustomers(pageSize, offset);
-        countCustomers = userService.countAllCustomersForAdmin();
-        int pageNumbers = (int) Math.ceil(countCustomers / pageSize + 0.5);
-        request.setAttribute(AttributeName.PAGE_QUANTITY, pageNumbers);
-        request.setAttribute(AttributeName.PAGE_NUMBER, pageNumber);
-        request.setAttribute(AttributeName.PAGE_SIZE, pageSize);
-        request.setAttribute(AttributeName.CUSTOMERS, customers);
+        try {
+            List<CustomerDto> customers = userService.findAllCustomers(pageSize, offset);
+            countCustomers = userService.countAllCustomersForAdmin();
+            int pageNumbers = (int) Math.ceil(countCustomers / pageSize + 0.5);
+            request.setAttribute(AttributeName.PAGE_QUANTITY, pageNumbers);
+            request.setAttribute(AttributeName.PAGE_NUMBER, pageNumber);
+            request.setAttribute(AttributeName.PAGE_SIZE, pageSize);
+            request.setAttribute(AttributeName.CUSTOMERS, customers);
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            return JSPPagePath.ERROR;
+        }
         return JSPPagePath.ADMIN_ALL_CUSTOMERS;
     }
 

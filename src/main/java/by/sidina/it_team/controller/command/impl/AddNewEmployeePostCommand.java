@@ -13,6 +13,8 @@ import by.sidina.it_team.service.repository.UserService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.TeamPositionLevelServiceImpl;
 import by.sidina.it_team.service.impl.UserServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ import java.util.Optional;
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class AddNewEmployeePostCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final TeamPositionLevelService teamPositionLevelService
             = new TeamPositionLevelServiceImpl(new TeamPositionLevelDAOImpl());
     private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
@@ -34,7 +37,7 @@ public class AddNewEmployeePostCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
@@ -50,16 +53,19 @@ public class AddNewEmployeePostCommand implements BaseCommand {
         String position = request.getParameter(ParameterName.EMPLOYEE_POSITION);
         String level = request.getParameter(ParameterName.EMPLOYEE_LEVEL);
         User userEmployee = new User(name, surname, role, email, status);
-        Optional<User> existingUser = userService.findUserByEmail(userEmployee.getEmail());
-        if (existingUser.isPresent()) {
-            request.setAttribute(AttributeName.MESSAGE_EMAIL_EXISTS, MSG_EMAIL_EXISTS);
-            return JSPPagePath.ADMIN_NEW_EMPLOYEE;
-        }
-        boolean isChanged = teamPositionLevelService.add(position, level, userEmployee, password);
-        if (isChanged) {
-            request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
-        } else {
-            request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+        try {
+            Optional<User> existingUser = userService.findUserByEmail(userEmployee.getEmail());
+            if (existingUser.isPresent()) {
+                request.setAttribute(AttributeName.MESSAGE_EMAIL_EXISTS, MSG_EMAIL_EXISTS);
+                return JSPPagePath.ADMIN_NEW_EMPLOYEE;
+            }
+            boolean isChanged = teamPositionLevelService.add(position, level, userEmployee, password);
+            if (isChanged) {
+                request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
+            }
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            return JSPPagePath.ERROR;
         }
         return JSPPagePath.ADMIN_NEW_EMPLOYEE;
     }

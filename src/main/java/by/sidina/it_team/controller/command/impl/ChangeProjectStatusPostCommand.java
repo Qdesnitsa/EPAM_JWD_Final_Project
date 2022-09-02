@@ -11,6 +11,8 @@ import by.sidina.it_team.entity.User;
 import by.sidina.it_team.service.repository.ProjectService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.ProjectServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,6 +23,7 @@ import java.util.Optional;
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class ChangeProjectStatusPostCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
 
     @Override
@@ -30,7 +33,7 @@ public class ChangeProjectStatusPostCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
@@ -41,20 +44,23 @@ public class ChangeProjectStatusPostCommand implements BaseCommand {
             return JSPPagePath.ADMIN_EDIT_PROJECT;
         } else {
             int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
-            Optional<ProjectDto> project = projectService.findByID(projectId);
-            if (project.isPresent()) {
-                String projectStatus = request.getParameter(ParameterName.PROJECT_STATUS);
-                boolean isChanged = projectService.changeStatus(projectId, projectStatus);
-                if (isChanged) {
-                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
+            try {
+                Optional<ProjectDto> project = projectService.findByID(projectId);
+                if (project.isPresent()) {
+                    String projectStatus = request.getParameter(ParameterName.PROJECT_STATUS);
+                    boolean isChanged = projectService.changeStatus(projectId, projectStatus);
+                    if (isChanged) {
+                        request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
+                    }
                     project = projectService.findByID(projectId);
                     session.setAttribute(AttributeName.PROJECT, project.get());
                     return JSPPagePath.ADMIN_EDIT_PROJECT;
                 } else {
                     request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
-            } else {
-                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
             }
         }
         return JSPPagePath.ADMIN_EDIT_PROJECT;

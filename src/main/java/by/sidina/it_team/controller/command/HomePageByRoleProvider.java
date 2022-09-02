@@ -9,6 +9,13 @@ import by.sidina.it_team.dao.impl.UserDAOImpl;
 import by.sidina.it_team.dao.repository.ProjectDAO;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
+import by.sidina.it_team.service.exception.ServiceException;
+import by.sidina.it_team.service.impl.ProjectServiceImpl;
+import by.sidina.it_team.service.impl.UserServiceImpl;
+import by.sidina.it_team.service.repository.ProjectService;
+import by.sidina.it_team.service.repository.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
@@ -16,29 +23,32 @@ import java.util.List;
 import java.util.Optional;
 
 public class HomePageByRoleProvider {
+    private static final Logger LOGGER = LogManager.getLogger();
+    private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
+    private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
     private static final int PROJECT_STATUS_DEFAULT = 1;
-    private static final int PAGE_SIZE_DEFAULT = 5;
+    private static final int PAGE_SIZE_DEFAULT = 10;
     private static final int PAGE_NUMBER_DEFAULT = 1;
 
     public static String getProjectsPageForUser(User user, HttpServletRequest request) {
         LocalDate currentDate = LocalDate.now();
-        ProjectDAO projectDAO = new ProjectDAOImpl();
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        String projectStatusString = (String) request.getAttribute(AttributeName.PROJECT_STATUS);
+        String projectStatusString = (String) request.getSession().getAttribute(AttributeName.PROJECT_STATUS);
         int projectStatus = null == projectStatusString ? PROJECT_STATUS_DEFAULT : Integer.parseInt(projectStatusString);
         int pageSize = PAGE_SIZE_DEFAULT;
         String pageNumberString = (String) request.getAttribute(AttributeName.PAGE_NUMBER);
         int pageNumber = null == pageNumberString ? PAGE_NUMBER_DEFAULT : Integer.parseInt(pageNumberString);
         if (user.getRole_id() == Role.ADMIN.getId()) {
-            List<ProjectDto> projects = null;
+            List<ProjectDto> projects;
             int countProjects;
             try {
                 int offset = pageSize * pageNumber - pageSize;
-                projects = projectDAO.findAllForAdmin(pageSize, offset, projectStatus);
-                countProjects = projectDAO.countAllProjectsForAdmin(projectStatus);
-            } catch (DAOException e) {
-                throw new RuntimeException(e);
+                projects = projectService.findAllForAdmin(pageSize, offset, String.valueOf(projectStatus));
+                countProjects = projectService.countAllProjectsForAdmin(projectStatus);
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
             }
             int pageNumbers = (int) Math.ceil(countProjects / pageSize + 0.5);
             request.setAttribute(AttributeName.PAGE_QUANTITY, pageNumbers);
@@ -48,37 +58,34 @@ public class HomePageByRoleProvider {
             request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
             return JSPPagePath.ADMIN_ALL_PROJECTS;
         } else if (user.getRole_id() == Role.EMPLOYEE.getId()) {
-            List<ProjectDto> projects = null;
+            List<ProjectDto> projects;
             try {
-                projects = projectDAO.findAllByEmployeeID(user.getId());
-            } catch (DAOException e) {
-                throw new RuntimeException(e);
+                projects = projectService.findAllByEmployeeID(user.getId());
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
             }
             request.setAttribute(AttributeName.PROJECTS, projects);
             request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
             return JSPPagePath.EMPLOYEE_PROJECTS;
         } else if (user.getRole_id() == Role.CUSTOMER.getId()) {
-            UserDAOImpl userDaoImpl = new UserDAOImpl();
-            Optional<User> existingUser = null;
+            Optional<User> existingUser;
             try {
-                existingUser = userDaoImpl.findUserByEmail(user.getEmail());
-            } catch (DAOException e) {
-                throw new RuntimeException(e);
+                existingUser = userService.findUserByEmail(user.getEmail());
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
             }
-            List<ProjectDto> projects = null;
+            List<ProjectDto> projects;
             try {
-                projects = projectDAO.findAllByCustomerID(existingUser.get().getId());
-            } catch (DAOException e) {
-                throw new RuntimeException(e);
+                projects = projectService.findAllByCustomerID(existingUser.get().getId());
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
             }
             request.setAttribute(AttributeName.PROJECTS, projects);
             request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
-            return JSPPagePath.CUSTOMER_PROJECTS;
         }
-        try {
-            throw new DAOException("Unknown role");
-        } catch (DAOException e) {
-            throw new RuntimeException(e);
-        }
+        return JSPPagePath.CUSTOMER_PROJECTS;
     }
 }

@@ -21,17 +21,17 @@ public class UserDAOImpl implements UserDAO {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final String SQL_FIND_ALL_USERS
             = """
-                        SELECT id,
-                               name,
-                               surname,
-                               (SELECT role_types
-                                FROM   roles
-                                WHERE  id = users.role_id),
-                               email,
-                               (SELECT status
-                                FROM   status_user
-                                WHERE  id = users.user_status_id)
-                        FROM   users
+            SELECT id,
+                   name,
+                   surname,
+                   (SELECT role_types
+                   FROM   roles
+                   WHERE  id = users.role_id),
+                   email,
+                   (SELECT status
+                   FROM   status_user
+                   WHERE  id = users.user_status_id)
+            FROM   users
             """;
     private static final String SQL_FIND_ALL_CUSTOMERS
             = """

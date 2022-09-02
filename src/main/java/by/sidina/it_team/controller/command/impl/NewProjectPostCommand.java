@@ -14,6 +14,8 @@ import by.sidina.it_team.service.repository.UserService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.ProjectServiceImpl;
 import by.sidina.it_team.service.impl.UserServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -25,6 +27,7 @@ import java.util.Optional;
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class NewProjectPostCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
     private static final String EQUALS = "=";
@@ -40,7 +43,7 @@ public class NewProjectPostCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -58,23 +61,28 @@ public class NewProjectPostCommand implements BaseCommand {
             int seniorQuantity = Integer.parseInt(request.getParameter(ParameterName.SENIOR_QUANTITY));
             int middleQuantity = Integer.parseInt(request.getParameter(ParameterName.MIDDLE_QUANTITY));
             int juniorQuantity = Integer.parseInt(request.getParameter(ParameterName.JUNIOR_QUANTITY));
-            Optional<User> userNew = userService.findUserByEmail(user.getEmail());
-            int user_id = userNew.get().getId();
-            projectService.add(new Project.Builder()
-                    .setCustomerID(user_id)
-                    .setName(projectName)
-                    .setStartDate(startDate)
-                    .setEndDate(endDate)
-                    .setRequirementComment(new StringBuilder()
-                            .append(String.join(DELIMITER_COMMA, developers)).append(DELIMITER_SEMICOLON)
-                            .append(ParameterName.SENIOR_QUANTITY).append(EQUALS)
-                            .append(seniorQuantity).append(DELIMITER_SEMICOLON)
-                            .append(ParameterName.MIDDLE_QUANTITY).append(EQUALS)
-                            .append(middleQuantity).append(DELIMITER_SEMICOLON)
-                            .append(ParameterName.JUNIOR_QUANTITY).append(EQUALS)
-                            .append(juniorQuantity).append(DELIMITER_SEMICOLON)
-                            .toString())
-                    .build());
+            try {
+                Optional<User> userNew = userService.findUserByEmail(user.getEmail());
+                int user_id = userNew.get().getId();
+                projectService.add(new Project.Builder()
+                        .setCustomerID(user_id)
+                        .setName(projectName)
+                        .setStartDate(startDate)
+                        .setEndDate(endDate)
+                        .setRequirementComment(new StringBuilder()
+                                .append(String.join(DELIMITER_COMMA, developers)).append(DELIMITER_SEMICOLON)
+                                .append(ParameterName.SENIOR_QUANTITY).append(EQUALS)
+                                .append(seniorQuantity).append(DELIMITER_SEMICOLON)
+                                .append(ParameterName.MIDDLE_QUANTITY).append(EQUALS)
+                                .append(middleQuantity).append(DELIMITER_SEMICOLON)
+                                .append(ParameterName.JUNIOR_QUANTITY).append(EQUALS)
+                                .append(juniorQuantity).append(DELIMITER_SEMICOLON)
+                                .toString())
+                        .build());
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
+            }
         } else {
             request.setAttribute(AttributeName.MESSAGE_START_END_DATE, MSG_START_DATE_AFTER_END_DATE);
         }

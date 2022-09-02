@@ -29,6 +29,6 @@ public class HomePage implements BaseCommand {
 
     @Override
     public String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) {
-        return null;
+        return JSPPagePath.SIGN_IN;
     }
 }

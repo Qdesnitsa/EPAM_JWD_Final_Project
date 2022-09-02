@@ -14,6 +14,8 @@ import by.sidina.it_team.service.repository.ProjectService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.PaymentServiceImpl;
 import by.sidina.it_team.service.impl.ProjectServiceImpl;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -27,6 +29,7 @@ import java.util.stream.Stream;
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
 public class NewPaymentPostCommand implements BaseCommand {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
     private static final PaymentService paymentService = new PaymentServiceImpl(new PaymentDAOImpl());
 
@@ -37,39 +40,41 @@ public class NewPaymentPostCommand implements BaseCommand {
     }
 
     @Override
-    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServiceException {
+    public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.PROJECT_ID) == null) {
+        try {
             List<ProjectDto> projects = projectService.findAllByCustomerID(user.getId());
-            request.setAttribute(AttributeName.PROJECTS, projects);
-            return JSPPagePath.CUSTOMER_PROJECTS;
-        } else {
-            int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
-            Optional<ProjectDto> project = projectService.findByID(projectId);
-            List<ProjectDto> projects = projectService.findAllByCustomerID(user.getId());
-            boolean hasCustomerThisProject = projects
-                    .stream()
-                    .flatMap(s -> Stream.ofNullable(s))
-                    .filter(elem -> elem.getId() == projectId)
-                    .findAny()
-                    .isPresent();
-            if (hasCustomerThisProject) {
-                String amount = request.getParameter(ParameterName.PAYMENT);
-                boolean isAdded = paymentService.addPaymentByProjectAndCustomerID(project.get(), amount, Date.valueOf(currentDate));
-                if (isAdded) {
-                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
+            if (request.getParameter(ParameterName.PROJECT_ID) == null) {
+                request.setAttribute(AttributeName.PROJECTS, projects);
+                return JSPPagePath.CUSTOMER_PROJECTS;
+            } else {
+                int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
+                Optional<ProjectDto> project = projectService.findByID(projectId);
+                boolean hasCustomerThisProject = projects
+                        .stream()
+                        .flatMap(s -> Stream.ofNullable(s))
+                        .filter(elem -> elem.getId() == projectId)
+                        .findAny()
+                        .isPresent();
+                if (hasCustomerThisProject) {
+                    String amount = request.getParameter(ParameterName.PAYMENT);
+                    boolean isAdded = paymentService.addPaymentByProjectAndCustomerID(project.get(), amount, Date.valueOf(currentDate));
+                    if (isAdded) {
+                        request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
+                    }
                 } else {
                     request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
-            } else {
-                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+                projects = projectService.findAllByCustomerID(user.getId());
+                request.setAttribute(AttributeName.PROJECTS, projects);
             }
-            projects = projectService.findAllByCustomerID(user.getId());
-            request.setAttribute(AttributeName.PROJECTS, projects);
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            return JSPPagePath.ERROR;
         }
         return JSPPagePath.CUSTOMER_PROJECTS;
     }
