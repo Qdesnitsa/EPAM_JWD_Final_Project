@@ -17,8 +17,7 @@ public class SelectLocalePostCommand implements BaseCommand {
         return true;
     }
 
-    @Override
-    public Command getExpectedCommand(HttpServletRequest request, HttpServletResponse response) {
+    public static Command getExpectedCommand(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         session.setAttribute(AttributeName.LOCALE, request.getParameter(ParameterName.LANGUAGE));
         String commandName = (String) session.getAttribute(AttributeName.LAST_COMMAND);

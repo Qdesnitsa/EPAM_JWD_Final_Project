@@ -2,8 +2,9 @@ package by.sidina.it_team.controller.command;
 
 import by.sidina.it_team.controller.Command;
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
+import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.dictionary.ParameterName;
-import by.sidina.it_team.dao.exception.DAOException;
+import by.sidina.it_team.controller.command.impl.SelectLocalePostCommand;
 import by.sidina.it_team.service.exception.ServiceException;
 
 import javax.servlet.ServletException;
@@ -19,10 +20,6 @@ public interface BaseCommand extends Command {
 
     String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response);
 
-    default Command getExpectedCommand(HttpServletRequest request, HttpServletResponse response) {
-        return null;
-    }
-
     @Override
     default String execute(HttpServletRequest request, HttpServletResponse response) throws ServiceException, IOException, ServletException {
         if (canBeExpectedResponseReturned(request, response)) {
@@ -35,7 +32,7 @@ public interface BaseCommand extends Command {
             if (jspPage != null) {
                 request.getRequestDispatcher(jspPage).forward(request, response);
             } else {
-                Command command = getExpectedCommand(request, response);
+                Command command = SelectLocalePostCommand.getExpectedCommand(request, response);
                 if (command != null) {
                     command.execute(request, response);
                 }
@@ -43,6 +40,6 @@ public interface BaseCommand extends Command {
         } else {
             request.getRequestDispatcher(getAlternativeJspPage(request, response)).forward(request, response);
         }
-        return null;
+        return JSPPagePath.ERROR;
     }
 }

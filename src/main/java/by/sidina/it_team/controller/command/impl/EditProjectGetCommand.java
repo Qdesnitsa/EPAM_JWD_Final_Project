@@ -42,9 +42,6 @@ public class EditProjectGetCommand implements BaseCommand {
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
         if (request.getParameter(ParameterName.PROJECT_ID) != null) {
             session.setAttribute(AttributeName.PROJECT_ID, request.getParameter(ParameterName.PROJECT_ID));
-        } else {
-            request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
-            return JSPPagePath.ADMIN_ALL_PROJECTS;
         }
         int projectId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.PROJECT_ID)));
         try {
