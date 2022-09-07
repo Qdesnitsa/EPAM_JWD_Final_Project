@@ -18,7 +18,6 @@
                     <h2><fmt:message key="label.my_projects"/></h2><br>
                 </caption>
                 <tr>
-                    <th><fmt:message key="label.project_id"/></th>
                     <th><fmt:message key="label.project_name"/></th>
                     <th><fmt:message key="label.project_start_date"/></th>
                     <th><fmt:message key="label.project_end_date"/></th>
@@ -32,7 +31,6 @@
                 <c:forEach var="project" items="${projects}">
                     <tr>
                         <form action="controller" method="POST">
-                            <td>${project.id}</td>
                             <td>${project.name}</td>
                             <td>${project.startDate}</td>
                             <td>${project.endDate}</td>

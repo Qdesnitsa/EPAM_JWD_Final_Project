@@ -41,28 +41,30 @@ public class ChangeEmployeeLevelPostCommand implements BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (session.getAttribute(ParameterName.EMPLOYEE_ID) == null) {
-            return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+        int employeeId;
+        if (request.getParameter(ParameterName.EMPLOYEE_ID) == null) {
+            employeeId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.EMPLOYEE_ID)));
         } else {
-            int employeeId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.EMPLOYEE_ID)));
-            try {
-                Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
-                if (employee.isPresent()) {
-                    String level = request.getParameter(ParameterName.CHANGE_EMPLOYEE_LEVEL);
-                    boolean isChanged = teamPositionLevelService.changeLevel(employeeId, level);
-                    if (isChanged) {
-                        request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
-                    }
-                    employee = teamPositionLevelService.findByID(employeeId);
-                    request.setAttribute(AttributeName.EMPLOYEE, employee.get());
-                    return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
-                } else {
-                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+            employeeId = Integer.parseInt(String.valueOf(request.getParameter(ParameterName.EMPLOYEE_ID)));
+            session.setAttribute(AttributeName.EMPLOYEE_ID, request.getParameter(ParameterName.EMPLOYEE_ID));
+        }
+        try {
+            Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
+            if (employee.isPresent()) {
+                String level = request.getParameter(ParameterName.CHANGE_EMPLOYEE_LEVEL);
+                boolean isChanged = teamPositionLevelService.changeLevel(employeeId, level);
+                if (isChanged) {
+                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                 }
-            } catch (ServiceException e) {
-                LOGGER.error(e);
-                return JSPPagePath.ERROR;
+                employee = teamPositionLevelService.findByID(employeeId);
+                request.setAttribute(AttributeName.EMPLOYEE, employee.get());
+                return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+            } else {
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
             }
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            return JSPPagePath.ERROR;
         }
         return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
     }

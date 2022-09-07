@@ -30,8 +30,8 @@
                 </form>
             </div>
             <tr>
-                <th><fmt:message key="label.customer_id"/></th>
-                <th><fmt:message key="label.project_id"/></th>
+                <th><fmt:message key="label.customer_name"/></th>
+                <th><fmt:message key="label.customer_surname"/></th>
                 <th><fmt:message key="label.project_name"/></th>
                 <th><fmt:message key="label.project_status"/></th>
                 <th><fmt:message key="label.project_start_date"/></th>
@@ -43,8 +43,8 @@
             </tr>
             <c:forEach var="project" items="${projects}">
                 <tr>
-                    <td>${project.customerId}</td>
-                    <td>${project.id}</td>
+                    <td>${project.customerName}</td>
+                    <td>${project.customerSurname}</td>
                     <form action="controller" method="POST">
                         <td>
                             <a href="/IT_Team/controller?command=edit_project_get&project_id=${project.id}">${project.name}</a>

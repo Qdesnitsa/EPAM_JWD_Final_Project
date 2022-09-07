@@ -17,7 +17,6 @@
                 <h2><fmt:message key="label.all_employees"/></h2>
             </caption>
             <tr>
-                <th><fmt:message key="label.employee_id"/></th>
                 <th><fmt:message key="label.email"/></th>
                 <th><fmt:message key="label.name"/></th>
                 <th><fmt:message key="label.surname"/></th>
@@ -27,7 +26,6 @@
             </tr>
             <c:forEach var="employee" items="${employees}">
                 <tr>
-                    <td>${employee.id}</td>
                     <td>${employee.email}</td>
                     <td>${employee.name}</td>
                     <form action="controller" method="POST">

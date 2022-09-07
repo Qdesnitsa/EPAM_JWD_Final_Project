@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Anton&family=Inter:wght@500&family=Patua+One&family=Russo+One&display=swap');
 
 body {
-    background-image: url("//IT_Team/page/image/background.png");
+    background-image: url("/IT_Team/page/image/background.png");
     background-repeat: no-repeat;
     background-size: 100%;
     font-family: "Inter", sans-serif;

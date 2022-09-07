@@ -22,6 +22,8 @@ public class ProjectDAOImpl implements ProjectDAO {
     private static final String SQL_FIND_ALL_PROJECTS
             = """
             SELECT projects.id as id,
+                   users.name as customer_name,
+                   users.surname as customer_surname,
                    projects.name as name,
                    projects.start_date as start_date,
                    projects.end_date as end_date,
@@ -35,6 +37,7 @@ public class ProjectDAOImpl implements ProjectDAO {
             FROM projects
                      LEFT JOIN status_project ON projects.project_status_id = status_project.id
                      LEFT JOIN project_calculation ON projects.id = project_calculation.project_id
+                     LEFT JOIN users ON projects.customer_id = users.id
             WHERE status_project.id=?
             GROUP BY id
             ORDER BY length(project_status), start_date
@@ -52,6 +55,8 @@ public class ProjectDAOImpl implements ProjectDAO {
             = """
             SELECT projects.id                                     AS id,
                    projects.name                                   AS name,
+                   users.name                                      AS customer_name,
+                   users.surname                                   AS customer_surname,
                    projects.start_date                             AS start_date,
                    projects.end_date                               AS end_date,
                    status_project.status                           AS project_status,
@@ -74,6 +79,8 @@ public class ProjectDAOImpl implements ProjectDAO {
                           ON projects.id = team_schedule.project_id
                    LEFT JOIN project_calculation
                           ON projects.id = project_calculation.project_id
+                   LEFT JOIN users
+                          ON projects.customer_id = users.id
             WHERE  projects.customer_id =?
             GROUP  BY id
             """;
@@ -81,6 +88,8 @@ public class ProjectDAOImpl implements ProjectDAO {
             = """
             SELECT projects.id                                     AS id,
                    projects.name                                   AS name,
+                   users.name                                      AS customer_name,
+                   users.surname                                   AS customer_surname,
                    projects.start_date                             AS start_date,
                    projects.end_date                               AS end_date,
                    status_project.status                           AS project_status,
@@ -103,6 +112,8 @@ public class ProjectDAOImpl implements ProjectDAO {
                           ON projects.id = team_schedule.project_id
                    LEFT JOIN project_calculation
                           ON projects.id = project_calculation.project_id
+                   LEFT JOIN users
+                          ON projects.customer_id = users.id
             WHERE  team_schedule.employee_id =?
             GROUP  BY id
             """;
@@ -110,6 +121,8 @@ public class ProjectDAOImpl implements ProjectDAO {
             = """
             SELECT projects.id                                                           AS id,
                    projects.name                                                         AS name,
+                   users.name                                                            AS customer_name,
+                   users.surname                                                         AS customer_surname,
                    projects.start_date                                                   AS start_date,
                    projects.end_date                                                     AS end_date,
                    status_project.status                                                 AS project_status,
@@ -128,6 +141,8 @@ public class ProjectDAOImpl implements ProjectDAO {
                           ON projects.id = team_schedule.project_id
                    LEFT JOIN project_calculation
                           ON projects.id = project_calculation.project_id
+                   LEFT JOIN users
+                          ON projects.customer_id = users.id
             WHERE  projects.id =?
             GROUP  BY id
             """;
@@ -368,6 +383,8 @@ public class ProjectDAOImpl implements ProjectDAO {
                 .setCustomerId(resultSet.getInt("customer_id"))
                 .setId(resultSet.getInt("id"))
                 .setName(resultSet.getString("name"))
+                .setCustomerName(resultSet.getString("customer_name"))
+                .setCustomerSurname(resultSet.getString("customer_surname"))
                 .setStatus(ProjectStatus.valueOf(resultSet.getString("project_status")))
                 .setStartDate(resultSet.getDate("start_date"))
                 .setEndDate(resultSet.getDate("end_date"))

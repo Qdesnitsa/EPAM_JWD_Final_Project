@@ -41,10 +41,13 @@ public class EditEmployeeGetCommand implements BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (session.getAttribute(ParameterName.EMPLOYEE_ID) == null) {
+        int employeeId;
+        if (request.getParameter(ParameterName.EMPLOYEE_ID) == null) {
+            employeeId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.EMPLOYEE_ID)));
+        } else {
+            employeeId = Integer.parseInt(String.valueOf(request.getParameter(ParameterName.EMPLOYEE_ID)));
             session.setAttribute(AttributeName.EMPLOYEE_ID, request.getParameter(ParameterName.EMPLOYEE_ID));
         }
-        int employeeId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.EMPLOYEE_ID)));
         try {
             Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
             if (employee.isPresent()) {

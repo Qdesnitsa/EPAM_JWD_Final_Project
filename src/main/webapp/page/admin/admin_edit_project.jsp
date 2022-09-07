@@ -18,8 +18,8 @@
                     <h2><fmt:message key="label.project_edition"/></h2><br>
                 </caption>
                 <tr>
-                    <th width="10%"><fmt:message key="label.project_id"/></th>
-                    <th width="10%"><fmt:message key="label.customer_id"/></th>
+                    <th width="10%"><fmt:message key="label.customer_name"/></th>
+                    <th width="10%"><fmt:message key="label.customer_surname"/></th>
                     <th width="15%"><fmt:message key="label.project_name"/></th>
                     <th width="10%"><fmt:message key="label.project_status"/></th>
                     <th width="10%"><fmt:message key="label.project_start_date"/></th>
@@ -27,8 +27,8 @@
                     <th width="35%"><fmt:message key="label.project_comment"/></th>
                 </tr>
                 <tr>
-                    <td>${project.id}</td>
-                    <td>${project.customerId}</td>
+                    <td>${project.customerName}</td>
+                    <td>${project.customerSurname}</td>
                     <td>${project.name}</td>
                     <td>${project.status}</td>
                     <td>${project.startDate}</td>

@@ -18,7 +18,6 @@
                     <h2><fmt:message key="label.edition_employee"/></h2><br>
                 </caption>
                 <tr>
-                    <th><fmt:message key="label.employee_id"/></th>
                     <th><fmt:message key="label.email"/></th>
                     <th><fmt:message key="label.name"/></th>
                     <th><fmt:message key="label.surname"/></th>
@@ -27,7 +26,6 @@
                     <th><fmt:message key="label.employee_level"/></th>
                 </tr>
                 <tr>
-                    <td>${employee.id}</td>
                     <td>${employee.email}</td>
                     <td>${employee.name}</td>
                     <td>${employee.surname}</td>

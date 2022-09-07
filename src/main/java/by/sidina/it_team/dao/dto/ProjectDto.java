@@ -12,6 +12,8 @@ public class ProjectDto {
     private Date endDate;
     private ProjectStatus status;
     private int customerId;
+    private String customerName;
+    private String customerSurname;
     private double amount;
     private double hoursFact;
     private double hoursPlan;
@@ -23,7 +25,7 @@ public class ProjectDto {
     }
 
     public ProjectDto(int id, String name, Date startDate, Date endDate, ProjectStatus status, int customerId,
-                      double amount, double hoursFact, double hoursPlan, double costPlan) {
+                      double amount, double hoursFact, double hoursPlan, double costPlan, String customerName, String customerSurname) {
         this.id = id;
         this.name = name;
         this.startDate = startDate;
@@ -34,6 +36,8 @@ public class ProjectDto {
         this.hoursFact = hoursFact;
         this.hoursPlan = hoursPlan;
         this.costPlan = costPlan;
+        this.customerName = customerName;
+        this.customerSurname = customerSurname;
     }
 
     public int getId() {
@@ -42,6 +46,12 @@ public class ProjectDto {
 
     public String getName() {
         return name;
+    }
+    public String getCustomerName() {
+        return customerName;
+    }
+    public String getCustomerSurname() {
+        return customerSurname;
     }
 
     public Date getStartDate() {
@@ -94,12 +104,15 @@ public class ProjectDto {
                 Objects.equals(name, projectDto.name) &&
                 Objects.equals(startDate, projectDto.startDate) &&
                 Objects.equals(endDate, projectDto.endDate) &&
+                Objects.equals(customerName, projectDto.customerName) &&
+                Objects.equals(customerSurname, projectDto.customerSurname) &&
                 Objects.equals(status, projectDto.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, startDate, endDate, status, customerId, amount, hoursFact, hoursPlan, costPlan);
+        return Objects.hash(id, name, startDate, endDate, status, customerId, amount, hoursFact, hoursPlan, costPlan,
+                customerName,customerSurname);
     }
 
     public static class Builder {
@@ -111,6 +124,16 @@ public class ProjectDto {
 
         public Builder setId(int id) {
             this.projectDto.id = id;
+            return this;
+        }
+
+        public Builder setCustomerName(String customerName) {
+            this.projectDto.customerName = customerName;
+            return this;
+        }
+
+        public Builder setCustomerSurname(String customerSurname) {
+            this.projectDto.customerSurname = customerSurname;
             return this;
         }
 

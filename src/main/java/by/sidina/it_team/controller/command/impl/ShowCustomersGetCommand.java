@@ -23,7 +23,7 @@ import java.util.List;
 public class ShowCustomersGetCommand implements BaseCommand {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final int PAGE_NUMBER_DEFAULT = 1;
-    public static final int PAGE_SIZE_DEFAULT = 5;
+    public static final int PAGE_SIZE_DEFAULT = 10;
     private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
 
     @Override

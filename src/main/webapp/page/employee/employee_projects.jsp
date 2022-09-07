@@ -17,7 +17,6 @@
                 <h2><fmt:message key="label.my_projects"/></h2><br>
             </caption>
             <tr>
-                <th><fmt:message key="label.project_id"/></th>
                 <th><fmt:message key="label.project_name"/></th>
                 <th><fmt:message key="label.project_status"/></th>
                 <th><fmt:message key="label.project_start_date"/></th>
@@ -26,7 +25,6 @@
             </tr>
             <c:forEach var="project" items="${projects}">
                 <tr>
-                    <td>${project.id}</td>
                     <form action="controller" method="POST">
                         <td>
                             <a href="/IT_Team/controller?command=post_hours_get&project_id=${project.id}">${project.name}</a>

@@ -17,7 +17,6 @@
                 <h2><fmt:message key="label.all_customers"/></h2><br>
             </caption>
             <tr>
-                <th><fmt:message key="label.customer_id"/></th>
                 <th><fmt:message key="label.email"/></th>
                 <th><fmt:message key="label.name"/></th>
                 <th><fmt:message key="label.surname"/></th>
@@ -25,7 +24,6 @@
             </tr>
             <c:forEach var="customer" items="${customers}">
                 <tr>
-                    <td>${customer.id}</td>
                     <td>${customer.email}</td>
                     <td>${customer.name}</td>
                     <form action="controller" method="POST">
