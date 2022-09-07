@@ -11,6 +11,7 @@ public interface UserDAO {
     List<User> findAll() throws DAOException;
 
     List<CustomerDto> findAllCustomers(int limit, int offset) throws DAOException;
+    List<CustomerDto> findAllCustomersByPattern(int limit, int offset, String pattern) throws DAOException;
 
     Optional<CustomerDto> findCustomerByID(int id) throws DAOException;
 
@@ -28,5 +29,5 @@ public interface UserDAO {
 
     boolean changeStatus(int id, int status) throws DAOException;
 
-    int countAllCustomersForAdmin() throws DAOException;
+    int countAllCustomersForAdmin(String pattern) throws DAOException;
 }

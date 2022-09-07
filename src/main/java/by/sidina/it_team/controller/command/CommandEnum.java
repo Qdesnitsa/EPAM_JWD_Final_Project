@@ -173,6 +173,11 @@ public enum CommandEnum {
             this.command = new AddNewEmployeeGetCommand();
         }
     },
+    SHOW_CUSTOMERS_BY_PATTERN {
+        {
+            this.command = new ShowCustomersGetCommand();
+        }
+    },
     REMOVE_EMPLOYEES_POST {
         {
             this.command = new RemoveEmployeeFromProjectPostCommand();

@@ -22,6 +22,7 @@ import java.util.List;
 
 public class ShowCustomersGetCommand implements BaseCommand {
     private static final Logger LOGGER = LogManager.getLogger();
+    public static final String SEARCH_PATTERN_DEFAULT = "";
     public static final int PAGE_NUMBER_DEFAULT = 1;
     public static final int PAGE_SIZE_DEFAULT = 10;
     private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
@@ -36,6 +37,7 @@ public class ShowCustomersGetCommand implements BaseCommand {
 
     @Override
     public String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) {
+        HttpSession session = request.getSession();
         LocalDate currentDate = LocalDate.now();
         request.setAttribute(AttributeName.CURRENT_DATE, currentDate);
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
@@ -48,9 +50,18 @@ public class ShowCustomersGetCommand implements BaseCommand {
                 : Integer.parseInt(pageNumberString);
         int countCustomers;
         int offset = pageSize * pageNumber - pageSize;
+        String userPattern;
+        if (request.getParameter(ParameterName.SEARCH_PATTERN) != null) {
+            session.setAttribute(AttributeName.SEARCH_PATTERN, request.getParameter(ParameterName.SEARCH_PATTERN));
+            userPattern = (String) session.getAttribute(AttributeName.SEARCH_PATTERN);
+        } else if (session.getAttribute(AttributeName.SEARCH_PATTERN) != null) {
+            userPattern = (String) session.getAttribute(AttributeName.SEARCH_PATTERN);
+        } else {
+            userPattern = SEARCH_PATTERN_DEFAULT;
+        }
         try {
-            List<CustomerDto> customers = userService.findAllCustomers(pageSize, offset);
-            countCustomers = userService.countAllCustomersForAdmin();
+            List<CustomerDto> customers = userService.findAllCustomersByPattern(pageSize, offset, userPattern);
+            countCustomers = userService.countAllCustomersForAdmin(userPattern);
             int pageNumbers = (int) Math.ceil(countCustomers / pageSize + 0.5);
             request.setAttribute(AttributeName.PAGE_QUANTITY, pageNumbers);
             request.setAttribute(AttributeName.PAGE_NUMBER, pageNumber);

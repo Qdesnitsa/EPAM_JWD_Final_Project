@@ -46,6 +46,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<CustomerDto> findAllCustomersByPattern(int limit, int offset, String pattern) throws ServiceException {
+        List<CustomerDto> customers;
+        try {
+            customers = userDAO.findAllCustomersByPattern(limit, offset, pattern);
+        } catch (DAOException e) {
+            LOGGER.error(e);
+            throw new ServiceException("Failed to find all customers by pattern from DAO", e);
+        }
+        return customers;
+    }
+
+    @Override
     public Optional<User> findByID(int id) throws ServiceException {
         Optional<User> optional = Optional.empty();
         try {
@@ -70,10 +82,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public int countAllCustomersForAdmin() throws ServiceException {
+    public int countAllCustomersForAdmin(String pattern) throws ServiceException {
         int countCustomers = 0;
         try {
-            countCustomers = userDAO.countAllCustomersForAdmin();
+            countCustomers = userDAO.countAllCustomersForAdmin(pattern);
         } catch (DAOException e) {
             LOGGER.error(e);
             throw new ServiceException("Failed to count all customers from DAO", e);

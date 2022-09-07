@@ -13,9 +13,21 @@
     </jsp:attribute>
     <jsp:body>
         <table class="table" align="center">
-            <caption>
-                <h2><fmt:message key="label.all_customers"/></h2><br>
-            </caption>
+            <h2 style="text-align: center"><fmt:message key="label.all_customers"/></h2><br>
+            <div style="text-align: center"><fmt:message key="label.find_customer_by_pattern"/><br>
+                <form action="controller" method="POST">
+                    <input
+                            type="text"
+                            name="search_pattern"
+                            placeholder="<fmt:message key="label.search"/>"
+                            size="30"
+                            style="font-size: 15px"
+                    />
+                    <button type="submit" class="submit" name="command" value="show_customers_by_pattern">
+                        <fmt:message key="label.show"/>
+                    </button>
+                </form>
+            </div>
             <tr>
                 <th><fmt:message key="label.email"/></th>
                 <th><fmt:message key="label.name"/></th>

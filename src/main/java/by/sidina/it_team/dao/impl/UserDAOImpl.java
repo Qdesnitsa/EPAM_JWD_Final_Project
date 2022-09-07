@@ -67,13 +67,14 @@ public class UserDAOImpl implements UserDAO {
                           ON status_user.id = users.user_status_id
             WHERE  roles.role_types = "customer"
                    AND users.id =?
-            ORDER  BY status_user.status\s
+            ORDER  BY status_user.status
             """;
     private static final String SQL_COUNT_ALL_CUSTOMERS
             = """
-            SELECT Count(*) AS count
+            SELECT count(*) AS count
             FROM   users
             WHERE  role_id = 3
+            AND (name LIKE ? OR surname LIKE ?)
             """;
     private static final String SQL_FIND_USER_BY_ID
             = """
@@ -100,6 +101,25 @@ public class UserDAOImpl implements UserDAO {
             "SELECT id, name, surname, role_id, email, user_status_id FROM users WHERE email=? AND password=?";
     private static final String SQL_FIND_PASSWORD_BY_EMAIL
             = "SELECT password FROM users WHERE email=?";
+    private static final String SQL_FIND_NAMES_AND_SURNAMES_BY_PATTERN
+            = """
+            SELECT users.id           AS id,
+                   users.name         AS name,
+                   users.surname      AS surname,
+                   roles.role_types   AS role,
+                   users.email        AS email,
+                   status_user.status AS status,
+                   status_user.id     AS status_id
+            FROM   users
+                   LEFT JOIN roles
+                          ON roles.id = users.role_id
+                   LEFT JOIN status_user
+                          ON status_user.id = users.user_status_id
+            WHERE  roles.role_types = "customer"
+                   AND (users.name LIKE ? OR users.surname LIKE ?)
+            ORDER  BY status_user.status
+            LIMIT  ? offset ?
+            """;
 
     @Override
     public List<User> findAll() throws DAOException {
@@ -142,6 +162,35 @@ public class UserDAOImpl implements UserDAO {
         } catch (SQLException e) {
             LOGGER.error(e);
             throw new DAOException("Failed attempt to find all customers in the database", e);
+        } finally {
+            try {
+                resultSet.close();
+            } catch (SQLException e) {
+                LOGGER.error(e);
+                throw new DAOException("Failed attempt to close resultSet", e);
+            }
+        }
+        return users;
+    }
+
+    @Override
+    public List<CustomerDto> findAllCustomersByPattern(int limit, int offset, String pattern) throws DAOException {
+        LOGGER.info("Attempt to find all customers by pattern in the database");
+        List<CustomerDto> users = new ArrayList<>();
+        ResultSet resultSet = null;
+        try (Connection connection = ConnectionPool.getInstance().takeConnection();
+             PreparedStatement statement = connection.prepareStatement(SQL_FIND_NAMES_AND_SURNAMES_BY_PATTERN)) {
+            statement.setString(1, "%" + pattern + "%");
+            statement.setString(2, "%" + pattern + "%");
+            statement.setInt(3, limit);
+            statement.setInt(4, offset);
+            resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                users.add(retrieveDto(resultSet));
+            }
+        } catch (SQLException e) {
+            LOGGER.error(e);
+            throw new DAOException("Failed attempt to find all customers by pattern in the database", e);
         } finally {
             try {
                 resultSet.close();
@@ -208,12 +257,14 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public int countAllCustomersForAdmin() throws DAOException {
+    public int countAllCustomersForAdmin(String pattern) throws DAOException {
         LOGGER.info("Attempt to count all customers in the database");
         int countCustomers = 0;
         ResultSet resultSet = null;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_COUNT_ALL_CUSTOMERS)) {
+            statement.setString(1, "%" + pattern + "%");
+            statement.setString(2, "%" + pattern + "%");
             resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 countCustomers = resultSet.getInt("count");

@@ -35,4 +35,5 @@ public final class ParameterName {
     public static final String LANGUAGE = "language";
     public static final String LEVEL = "level";
     public static final String QUANTITY = "quantity";
+    public static final String SEARCH_PATTERN = "search_pattern";
 }

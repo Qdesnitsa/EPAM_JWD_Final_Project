@@ -30,4 +30,5 @@ public class AttributeName {
     public static final String EMPLOYEE_ID = "employee_id";
     public static final String LOCALE = "locale";
     public static final String QUANTITY = "quantity";
+    public static final String SEARCH_PATTERN = "search_pattern";
 }

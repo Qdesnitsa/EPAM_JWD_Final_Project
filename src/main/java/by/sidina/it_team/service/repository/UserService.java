@@ -11,12 +11,13 @@ public interface UserService {
     List<User> findAll() throws ServiceException;
 
     List<CustomerDto> findAllCustomers(int limit, int offset) throws ServiceException;
+    List<CustomerDto> findAllCustomersByPattern(int limit, int offset, String pattern) throws ServiceException;
 
     Optional<User> findByID(int id) throws ServiceException;
 
     Optional<CustomerDto> findCustomerByID(int id) throws ServiceException;
 
-    int countAllCustomersForAdmin() throws ServiceException;
+    int countAllCustomersForAdmin(String pattern) throws ServiceException;
 
     boolean add(User user, String password) throws ServiceException;
 
