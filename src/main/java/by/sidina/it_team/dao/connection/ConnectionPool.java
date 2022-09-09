@@ -1,6 +1,8 @@
 package by.sidina.it_team.dao.connection;
 
 import by.sidina.it_team.dao.exception.DAOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.sql.*;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
 
 public final class ConnectionPool {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static ConnectionPool instance;
     private BlockingQueue<Connection> connectionQueue;
     private BlockingQueue<Connection> givenAwayConQueue;
@@ -19,7 +22,7 @@ public final class ConnectionPool {
         try {
             instance = new ConnectionPool();
         } catch (DAOException e) {
-            // logger.log(Level.ERROR, "Can not initialize connection pool", e);
+            LOGGER.error("Can not initialize connection pool", e);
         }
     }
 
@@ -36,6 +39,7 @@ public final class ConnectionPool {
                 PooledConnection pooledConnection = new ConnectionPool.PooledConnection(connection);
                 connectionQueue.add(pooledConnection);
             } catch (SQLException e) {
+                LOGGER.error("Error in creating connection pool.", e);
                 throw new DAOException("Cannot create connection pool", e);
             }
         }
@@ -50,7 +54,7 @@ public final class ConnectionPool {
             closeConnectionsQueue(givenAwayConQueue);
             closeConnectionsQueue(connectionQueue);
         } catch (SQLException e) {
-            //logger.lod(Level.ERROR, "Error closing the connection.", e);
+            LOGGER.error("Error closing the connection.", e);
         }
     }
 
@@ -69,17 +73,17 @@ public final class ConnectionPool {
         try {
             con.close();
         } catch (SQLException e) {
-            //logger.log(Level.ERROR, "Connection isn't return to the pool.");
+            LOGGER.error("Connection isn't return to the pool.", e);
         }
         try {
             rs.close();
         } catch (SQLException e) {
-            //logger.log(Level.ERROR, "ResultSet isn't closed.");
+            LOGGER.error("ResultSet isn't closed.", e);
         }
         try {
             st.close();
         } catch (SQLException e) {
-            //logger.log(Level.ERROR, "Statement isn't closed.");
+            LOGGER.error("Statement isn't closed.", e);
         }
     }
 
@@ -87,14 +91,14 @@ public final class ConnectionPool {
         try {
             con.close();
         } catch (SQLException e) {
-            //logger.log(Level.ERROR, "Connection isn't return to the pool.");
+            LOGGER.error("Connection isn't return to the pool.", e);
         }
         try {
             if (st != null) {
                 st.close();
             }
         } catch (SQLException e) {
-            //logger.log(Level.ERROR, "Statement isn't closed.");
+            LOGGER.error("Statement isn't closed.", e);
         }
     }
 

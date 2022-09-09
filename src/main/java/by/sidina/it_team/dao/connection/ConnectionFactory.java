@@ -1,6 +1,8 @@
 package by.sidina.it_team.dao.connection;
 
 import by.sidina.it_team.dao.exception.DAOException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +12,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class ConnectionFactory {
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final Properties PROPERTIES = new Properties();
     private static final String DATABASE_PROPERTIES = "database.properties";
     private static final String PROPERTIES_URL = "db.url";
@@ -36,7 +39,7 @@ public class ConnectionFactory {
             driver = PROPERTIES.getProperty(PROPERTIES_DRIVER);
             poolSize = PROPERTIES.getProperty(PROPERTIES_POOL_SIZE);
         } catch (IOException e) {
-            //LOGGER.error("Cannot get information from database.properties file");
+            LOGGER.error("Cannot get information from database.properties file");
         }
     }
 
