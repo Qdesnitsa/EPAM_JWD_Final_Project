@@ -1,4 +1,4 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.admin;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
@@ -32,7 +32,7 @@ public class ShowCustomersGetCommand implements BaseCommand {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(AttributeName.USER);
         return user != null
-                && user.getRole_id() == Role.ADMIN.getId();
+                && user.getRoleId() == Role.ADMIN.getId();
     }
 
     @Override

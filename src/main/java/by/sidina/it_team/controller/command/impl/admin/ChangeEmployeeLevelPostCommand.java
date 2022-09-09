@@ -1,4 +1,4 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.admin;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
@@ -6,14 +6,11 @@ import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
-import by.sidina.it_team.dao.impl.UserDAOImpl;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
 import by.sidina.it_team.service.repository.TeamPositionLevelService;
-import by.sidina.it_team.service.repository.UserService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.TeamPositionLevelServiceImpl;
-import by.sidina.it_team.service.impl.UserServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,16 +22,15 @@ import java.util.Optional;
 
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
-public class ChangeEmployeeStatusPostCommand implements BaseCommand {
+public class ChangeEmployeeLevelPostCommand implements BaseCommand {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final TeamPositionLevelService teamPositionLevelService
             = new TeamPositionLevelServiceImpl(new TeamPositionLevelDAOImpl());
-    private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
-        return user != null && user.getRole_id() == Role.ADMIN.getId();
+        return user != null && user.getRoleId() == Role.ADMIN.getId();
     }
 
     @Override
@@ -55,8 +51,8 @@ public class ChangeEmployeeStatusPostCommand implements BaseCommand {
         try {
             Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
             if (employee.isPresent()) {
-                String status = request.getParameter(ParameterName.CHANGE_EMPLOYEE_STATUS);
-                boolean isChanged = userService.changeStatus(employeeId, status);
+                String level = request.getParameter(ParameterName.CHANGE_EMPLOYEE_LEVEL);
+                boolean isChanged = teamPositionLevelService.changeLevel(employeeId, level);
                 if (isChanged) {
                     request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                 }

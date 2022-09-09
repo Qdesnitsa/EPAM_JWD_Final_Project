@@ -1,4 +1,4 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.customer;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
@@ -15,7 +15,7 @@ public class NewProjectGetCommand implements BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
-        return user != null && user.getRole_id() == Role.CUSTOMER.getId();
+        return user != null && user.getRoleId() == Role.CUSTOMER.getId();
     }
 
     @Override

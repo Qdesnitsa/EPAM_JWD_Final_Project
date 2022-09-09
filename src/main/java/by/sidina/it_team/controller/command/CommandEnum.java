@@ -2,10 +2,16 @@ package by.sidina.it_team.controller.command;
 
 import by.sidina.it_team.controller.Command;
 import by.sidina.it_team.controller.command.impl.*;
-import by.sidina.it_team.controller.command.impl.EditProjectGetCommand;
+import by.sidina.it_team.controller.command.impl.admin.EditProjectGetCommand;
 import by.sidina.it_team.controller.command.impl.HomeShowProjectsCommand;
 import by.sidina.it_team.controller.command.impl.HomePage;
-import by.sidina.it_team.controller.command.impl.ShowEmployeesGetCommand;
+import by.sidina.it_team.controller.command.impl.admin.ShowEmployeesGetCommand;
+import by.sidina.it_team.controller.command.impl.admin.*;
+import by.sidina.it_team.controller.command.impl.customer.NewPaymentPostCommand;
+import by.sidina.it_team.controller.command.impl.customer.NewProjectGetCommand;
+import by.sidina.it_team.controller.command.impl.customer.NewProjectPostCommand;
+import by.sidina.it_team.controller.command.impl.employee.PostHoursGetCommand;
+import by.sidina.it_team.controller.command.impl.employee.PostHoursPostCommand;
 
 public enum CommandEnum {
     SELECT_LOCALE {

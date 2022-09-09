@@ -1,16 +1,16 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.admin;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
-import by.sidina.it_team.dao.dto.ProjectDto;
-import by.sidina.it_team.dao.impl.ProjectDAOImpl;
+import by.sidina.it_team.dao.dto.CustomerDto;
+import by.sidina.it_team.dao.impl.UserDAOImpl;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
-import by.sidina.it_team.service.repository.ProjectService;
+import by.sidina.it_team.service.repository.UserService;
 import by.sidina.it_team.service.exception.ServiceException;
-import by.sidina.it_team.service.impl.ProjectServiceImpl;
+import by.sidina.it_team.service.impl.UserServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,13 +22,14 @@ import java.util.Optional;
 
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
-public class ShowProjectGetCommand implements BaseCommand {
+public class EditCustomerGetCommand implements BaseCommand {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
+    private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
+
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
-        return user != null && user.getRole_id() == Role.ADMIN.getId();
+        return user != null && user.getRoleId() == Role.ADMIN.getId();
     }
 
     @Override
@@ -39,24 +40,25 @@ public class ShowProjectGetCommand implements BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.PROJECT_ID) == null) {
-            return JSPPagePath.ADMIN_EDIT_PROJECT;
+        session.setAttribute(AttributeName.CUSTOMER_ID, request.getParameter(ParameterName.CUSTOMER_ID));
+        if (request.getParameter(ParameterName.CUSTOMER_ID) == null) {
+            return JSPPagePath.ADMIN_EDIT_CUSTOMER;
         } else {
-            int projectId = Integer.parseInt(request.getParameter(ParameterName.PROJECT_ID));
+            int customerId = Integer.parseInt(request.getParameter(ParameterName.CUSTOMER_ID));
             try {
-                Optional<ProjectDto> project = projectService.findByID(projectId);
-                if (project.isPresent()) {
-                    request.setAttribute(AttributeName.PROJECT, project.get());
-                    return JSPPagePath.ADMIN_EDIT_PROJECT;
+                Optional<CustomerDto> customer = userService.findCustomerByID(customerId);
+                if (customer.isPresent()) {
+                    session.setAttribute(AttributeName.CUSTOMER, customer.get());
+                    return JSPPagePath.ADMIN_EDIT_CUSTOMER;
                 } else {
                     request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
-                    return JSPPagePath.ADMIN_EDIT_PROJECT;
                 }
             } catch (ServiceException e) {
                 LOGGER.error(e);
                 return JSPPagePath.ERROR;
             }
         }
+        return JSPPagePath.ADMIN_EDIT_CUSTOMER;
     }
 
     @Override

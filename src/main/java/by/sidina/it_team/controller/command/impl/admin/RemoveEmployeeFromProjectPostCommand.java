@@ -1,14 +1,14 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.admin;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
-import by.sidina.it_team.controller.command.BaseCommand;
 import by.sidina.it_team.controller.command.dictionary.ParameterName;
+import by.sidina.it_team.controller.command.BaseCommand;
+import by.sidina.it_team.dao.dto.EmployeeDto;
 import by.sidina.it_team.dao.dto.ProjectDto;
 import by.sidina.it_team.dao.impl.ProjectDAOImpl;
 import by.sidina.it_team.dao.impl.TeamScheduleDAOImpl;
 import by.sidina.it_team.entity.Role;
-import by.sidina.it_team.entity.TeamSchedule;
 import by.sidina.it_team.entity.User;
 import by.sidina.it_team.service.repository.ProjectService;
 import by.sidina.it_team.service.repository.TeamScheduleService;
@@ -21,25 +21,21 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
-public class PostHoursPostCommand implements BaseCommand {
+public class RemoveEmployeeFromProjectPostCommand implements BaseCommand {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
     private static final TeamScheduleService teamScheduleService = new TeamScheduleServiceImpl(new TeamScheduleDAOImpl());
-    public static int HOURS_DEFAULT = 0;
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute(AttributeName.USER);
-        return user != null
-                && user.getRole_id() == Role.EMPLOYEE.getId();
+        User user = (User) request.getSession().getAttribute(AttributeName.USER);
+        return user != null && user.getRoleId() == Role.ADMIN.getId();
     }
 
     @Override
@@ -50,34 +46,33 @@ public class PostHoursPostCommand implements BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        int projectId = Integer.parseInt(String.valueOf(session.getAttribute(AttributeName.PROJECT_ID)));
-        try {
-            List<ProjectDto> employeeProjects = projectService.findAllByEmployeeID(user.getId());
-            boolean hasEmployeeThisProject = employeeProjects
-                    .stream()
-                    .flatMap(s -> Stream.ofNullable(s))
-                    .filter(elem -> (elem.getId() == projectId))
-                    .findAny()
-                    .isPresent();
-            if (hasEmployeeThisProject) {
-                Date date = null == request.getParameter(ParameterName.DATE)
-                        ? Date.valueOf(currentDate)
-                        : Date.valueOf(request.getParameter(ParameterName.DATE));
-                double hours = null == request.getParameter(ParameterName.HOURS)
-                        ? HOURS_DEFAULT
-                        : Double.parseDouble(request.getParameter(ParameterName.HOURS));
-                boolean isAdded = teamScheduleService.addHoursByEmployeeId(new TeamSchedule(user.getId(), projectId, date, hours));
-                if (isAdded) {
-                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
+        if (session.getAttribute(ParameterName.PROJECT_ID) == null ||
+                request.getParameter(ParameterName.REMOVE_ID) == null) {
+            return JSPPagePath.ADMIN_EDIT_PROJECT;
+        } else {
+            int projectId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.PROJECT_ID)));
+            try {
+                Optional<ProjectDto> project = projectService.findByID(projectId);
+                if (project.isPresent()) {
+                    int idToRemove = Integer.parseInt(request.getParameter(ParameterName.REMOVE_ID));
+                    boolean isRemoved = teamScheduleService.removeEmployeeFromProject(idToRemove, projectId);
+                    if (isRemoved) {
+                        request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
+                    }
+                    project = projectService.findByID(projectId);
+                    request.setAttribute(AttributeName.PROJECT, project.get());
+                    List<EmployeeDto> employees = teamScheduleService.findEmployeesOnProject(projectId);
+                    request.setAttribute(AttributeName.EMPLOYEES, employees);
+                    return JSPPagePath.ADMIN_EDIT_PROJECT;
+                } else {
+                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
-            } else {
-                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+            } catch (ServiceException e) {
+                LOGGER.error(e);
+                return JSPPagePath.ERROR;
             }
-        } catch (ServiceException e) {
-            LOGGER.error(e);
-            return JSPPagePath.ERROR;
         }
-        return JSPPagePath.EMPLOYEE_EDIT_HOURS;
+        return JSPPagePath.ADMIN_EDIT_PROJECT;
     }
 
     @Override

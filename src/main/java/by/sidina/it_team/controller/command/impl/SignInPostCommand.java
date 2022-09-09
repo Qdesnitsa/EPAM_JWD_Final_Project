@@ -40,7 +40,7 @@ public class SignInPostCommand implements BaseCommand {
         String password = request.getParameter(ParameterName.PASSWORD);
         try {
             Optional<User> user = userService.findUserByEmailAndPassword(email, password);
-            if (user.isPresent() && user.get().getStatus_id() != UserStatus.BLOCKED.getUserStatusID()) {
+            if (user.isPresent() && user.get().getStatusId() != UserStatus.BLOCKED.getUserStatusID()) {
                 session.setAttribute(AttributeName.USER, user.get());
                 return JSPPagePath.INDEX;
             } else {

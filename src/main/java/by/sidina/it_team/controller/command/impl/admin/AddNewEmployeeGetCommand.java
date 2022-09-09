@@ -1,4 +1,4 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.admin;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
@@ -16,7 +16,7 @@ public class AddNewEmployeeGetCommand implements BaseCommand {
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
-        return user != null && user.getRole_id() == Role.ADMIN.getId();
+        return user != null && user.getRoleId() == Role.ADMIN.getId();
     }
 
     @Override

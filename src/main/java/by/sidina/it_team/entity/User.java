@@ -9,19 +9,19 @@ public class User implements Serializable {
     private int id;
     private String name;
     private String surname;
-    private int role_id;
+    private int roleId;
     private String email;
-    private int status_id;
+    private int statusId;
 
     private User() {
     }
 
-    public User(String name, String surname, int role_id, String email, int status_id) {
+    public User(String name, String surname, int roleId, String email, int statusId) {
         this.name = name;
         this.surname = surname;
-        this.role_id = role_id;
+        this.roleId = roleId;
         this.email = email;
-        this.status_id = status_id;
+        this.statusId = statusId;
     }
 
     public int getId() {
@@ -36,16 +36,16 @@ public class User implements Serializable {
         return surname;
     }
 
-    public int getRole_id() {
-        return role_id;
+    public int getRoleId() {
+        return roleId;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public int getStatus_id() {
-        return status_id;
+    public int getStatusId() {
+        return statusId;
     }
 
     @Override
@@ -53,14 +53,14 @@ public class User implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && role_id == user.role_id && status_id == user.status_id &&
+        return id == user.id && roleId == user.roleId && statusId == user.statusId &&
                 Objects.equals(name, user.name) && Objects.equals(surname, user.surname) &&
                 Objects.equals(email, user.email);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, surname, role_id, email, status_id);
+        return Objects.hash(id, name, surname, roleId, email, statusId);
     }
 
     @Override
@@ -69,9 +69,9 @@ public class User implements Serializable {
                 "id=" + id +
                 ", name='" + name +
                 ", surname='" + surname +
-                ", role_id=" + role_id +
+                ", role_id=" + roleId +
                 ", email='" + email +
-                ", status_id=" + status_id + "; ";
+                ", status_id=" + statusId + "; ";
     }
 
     public static class Builder {
@@ -96,8 +96,8 @@ public class User implements Serializable {
             return this;
         }
 
-        public Builder setRole_id(int role_id) {
-            newUser.role_id = role_id;
+        public Builder setRole_id(int roleId) {
+            newUser.roleId = roleId;
             return this;
         }
 
@@ -106,8 +106,8 @@ public class User implements Serializable {
             return this;
         }
 
-        public Builder setStatus_id(int status_id) {
-            newUser.status_id = status_id;
+        public Builder setStatus_id(int statusId) {
+            newUser.statusId = statusId;
             return this;
         }
 

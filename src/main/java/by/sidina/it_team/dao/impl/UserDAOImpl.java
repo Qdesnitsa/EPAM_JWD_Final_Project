@@ -117,7 +117,7 @@ public class UserDAOImpl implements UserDAO {
                           ON status_user.id = users.user_status_id
             WHERE  roles.role_types = "customer"
                    AND (users.name LIKE ? OR users.surname LIKE ?)
-            ORDER  BY status_user.status
+            ORDER  BY status_user.status, users.surname
             LIMIT  ? offset ?
             """;
 
@@ -291,10 +291,10 @@ public class UserDAOImpl implements UserDAO {
              PreparedStatement statement = connection.prepareStatement(SQL_ADD_EMPLOYEE)) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getSurname());
-            statement.setInt(3, user.getRole_id());
+            statement.setInt(3, user.getRoleId());
             statement.setString(4, user.getEmail());
             statement.setString(5, password);
-            statement.setInt(6, user.getStatus_id());
+            statement.setInt(6, user.getStatusId());
             int counter = statement.executeUpdate();
             if (counter != 0) {
                 isAdded = true;
@@ -316,7 +316,7 @@ public class UserDAOImpl implements UserDAO {
         boolean isChanged = false;
         try (Connection connection = ConnectionPool.getInstance().takeConnection();
              PreparedStatement statement = connection.prepareStatement(SQL_EDIT_USER_STATUS_BY_ID)) {
-            statement.setInt(1, user.getStatus_id());
+            statement.setInt(1, user.getStatusId());
             statement.setInt(2, id);
             int counter = statement.executeUpdate();
             if (counter != 0) {

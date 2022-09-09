@@ -18,7 +18,7 @@ public interface BaseCommand extends Command {
 
     String getExpectedJspPage(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, ServiceException;
 
-    String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response);
+    String getAlternativeJspPage(HttpServletRequest request, HttpServletResponse response) throws ServletException;
 
     @Override
     default String execute(HttpServletRequest request, HttpServletResponse response) throws ServiceException, IOException, ServletException {

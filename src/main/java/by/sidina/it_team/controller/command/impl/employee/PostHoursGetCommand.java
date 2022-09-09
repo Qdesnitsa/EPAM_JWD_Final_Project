@@ -1,4 +1,4 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.employee;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
@@ -18,7 +18,7 @@ public class PostHoursGetCommand implements BaseCommand {
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(AttributeName.USER);
-        return user != null && user.getRole_id() == Role.EMPLOYEE.getId();
+        return user != null && user.getRoleId() == Role.EMPLOYEE.getId();
     }
 
     @Override

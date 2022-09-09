@@ -1,4 +1,4 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.customer;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
@@ -39,7 +39,7 @@ public class NewProjectPostCommand implements BaseCommand {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute(AttributeName.USER);
         return user != null
-                && user.getRole_id() == Role.CUSTOMER.getId();
+                && user.getRoleId() == Role.CUSTOMER.getId();
     }
 
     @Override

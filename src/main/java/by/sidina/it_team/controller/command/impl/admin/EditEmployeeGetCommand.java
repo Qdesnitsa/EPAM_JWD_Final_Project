@@ -1,16 +1,16 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.admin;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
 import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
-import by.sidina.it_team.dao.dto.CustomerDto;
-import by.sidina.it_team.dao.impl.UserDAOImpl;
+import by.sidina.it_team.dao.dto.EmployeeDto;
+import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
-import by.sidina.it_team.service.repository.UserService;
+import by.sidina.it_team.service.repository.TeamPositionLevelService;
 import by.sidina.it_team.service.exception.ServiceException;
-import by.sidina.it_team.service.impl.UserServiceImpl;
+import by.sidina.it_team.service.impl.TeamPositionLevelServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,14 +22,15 @@ import java.util.Optional;
 
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
-public class ShowCustomerGetCommand implements BaseCommand {
+public class EditEmployeeGetCommand implements BaseCommand {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
+    private static final TeamPositionLevelService teamPositionLevelService
+            = new TeamPositionLevelServiceImpl(new TeamPositionLevelDAOImpl());
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
-        return user != null && user.getRole_id() == Role.ADMIN.getId();
+        return user != null && user.getRoleId() == Role.ADMIN.getId();
     }
 
     @Override
@@ -40,23 +41,26 @@ public class ShowCustomerGetCommand implements BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        if (request.getParameter(ParameterName.PROJECT_ID).isEmpty()) {
-            return JSPPagePath.ADMIN_EDIT_CUSTOMER;
+        int employeeId;
+        if (request.getParameter(ParameterName.EMPLOYEE_ID) == null) {
+            employeeId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.EMPLOYEE_ID)));
         } else {
-            int customerId = Integer.parseInt(request.getParameter(ParameterName.CUSTOMER_ID));
-            try {
-                Optional<CustomerDto> customer = userService.findCustomerByID(customerId);
-                if (customer.isPresent()) {
-                    request.setAttribute(AttributeName.CUSTOMER, customer.get());
-                } else {
-                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
-                }
-            } catch (ServiceException e) {
-                LOGGER.error(e);
-                return JSPPagePath.ERROR;
-            }
-            return JSPPagePath.ADMIN_EDIT_CUSTOMER;
+            employeeId = Integer.parseInt(String.valueOf(request.getParameter(ParameterName.EMPLOYEE_ID)));
+            session.setAttribute(AttributeName.EMPLOYEE_ID, request.getParameter(ParameterName.EMPLOYEE_ID));
         }
+        try {
+            Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
+            if (employee.isPresent()) {
+                session.setAttribute(AttributeName.EMPLOYEE, employee.get());
+                return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+            } else {
+                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+            }
+        } catch (ServiceException e) {
+            LOGGER.error(e);
+            return JSPPagePath.ERROR;
+        }
+        return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
     }
 
     @Override

@@ -18,14 +18,12 @@
                     <h2><fmt:message key="label.customer_edition"/></h2>
                 </caption>
                 <tr>
-                    <th><fmt:message key="label.customer_id"/></th>
                     <th><fmt:message key="label.email"/></th>
                     <th><fmt:message key="label.name"/></th>
                     <th><fmt:message key="label.surname"/></th>
                     <th><fmt:message key="label.status"/></th>
                 </tr>
                 <tr>
-                    <td>${customer.id}</td>
                     <td>${customer.email}</td>
                     <td>${customer.name}</td>
                     <td>${customer.surname}</td>

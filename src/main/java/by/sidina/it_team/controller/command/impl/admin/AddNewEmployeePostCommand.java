@@ -1,16 +1,18 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.admin;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
-import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.controller.command.BaseCommand;
-import by.sidina.it_team.dao.dto.EmployeeDto;
+import by.sidina.it_team.controller.command.dictionary.ParameterName;
 import by.sidina.it_team.dao.impl.TeamPositionLevelDAOImpl;
+import by.sidina.it_team.dao.impl.UserDAOImpl;
 import by.sidina.it_team.entity.Role;
 import by.sidina.it_team.entity.User;
 import by.sidina.it_team.service.repository.TeamPositionLevelService;
+import by.sidina.it_team.service.repository.UserService;
 import by.sidina.it_team.service.exception.ServiceException;
 import by.sidina.it_team.service.impl.TeamPositionLevelServiceImpl;
+import by.sidina.it_team.service.impl.UserServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,15 +24,16 @@ import java.util.Optional;
 
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
-public class ChangeEmployeeLevelPostCommand implements BaseCommand {
+public class AddNewEmployeePostCommand implements BaseCommand {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final TeamPositionLevelService teamPositionLevelService
             = new TeamPositionLevelServiceImpl(new TeamPositionLevelDAOImpl());
+    private static final UserService userService = new UserServiceImpl(new UserDAOImpl());
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
-        return user != null && user.getRole_id() == Role.ADMIN.getId();
+        return user != null && user.getRoleId() == Role.ADMIN.getId();
     }
 
     @Override
@@ -41,32 +44,30 @@ public class ChangeEmployeeLevelPostCommand implements BaseCommand {
         User user = (User) session.getAttribute(AttributeName.USER);
         request.setAttribute(AttributeName.USER_NAME, user.getName());
         request.setAttribute(AttributeName.USER_SURNAME, user.getSurname());
-        int employeeId;
-        if (request.getParameter(ParameterName.EMPLOYEE_ID) == null) {
-            employeeId = Integer.parseInt(String.valueOf(session.getAttribute(ParameterName.EMPLOYEE_ID)));
-        } else {
-            employeeId = Integer.parseInt(String.valueOf(request.getParameter(ParameterName.EMPLOYEE_ID)));
-            session.setAttribute(AttributeName.EMPLOYEE_ID, request.getParameter(ParameterName.EMPLOYEE_ID));
-        }
+        String email = request.getParameter(ParameterName.EMAIL);
+        String password = request.getParameter(ParameterName.PASSWORD);
+        String name = request.getParameter(ParameterName.NAME);
+        String surname = request.getParameter(ParameterName.SURNAME);
+        int status = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_STATUS));
+        int role = Integer.parseInt(request.getParameter(ParameterName.EMPLOYEE_ROLE));
+        String position = request.getParameter(ParameterName.EMPLOYEE_POSITION);
+        String level = request.getParameter(ParameterName.EMPLOYEE_LEVEL);
+        User userEmployee = new User(name, surname, role, email, status);
         try {
-            Optional<EmployeeDto> employee = teamPositionLevelService.findByID(employeeId);
-            if (employee.isPresent()) {
-                String level = request.getParameter(ParameterName.CHANGE_EMPLOYEE_LEVEL);
-                boolean isChanged = teamPositionLevelService.changeLevel(employeeId, level);
-                if (isChanged) {
-                    request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
-                }
-                employee = teamPositionLevelService.findByID(employeeId);
-                request.setAttribute(AttributeName.EMPLOYEE, employee.get());
-                return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
-            } else {
-                request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
+            Optional<User> existingUser = userService.findUserByEmail(userEmployee.getEmail());
+            if (existingUser.isPresent()) {
+                request.setAttribute(AttributeName.MESSAGE_EMAIL_EXISTS, MSG_EMAIL_EXISTS);
+                return JSPPagePath.ADMIN_NEW_EMPLOYEE;
+            }
+            boolean isChanged = teamPositionLevelService.add(position, level, userEmployee, password);
+            if (isChanged) {
+                request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
             }
         } catch (ServiceException e) {
             LOGGER.error(e);
             return JSPPagePath.ERROR;
         }
-        return JSPPagePath.ADMIN_EDIT_EMPLOYEE;
+        return JSPPagePath.ADMIN_NEW_EMPLOYEE;
     }
 
     @Override

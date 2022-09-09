@@ -1,4 +1,4 @@
-package by.sidina.it_team.controller.command.impl;
+package by.sidina.it_team.controller.command.impl.admin;
 
 import by.sidina.it_team.controller.command.dictionary.AttributeName;
 import by.sidina.it_team.controller.command.dictionary.JSPPagePath;
@@ -17,20 +17,19 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
 
 import static by.sidina.it_team.controller.command.dictionary.MessageContent.*;
 
-public class ChangeProjectStartDatePostCommand implements BaseCommand {
+public class ChangeProjectEndDatePostCommand implements BaseCommand {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final ProjectService projectService = new ProjectServiceImpl(new ProjectDAOImpl());
 
     @Override
     public boolean canBeExpectedResponseReturned(HttpServletRequest request, HttpServletResponse response) {
         User user = (User) request.getSession().getAttribute(AttributeName.USER);
-        return user != null && user.getRole_id() == Role.ADMIN.getId();
+        return user != null && user.getRoleId() == Role.ADMIN.getId();
     }
 
     @Override
@@ -48,16 +47,14 @@ public class ChangeProjectStartDatePostCommand implements BaseCommand {
             try {
                 Optional<ProjectDto> project = projectService.findByID(projectId);
                 if (project.isPresent()) {
-                    String startDate = request.getParameter(ParameterName.START_DATE);
-                    boolean isChanged = projectService.changeStartDate(projectId, startDate);
+                    String endDate = request.getParameter(ParameterName.END_DATE);
+                    boolean isChanged = projectService.changeEndDate(projectId, endDate);
                     if (isChanged) {
                         request.setAttribute(AttributeName.MESSAGE_SUCCESS, MSG_SUCCESS);
                     }
                     project = projectService.findByID(projectId);
-                    session.setAttribute(AttributeName.PROJECT, project.get());
+                    request.setAttribute(AttributeName.PROJECT, project.get());
                     return JSPPagePath.ADMIN_EDIT_PROJECT;
-                } else {
-                    request.setAttribute(AttributeName.MESSAGE_FAIL, MSG_FAIL);
                 }
             } catch (ServiceException e) {
                 LOGGER.error(e);
